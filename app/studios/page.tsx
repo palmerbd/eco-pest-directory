@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getAllStudios } from "@/lib/wordpress";
 import { StudioSearch } from "./StudioSearch";
 
-export const revalidate = 3600;
+export const revalidate = 1800; // 30-min ISR — keeps studio data reasonably fresh
 
 export const metadata: Metadata = {
   title: "Find Private Dance Studios Near You",
