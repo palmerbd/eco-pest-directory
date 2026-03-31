@@ -26,7 +26,7 @@ export async function generateMetadata({
 
   const location = [studio.city, studio.state].filter(Boolean).join(", ");
   return {
-    title: `${studio.title}${location ? ` â ${location}` : ""} | Private Dance Directory`,
+    title: `${studio.title}${location ? ` — ${location}` : ""}`,
     description:
       studio.description ||
       `Private dance lessons at ${studio.title}${location ? ` in ${location}` : ""}. ${
