@@ -230,7 +230,7 @@ export default async function StudioPage({
           )}
 
           {/* Location pill */}
-          y(studio.city || studio.state) && (
+          {(studio.city || studio.state) && (
             <div className="flex items-center gap-2 text-white/60 text-sm">
               <MapIcon />
               <span>{studio.city}{studio.city && studio.state ? ", " : ""}{studio.state}</span>
