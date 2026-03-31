@@ -347,7 +347,7 @@ export default async function StudioPage({
             {/* External Reviews */}
             {(studio.yelpUrl || studio.googleMapsUrl) && (
               <section>
-                <h2 classNama="font-display font-bold text-gray-900 text-xl mb-4">Reviews & Directions</h2>
+                <h2 "font-display font-bold text-gray-900 text-xl mb-4">Reviews & Directions</h2>
                 <div className="flex flex-wrap gap-3">
                   {studio.yelpUrl && (
                     <a href={studio.yelpUrl} target="_blank" rel="noopener noreferrer"
