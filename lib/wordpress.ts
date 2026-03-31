@@ -54,9 +54,28 @@ const STYLE_MAP: Record<string, DanceStyle> = {
 
 // ── Raw WP REST post → Studio ─────────────────────────────────────────────────
 
+// ── HTML entity decoder ──────────────────────────────────────────────────────
+
+function decodeHtmlEntities(str: string): string {
+  return str
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, "\u00A0")
+    .replace(/&mdash;/g, "\u2014")
+    .replace(/&ndash;/g, "\u2013")
+    .replace(/&rsquo;/g, "\u2019")
+    .replace(/&lsquo;/g, "\u2018")
+    .replace(/&rdquo;/g, "\u201D")
+    .replace(/&ldquo;/g, "\u201C");
+}
+
 function mapWPPost(post: Record<string, unknown>): Studio {
   const acf   = (post.acf   as Record<string, unknown>) || {};
-  const title = (post.title as Record<string, string>)?.rendered || "";
+  const title = decodeHtmlEntities((post.title as Record<string, string>)?.rendered || "");
 
   const city  = (acf.studio_address_city  as string) || "";
   const state = (acf.studio_address_state as string) || "";
@@ -76,9 +95,11 @@ function mapWPPost(post: Record<string, unknown>): Studio {
     slug:                  post.slug as string,
     title,
     description:
+      decodeHtmlEntities(
       (post.excerpt as Record<string, string>)?.rendered
         ?.replace(/<[^>]+>/g, "")
-        .trim() || "",
+        .trim() || ""
+    ),
     phone:                 (acf.studio_phone          as string) || "",
     address:               (acf.studio_address_street as string) || "",
     city,
