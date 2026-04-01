@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function StudiosPage() {
-  const studios = await getAllStudios(800);
+  const studios = await getAllStudios(100);
 
   return (
     <main>
