@@ -1,15 +1,35 @@
 // ─── ISR Revalidation Webhook ─────────────────────────────────────────────────
-// WordPress fires this when a listing is published or updated
-// Next.js regenerates that page within seconds — no full site rebuild needed
+// WordPress fires this when a dance_studio post is published or updated.
+// Next.js regenerates affected pages within seconds — no full rebuild needed.
 //
-// WP hook (add to functions.php or a custom plugin):
-//   add_action('publish_dance_studio', function($post_id) {
-//     $slug = get_post_field('post_name', $post_id);
-//     wp_remote_post('https://yourdomain.com/api/revalidate', [
-//       'body' => json_encode(['secret' => WP_REVALIDATE_SECRET, 'slug' => $slug]),
+// ── WordPress setup ──────────────────────────────────────────────────────────
+// Add to WP functions.php (or a mu-plugin):
+//
+//   define('WP_REVALIDATE_SECRET', 'your-secret-here'); // match Vercel env var
+//   define('WP_REVALIDATE_URL', 'https://ballroomdancedirectory.com/api/revalidate');
+//
+//   function bdd_revalidate_on_save($post_id, $post, $update) {
+//     if ($post->post_type !== 'dance_studio' || $post->post_status !== 'publish') return;
+//     $slug = $post->post_name;
+//     $city = strtolower(str_replace(' ', '-', get_field('studio_address_city', $post_id) ?? ''));
+//     $styles = get_field('studio_dance_styles', $post_id) ?? [];
+//     wp_remote_post(WP_REVALIDATE_URL, [
+//       'body'    => json_encode(['secret' => WP_REVALIDATE_SECRET, 'slug' => $slug, 'city' => $city, 'styles' => $styles]),
 //       'headers' => ['Content-Type' => 'application/json'],
+//       'timeout' => 10,
+//       'blocking' => false,
 //     ]);
-//   });
+//   }
+//   add_action('save_post', 'bdd_revalidate_on_save', 10, 3);
+//
+// ── Vercel setup ─────────────────────────────────────────────────────────────
+// Add environment variable in Vercel dashboard:
+//   WP_REVALIDATE_SECRET = <generate a random 32-char string>
+//
+// ── Test from terminal ───────────────────────────────────────────────────────
+//   curl -X POST https://ballroomdancedirectory.com/api/revalidate \
+//     -H "Content-Type: application/json" \
+//     -d '{"secret":"your-secret","slug":"fred-astaire-dance-studio-dallas-tx"}'
 
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,37 +37,53 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { secret, slug, cityState, style } = body;
+    const { secret, slug, city, styles } = body;
 
     // Validate secret token
-    if (secret !== process.env.WP_REVALIDATE_SECRET) {
+    if (!process.env.WP_REVALIDATE_SECRET || secret !== process.env.WP_REVALIDATE_SECRET) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     const revalidated: string[] = [];
 
-    // Revalidate the specific listing page
-    if (slug && cityState) {
-      const path = `/studios/${cityState}/${slug}`;
-      revalidatePath(path);
-      revalidated.push(path);
-    }
-
-    // Revalidate the city archive page
-    if (cityState) {
-      revalidatePath(`/studios/${cityState}`);
-      revalidated.push(`/studios/${cityState}`);
-    }
-
-    // Revalidate the style+city archive if style provided
-    if (style && cityState) {
-      revalidatePath(`/${style}/${cityState}`);
-      revalidated.push(`/${style}/${cityState}`);
-    }
-
-    // Always revalidate homepage
+    // Always revalidate studio listing + homepage
+    revalidatePath("/studios");
+    revalidated.push("/studios");
     revalidatePath("/");
     revalidated.push("/");
+
+    // Revalidate the specific studio detail page
+    if (slug) {
+      revalidatePath(`/studios/${slug}`);
+      revalidated.push(`/studios/${slug}`);
+    }
+
+    // Revalidate the city page
+    if (city) {
+      revalidatePath(`/studios/city/${city}`);
+      revalidated.push(`/studios/city/${city}`);
+    }
+
+    // Revalidate any matching style landing pages
+    const STYLE_PAGE_MAP: Record<string, string> = {
+      ballroom:     "/ballroom-dance-lessons",
+      latin:        "/latin-dance-lessons",
+      tango:        "/tango-dance-lessons",
+      wedding:      "/wedding-dance-lessons",
+      wedding_dance:"/wedding-dance-lessons",
+      swing:        "/swing-dance-lessons",
+      competition:  "/competition-dance-lessons",
+    };
+
+    if (Array.isArray(styles)) {
+      for (const style of styles) {
+        const path = STYLE_PAGE_MAP[style];
+        if (path && !revalidated.includes(path)) {
+          revalidatePath(path);
+          revalidated.push(path);
+        }
+      }
+    }
 
     return NextResponse.json({
       revalidated: true,

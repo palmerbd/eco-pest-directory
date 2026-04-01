@@ -244,6 +244,23 @@ export default async function StudioPage({
         </div>
       </section>
 
+      {/* Per-listing disclaimer */}
+      <div className="bg-amber-50 border-b border-amber-200">
+        <div className="max-w-5xl mx-auto px-6 py-3 flex items-start gap-2">
+          <span className="text-amber-600 text-xs mt-0.5 shrink-0">{"\u2139\ufe0f"}</span>
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <strong>Independent listing:</strong> Ballroom Dance Directory is not affiliated with{" "}
+            {studio.studioChain !== "independent" ? chain.label : "this studio"}.
+            This listing was compiled from public sources for informational purposes.
+            Information may not be current &mdash; please contact the studio directly to confirm
+            hours, pricing, and availability.{" "}
+            <a href="/contact" className="underline font-medium hover:text-amber-900">
+              Own this studio? Claim your listing.
+            </a>
+          </p>
+        </div>
+      </div>
+
       {/* Body */}
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
