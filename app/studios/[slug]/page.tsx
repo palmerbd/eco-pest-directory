@@ -6,14 +6,14 @@ import { Studio, CHAIN_CONFIG, STYLE_LABELS, AMENITY_LABELS, DanceStyle } from "
 
 export const revalidate = 3600;
 
-// ââ Static params âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Static params ─────────────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
   const slugs = await getAllStudioSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
-// ââ Metadata ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Metadata ──────────────────────────────────────────────────────────────────
 
 export async function generateMetadata({
   params,
@@ -26,7 +26,7 @@ export async function generateMetadata({
 
   const location = [studio.city, studio.state].filter(Boolean).join(", ");
   return {
-    title: `${studio.title}${location ? ` — ${location}` : ""}`,
+    title: `${studio.title}${location ? ` \u2014 ${location}` : ""}`,
     description:
       studio.description ||
       `Private dance lessons at ${studio.title}${location ? ` in ${location}` : ""}. ${
@@ -39,7 +39,7 @@ export async function generateMetadata({
   };
 }
 
-// ââ Sub-components ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Sub-components ────────────────────────────────────────────────────────────
 
 function StarRating({ rating, count }: { rating: number; count?: number }) {
   const full  = Math.floor(rating);
@@ -48,12 +48,12 @@ function StarRating({ rating, count }: { rating: number; count?: number }) {
   return (
     <div className="flex items-center gap-2">
       <span className="flex gap-0.5">
-        {Array.from({ length: full  }).map((_, i) => (
-          <span key={`f${i}`} className="text-xl" style={{ color: "#e8c560" }}>â</span>
+        {Array.from({ length: full }).map((_, i) => (
+          <span key={`f${i}`} className="text-xl" style={{ color: "#e8c560" }}>{"\u2605"}</span>
         ))}
-        {half && <span className="text-xl" style={{ color: "#e8c560" }}>â</span>}
+        {half && <span className="text-xl" style={{ color: "#e8c560" }}>{"\u00BD"}</span>}
         {Array.from({ length: empty }).map((_, i) => (
-          <span key={`e${i}`} className="text-xl text-gray-300">â</span>
+          <span key={`e${i}`} className="text-xl text-gray-300">{"\u2605"}</span>
         ))}
       </span>
       <span className="font-bold text-gray-900">{rating.toFixed(1)}</span>
@@ -120,7 +120,7 @@ const CalendarIcon = () => (
   </svg>
 );
 
-// ââ Page ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function StudioPage({
   params,
@@ -134,7 +134,6 @@ export default async function StudioPage({
   const chain    = CHAIN_CONFIG[studio.studioChain];
   const location = [studio.address, studio.city, studio.state, studio.zip]
     .filter(Boolean).join(", ");
-  const cityState = studio.cityState;
 
   const hours = studio.hours;
   const hoursRows = [
@@ -236,7 +235,7 @@ export default async function StudioPage({
               <span>{studio.city}{studio.city && studio.state ? ", " : ""}{studio.state}</span>
               {studio.foundedYear && (
                 <>
-                  <span className="text-white/20">Â·</span>
+                  <span className="text-white/20">&middot;</span>
                   <span>Est. {studio.foundedYear}</span>
                 </>
               )}
@@ -249,7 +248,7 @@ export default async function StudioPage({
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* ââ Left / Main ââ */}
+          {/* ── Left / Main ── */}
           <div className="lg:col-span-2 space-y-8">
 
             {/* About */}
@@ -285,7 +284,7 @@ export default async function StudioPage({
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {studio.amenities.map((a) => (
                     <div key={a} className="flex items-center gap-2 text-sm text-gray-700">
-                      <span className="text-green-500 shrink-0">â</span>
+                      <span className="text-green-500 shrink-0">{"\u2713"}</span>
                       {AMENITY_LABELS[a] || a}
                     </div>
                   ))}
@@ -347,20 +346,20 @@ export default async function StudioPage({
             {/* External Reviews */}
             {(studio.yelpUrl || studio.googleMapsUrl) && (
               <section>
-                <h2 classNama="font-display font-bold text-gray-900 text-xl mb-4">Reviews & Directions</h2>
+                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Reviews &amp; Directions</h2>
                 <div className="flex flex-wrap gap-3">
                   {studio.yelpUrl && (
                     <a href={studio.yelpUrl} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 border-red-100
                                  bg-red-50 text-red-700 font-semibold text-sm hover:bg-red-100 transition-colors">
-                      â Read Yelp Reviews
+                      {"\u2605"} Read Yelp Reviews
                     </a>
                   )}
                   {studio.googleMapsUrl && (
                     <a href={studio.googleMapsUrl} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 border-blue-100
                                  bg-blue-50 text-blue-700 font-semibold text-sm hover:bg-blue-100 transition-colors">
-                      ðº Get Directions
+                      {"\u2192"} Get Directions
                     </a>
                   )}
                 </div>
@@ -368,12 +367,12 @@ export default async function StudioPage({
             )}
           </div>
 
-          {/* ââ Right / Sidebar ââ */}
+          {/* ── Right / Sidebar ── */}
           <div className="space-y-6">
 
             {/* Contact card */}
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <h3 className="font-display font-bold text-gray-900 text-lg mb-4">Contact & Location</h3>
+              <h3 className="font-display font-bold text-gray-900 text-lg mb-4">Contact &amp; Location</h3>
 
               {studio.phone && (
                 <InfoRow
@@ -464,7 +463,7 @@ export default async function StudioPage({
             {/* Back to directory */}
             <Link href="/studios"
               className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-              â Back to all studios
+              {"\u2190"} Back to all studios
             </Link>
           </div>
         </div>
