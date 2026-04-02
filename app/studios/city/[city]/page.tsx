@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStudiosByCity, citySlugToName, getAllStudios } from "@/lib/wordpress";
 import { StudioCard, CHAIN_CONFIG, STYLE_LABELS, DanceStyle } from "@/types/studio";
+import { getCityConfig } from "@/lib/neighborhoods";
 
 export const revalidate = 3600;
 
@@ -185,6 +186,9 @@ export default async function CityPage({
     })),
   };
 
+  // Neighborhood config for sidebar
+  const cityConf = getCityConfig(city);
+
   return (
     <main>
       <script
@@ -259,6 +263,28 @@ export default async function CityPage({
                 <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-100">
                   <p className="text-xs font-bold uppercase tracking-wide text-yellow-700 mb-1">Pro Tip</p>
                   <p className="text-sm text-yellow-900">{cityContent.tip}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Neighborhoods in this city */}
+            {cityConf && cityConf.neighborhoods.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                <h3 className="font-display font-bold text-gray-900 text-base mb-3">
+                  Browse by Neighborhood
+                </h3>
+                <div className="space-y-0.5">
+                  {cityConf.neighborhoods.map((n) => (
+                    <Link
+                      key={n.slug}
+                      href={`/studios/city/${city}/${n.slug}`}
+                      className="flex items-center justify-between py-2 px-3 rounded-lg text-sm
+                                 text-gray-700 hover:bg-yellow-50 hover:text-yellow-800 transition-colors"
+                    >
+                      <span>{n.name}</span>
+                      <span className="text-gray-300">→</span>
+                    </Link>
+                  ))}
                 </div>
               </div>
             )}
