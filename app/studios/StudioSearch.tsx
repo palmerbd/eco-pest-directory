@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   StudioCard,
@@ -14,18 +14,7 @@ import {
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const CITIES = [
-  "Los Angeles",
-  "Chicago",
-  "Dallas",
-  "Miami",
-  "Houston",
-  "New York",
-  "Atlanta",
-  "Seattle",
-  "Denver",
-  "Austin",
-];
+const PAGE_SIZE = 24;
 
 const SELECT_CLASS =
   "px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white text-gray-700 " +
@@ -162,27 +151,62 @@ function StudioListCard({ studio }: { studio: StudioCard }) {
 
 export function StudioSearch({ studios }: { studios: StudioCard[] }) {
   const searchParams = useSearchParams();
+  const router       = useRouter();
+  const pathname     = usePathname();
 
-  const [query,     setQuery]     = useState(searchParams.get("q") ?? "");
-  const [city,      setCity]      = useState(searchParams.get("city") ?? "");
-  const [style,     setStyle]     = useState(searchParams.get("style") ?? "");
-  const [chain,     setChain]     = useState("");
-  const [minRating, setMinRating] = useState(0);
-  const [sortBy,    setSortBy]    = useState("rating");
-
-  // Sync state if params change (e.g. browser back/forward)
-  useEffect(() => {
-    setQuery(searchParams.get("q") ?? "");
-    setCity(searchParams.get("city") ?? "");
-    setStyle(searchParams.get("style") ?? "");
-  }, [searchParams]);
+  // ── Read initial state from URL params ────────────────────────────────────
+  const [query,     setQuery]     = useState(() => searchParams.get("q")      ?? "");
+  const [city,      setCity]      = useState(() => searchParams.get("city")   ?? "");
+  const [style,     setStyle]     = useState(() => searchParams.get("style")  ?? "");
+  const [chain,     setChain]     = useState(() => searchParams.get("chain")  ?? "");
+  const [minRating, setMinRating] = useState(() => Number(searchParams.get("rating") ?? "0"));
+  const [sortBy,    setSortBy]    = useState(() => searchParams.get("sort")   ?? "rating");
+  const [page,      setPage]      = useState(() => Math.max(1, Number(searchParams.get("page") ?? "1")));
 
   const hasFilters = !!(query || city || style || chain || minRating);
 
+  // ── Derive city list directly from live data ──────────────────────────────
+  const cities = useMemo(() => {
+    const seen = new Set<string>();
+    studios.forEach((s) => { if (s.city) seen.add(s.city); });
+    return Array.from(seen).sort();
+  }, [studios]);
+
+  // ── Sync state → URL ──────────────────────────────────────────────────────
+  const updateURL = useCallback(
+    (updates: Record<string, string | number>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(updates).forEach(([k, v]) => {
+        if (v === "" || v === 0 || (k === "sort" && v === "rating") || (k === "page" && v === 1)) {
+          params.delete(k);
+        } else {
+          params.set(k, String(v));
+        }
+      });
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    },
+    [searchParams, router, pathname]
+  );
+
+  // ── Filter change handlers ────────────────────────────────────────────────
+  function handleQuery(v: string)  { setQuery(v);     setPage(1); updateURL({ q: v,      page: 1 }); }
+  function handleCity(v: string)   { setCity(v);      setPage(1); updateURL({ city: v,   page: 1 }); }
+  function handleStyle(v: string)  { setStyle(v);     setPage(1); updateURL({ style: v,  page: 1 }); }
+  function handleChain(v: string)  { setChain(v);     setPage(1); updateURL({ chain: v,  page: 1 }); }
+  function handleRating(v: number) { setMinRating(v); setPage(1); updateURL({ rating: v, page: 1 }); }
+  function handleSort(v: string)   { setSortBy(v);    setPage(1); updateURL({ sort: v,   page: 1 }); }
+  function handlePage(v: number)   { setPage(v);               updateURL({ page: v }); }
+
+  function clearFilters() {
+    setQuery(""); setCity(""); setStyle(""); setChain(""); setMinRating(0); setPage(1);
+    router.replace(pathname, { scroll: false });
+  }
+
+  // ── Filter + sort ─────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     let result = studios;
 
-    // Text search across name, city, address
     if (query.trim()) {
       const q = query.trim().toLowerCase();
       result = result.filter(
@@ -198,7 +222,6 @@ export function StudioSearch({ studios }: { studios: StudioCard[] }) {
     if (chain)     result = result.filter((s) => s.studioChain === (chain as StudioChain));
     if (minRating) result = result.filter((s) => s.rating !== undefined && s.rating >= minRating);
 
-    // Sort
     result = [...result];
     if (sortBy === "rating") {
       result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
@@ -211,13 +234,17 @@ export function StudioSearch({ studios }: { studios: StudioCard[] }) {
     return result;
   }, [studios, query, city, style, chain, minRating, sortBy]);
 
-  function clearFilters() {
-    setQuery("");
-    setCity("");
-    setStyle("");
-    setChain("");
-    setMinRating(0);
-  }
+  // ── Pagination ────────────────────────────────────────────────────────────
+  const totalPages  = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage    = Math.min(page, totalPages);
+  const pageStudios = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      setPage(1);
+      updateURL({ page: 1 });
+    }
+  }, [page, totalPages, updateURL]);
 
   return (
     <>
@@ -225,7 +252,6 @@ export function StudioSearch({ studios }: { studios: StudioCard[] }) {
       <div className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 space-y-3">
 
-          {/* Search input */}
           <div className="relative">
             <svg
               className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
@@ -237,14 +263,14 @@ export function StudioSearch({ studios }: { studios: StudioCard[] }) {
             <input
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => handleQuery(e.target.value)}
               placeholder="Search studios by name or city…"
               className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl text-sm
                          focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
             />
             {query && (
               <button
-                onClick={() => setQuery("")}
+                onClick={() => handleQuery("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 aria-label="Clear search"
               >
@@ -253,36 +279,31 @@ export function StudioSearch({ studios }: { studios: StudioCard[] }) {
             )}
           </div>
 
-          {/* Filter dropdowns row */}
           <div className="flex flex-wrap gap-2 items-center">
-            {/* City */}
-            <select value={city} onChange={(e) => setCity(e.target.value)} className={SELECT_CLASS}>
+            <select value={city} onChange={(e) => handleCity(e.target.value)} className={SELECT_CLASS}>
               <option value="">All Cities</option>
-              {CITIES.map((c) => (
+              {cities.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
 
-            {/* Dance style */}
-            <select value={style} onChange={(e) => setStyle(e.target.value)} className={SELECT_CLASS}>
+            <select value={style} onChange={(e) => handleStyle(e.target.value)} className={SELECT_CLASS}>
               <option value="">All Styles</option>
               {DANCE_STYLES.map((s) => (
                 <option key={s} value={s}>{STYLE_LABELS[s]}</option>
               ))}
             </select>
 
-            {/* Chain / Studio type */}
-            <select value={chain} onChange={(e) => setChain(e.target.value)} className={SELECT_CLASS}>
+            <select value={chain} onChange={(e) => handleChain(e.target.value)} className={SELECT_CLASS}>
               <option value="">All Types</option>
               {(Object.entries(CHAIN_CONFIG) as [StudioChain, { label: string }][]).map(([k, v]) => (
                 <option key={k} value={k}>{v.label}</option>
               ))}
             </select>
 
-            {/* Min rating */}
             <select
               value={minRating}
-              onChange={(e) => setMinRating(Number(e.target.value))}
+              onChange={(e) => handleRating(Number(e.target.value))}
               className={SELECT_CLASS}
             >
               <option value={0}>Any Rating</option>
@@ -290,14 +311,12 @@ export function StudioSearch({ studios }: { studios: StudioCard[] }) {
               <option value={4.5}>4.5★ &amp; up</option>
             </select>
 
-            {/* Sort */}
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={SELECT_CLASS}>
+            <select value={sortBy} onChange={(e) => handleSort(e.target.value)} className={SELECT_CLASS}>
               <option value="rating">Top Rated</option>
               <option value="reviews">Most Reviewed</option>
               <option value="name">A → Z</option>
             </select>
 
-            {/* Clear button */}
             {hasFilters && (
               <button
                 onClick={clearFilters}
@@ -311,45 +330,45 @@ export function StudioSearch({ studios }: { studios: StudioCard[] }) {
         </div>
       </div>
 
-      {/* ── Results grid ──────────────────────────────────────────────────── */}
       <section className="py-10 px-4 sm:px-6" style={{ background: "#f9f6f0" }}>
         <div className="max-w-6xl mx-auto">
 
-          {/* Result count + active filter chips */}
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <p className="text-sm text-gray-500">
               <span className="font-semibold text-gray-800">{filtered.length}</span>{" "}
               studio{filtered.length !== 1 ? "s" : ""}
               {hasFilters ? " match your filters" : " in the directory"}
+              {totalPages > 1 && (
+                <span className="text-gray-400"> — page {safePage} of {totalPages}</span>
+              )}
             </p>
 
-            {/* Active filter chips */}
             {city && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-50 border border-yellow-200
                                text-yellow-800 text-xs font-medium rounded-full">
                 {city}
-                <button onClick={() => setCity("")} className="ml-0.5 hover:text-yellow-600">✕</button>
+                <button onClick={() => handleCity("")} className="ml-0.5 hover:text-yellow-600">✕</button>
               </span>
             )}
             {style && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-50 border border-yellow-200
                                text-yellow-800 text-xs font-medium rounded-full">
                 {STYLE_LABELS[style as DanceStyle]}
-                <button onClick={() => setStyle("")} className="ml-0.5 hover:text-yellow-600">✕</button>
+                <button onClick={() => handleStyle("")} className="ml-0.5 hover:text-yellow-600">✕</button>
               </span>
             )}
             {chain && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-50 border border-yellow-200
                                text-yellow-800 text-xs font-medium rounded-full">
                 {CHAIN_CONFIG[chain as StudioChain]?.label}
-                <button onClick={() => setChain("")} className="ml-0.5 hover:text-yellow-600">✕</button>
+                <button onClick={() => handleChain("")} className="ml-0.5 hover:text-yellow-600">✕</button>
               </span>
             )}
             {minRating > 0 && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-50 border border-yellow-200
                                text-yellow-800 text-xs font-medium rounded-full">
                 {minRating}★ &amp; up
-                <button onClick={() => setMinRating(0)} className="ml-0.5 hover:text-yellow-600">✕</button>
+                <button onClick={() => handleRating(0)} className="ml-0.5 hover:text-yellow-600">✕</button>
               </span>
             )}
           </div>
@@ -368,14 +387,65 @@ export function StudioSearch({ studios }: { studios: StudioCard[] }) {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filtered.map((studio) => (
-                <StudioListCard key={studio.id} studio={studio} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {pageStudios.map((studio) => (
+                  <StudioListCard key={studio.id} studio={studio} />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-12 flex-wrap">
+                  <button
+                    onClick={() => { handlePage(safePage - 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    disabled={safePage === 1}
+                    className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-200 bg-white
+                               text-gray-700 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed
+                               transition-colors"
+                  >
+                    ← Prev
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - safePage) <= 2)
+                    .reduce<(number | "…")[]>((acc, p, idx, arr) => {
+                      if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) acc.push("…");
+                      acc.push(p);
+                      return acc;
+                    }, [])
+                    .map((item, idx) =>
+                      item === "…" ? (
+                        <span key={`ellipsis-${idx}`} className="px-2 text-gray-400 select-none">…</span>
+                      ) : (
+                        <button
+                          key={item}
+                          onClick={() => { handlePage(item as number); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                          className={`w-10 py-2 text-sm font-medium rounded-lg border transition-colors
+                            ${safePage === item
+                              ? "border-yellow-400 text-yellow-800 bg-yellow-50"
+                              : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
+                            }`}
+                        >
+                          {item}
+                        </button>
+                      )
+                    )}
+
+                  <button
+                    onClick={() => { handlePage(safePage + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    disabled={safePage === totalPages}
+                    className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-200 bg-white
+                               text-gray-700 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed
+                               transition-colors"
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
     </>
   );
-}
+                                 }
