@@ -1,16 +1,17 @@
 "use client";
 
-// ââ /claim â Studio Claim Flow âââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── /claim — Studio Claim Flow ───────────────────────────────────────────────
 // 3-step wizard:
-//   Step 1 â Search for your studio
-//   Step 2 â Confirm selection + enter owner info
-//   Step 3 â Email sent â check inbox for magic link
+//   Step 1 → Search for your studio
+//   Step 2 → Confirm selection + enter owner info
+//   Step 3 → Email sent — check inbox for magic link
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
-// ââ Types âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface StudioResult {
   id:    number;
@@ -22,12 +23,12 @@ interface StudioResult {
 
 type Step = "search" | "confirm" | "sent" | "already_claimed";
 
-// ââ Constants âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Constants ─────────────────────────────────────────────────────────────────
 
 const WP_API = process.env.NEXT_PUBLIC_WP_API_URL || "http://5.78.144.42/wp-json";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
 
-// ââ Sub-components âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Sub-components ─────────────────────────────────────────────────────────────
 
 function StepIndicator({ current }: { current: number }) {
   const steps = ["Find your studio", "Confirm & verify", "Check your email"];
@@ -47,7 +48,7 @@ function StepIndicator({ current }: { current: number }) {
                   color:      done || active ? "#fff" : "#9ca3af",
                 }}
               >
-                {done ? "â" : num}
+                {done ? "✓" : num}
               </div>
               <span className={`text-xs mt-1 font-medium ${active ? "text-gray-900" : "text-gray-400"}`}>
                 {label}
@@ -66,9 +67,12 @@ function StepIndicator({ current }: { current: number }) {
   );
 }
 
-// ââ Main Page âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── Main Page ─────────────────────────────────────────────────────────────────
 
-export default function ClaimPage() {
+function ClaimPageInner() {
+  const searchParams = useSearchParams();
+  const preloadSlug  = searchParams.get("slug") || "";
+
   const [step,          setStep]          = useState<Step>("search");
   const [query,         setQuery]         = useState("");
   const [results,       setResults]       = useState<StudioResult[]>([]);
@@ -80,6 +84,32 @@ export default function ClaimPage() {
   const [submitting,    setSubmitting]    = useState(false);
   const [error,         setError]         = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-select studio when slug is passed from the studio detail page
+  useEffect(() => {
+    if (!preloadSlug) return;
+    (async () => {
+      try {
+        const url = `${WP_API}/wp/v2/dance_studio?slug=${encodeURIComponent(preloadSlug)}&_fields=id,slug,title,acf&status=publish`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data.length) return;
+        const p = data[0] as Record<string, unknown>;
+        const studio: StudioResult = {
+          id:    p.id as number,
+          slug:  p.slug as string,
+          title: (p.title as Record<string, string>)?.rendered || "",
+          city:  ((p.acf as Record<string, unknown>)?.studio_address_city  as string) || "",
+          state: ((p.acf as Record<string, unknown>)?.studio_address_state as string) || "",
+        };
+        setSelected(studio);
+        setQuery(studio.title);
+        setStep("confirm");
+      } catch { /* non-fatal */ }
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preloadSlug]);
 
   // Search WP API as user types
   useEffect(() => {
@@ -152,7 +182,7 @@ export default function ClaimPage() {
     setStep("sent");
   }
 
-  // ââ Render âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   const stepNum = step === "search" ? 1 : step === "confirm" ? 2 : 3;
 
@@ -182,7 +212,7 @@ export default function ClaimPage() {
 
           {step !== "already_claimed" && <StepIndicator current={stepNum} />}
 
-          {/* ââ Step 1: Search ââ */}
+          {/* ── Step 1: Search ── */}
           {step === "search" && (
             <div>
               <h2 className="font-bold text-gray-900 text-lg mb-1">Find your studio</h2>
@@ -200,7 +230,7 @@ export default function ClaimPage() {
                   autoFocus
                 />
                 {searching && (
-                  <div className="absolute right-3 top-3.5 text-gray-400 text-xs">Searchingâ¦</div>
+                  <div className="absolute right-3 top-3.5 text-gray-400 text-xs">Searching…</div>
                 )}
               </div>
 
@@ -225,7 +255,7 @@ export default function ClaimPage() {
                         )}
                       </div>
                       <span className="text-yellow-500 text-xs font-semibold opacity-0 group-hover:opacity-100">
-                        Select â
+                        Select →
                       </span>
                     </button>
                   ))}
@@ -244,7 +274,7 @@ export default function ClaimPage() {
             </div>
           )}
 
-          {/* ââ Step 2: Confirm + owner info ââ */}
+          {/* ── Step 2: Confirm + owner info ── */}
           {step === "confirm" && selected && (
             <form onSubmit={handleSubmit}>
               <h2 className="font-bold text-gray-900 text-lg mb-1">Confirm your studio</h2>
@@ -269,7 +299,7 @@ export default function ClaimPage() {
                     target="_blank"
                     className="text-xs text-yellow-700 hover:underline mt-1 inline-block"
                   >
-                    View listing â
+                    View listing ↗
                   </Link>
                 </div>
                 <button
@@ -348,15 +378,15 @@ export default function ClaimPage() {
                            transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}
               >
-                {submitting ? "Sending magic linkâ¦" : "Send Verification Email"}
+                {submitting ? "Sending magic link…" : "Send Verification Email"}
               </button>
             </form>
           )}
 
-          {/* ââ Step 3: Email sent ââ */}
+          {/* ── Step 3: Email sent ── */}
           {step === "sent" && (
             <div className="text-center py-4">
-              <div className="text-5xl mb-5">ð¬</div>
+              <div className="text-5xl mb-5">📬</div>
               <h2 className="font-bold text-gray-900 text-xl mb-2">Check your inbox</h2>
               <p className="text-gray-500 text-sm mb-4">
                 We sent a magic link to <strong>{ownerEmail}</strong>.
@@ -374,10 +404,10 @@ export default function ClaimPage() {
             </div>
           )}
 
-          {/* ââ Already claimed ââ */}
+          {/* ── Already claimed ── */}
           {step === "already_claimed" && (
             <div className="text-center py-4">
-              <div className="text-5xl mb-5">â</div>
+              <div className="text-5xl mb-5">✋</div>
               <h2 className="font-bold text-gray-900 text-xl mb-2">Already claimed</h2>
               <p className="text-gray-500 text-sm mb-4">
                 This listing has already been claimed by a verified owner.
@@ -388,7 +418,7 @@ export default function ClaimPage() {
                 href="/studios"
                 className="inline-block mt-2 text-sm font-semibold text-gray-500 hover:text-gray-900"
               >
-                â Back to directory
+                ← Back to directory
               </Link>
             </div>
           )}
@@ -403,5 +433,13 @@ export default function ClaimPage() {
         ) : null}
       </div>
     </main>
+  );
+}
+
+export default function ClaimPage() {
+  return (
+    <Suspense fallback={<main style={{ background: "#f8f7f4", minHeight: "100vh" }} className="flex items-center justify-center"><div className="animate-spin w-8 h-8 border-2 border-yellow-400 border-t-transparent rounded-full" /></main>}>
+      <ClaimPageInner />
+    </Suspense>
   );
 }
