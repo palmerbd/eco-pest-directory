@@ -355,7 +355,7 @@
       </div>
     </div>
 
-    <!-- Row 4: SEO tools + Live vendors -->
+    <!-- Row 4: SEO tools + Planned vendors -->
     <div class="arch-card card-google" style="border-color:#22c55e;">
       <div class="card-icon">🔍</div>
       <div class="card-vendor">Google Search Console <span class="free-tag">Free</span></div>
@@ -490,7 +490,7 @@
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">GitHub repo created: palmerbd/ballroom-dance-directory</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Next.js 16 project scaffolded with TypeScript + Tailwind CSS</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Vercel project connected to GitHub — auto-deploy on every push</span></div>
-      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">All environment variables set in Vercel (WP API, Supabase, Stripe, Resend, site URL)</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">All environment variables set in Vercel (WP API, Supabase, site URL)</span></div>
     </div>
   </div>
 
@@ -539,12 +539,11 @@
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">/claim — 3-step wizard (search studio → confirm + owner info → email sent)</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">/claim/callback — magic link handler (Supabase session exchange → insert claim → redirect)</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">/dashboard — studio owner dashboard (claim status, studio link, upgrade teaser)</span></div>
-      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">/upgrade — Stripe checkout flow for $49/mo Featured tier</span></div>
-      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">/upgrade/success — post-checkout confirmation page</span></div>
       <div class="section-head">Remaining Frontend Work</div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Studio photos / gallery display — build upload UI in claim flow; use licensed stock as placeholders <span style="color:#f87171;font-weight:700;">[Google Places API NOT permitted]</span></span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Embedded Google Map on studio detail pages (directions link exists but no map embed)</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Pricing section on studio detail pages (most studios have no pricing data)</span></div>
+      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Lead capture form on studio detail pages (paid tier feature — requires Stripe)</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Related studios section (same city) — not yet built</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Breadcrumb structured data (Schema.org BreadcrumbList) on studio + city pages</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">URL-synced filter state on /studios (filters reset on page refresh)</span></div>
@@ -590,7 +589,7 @@
       <div class="section-head">Claim Flow — Fully Deployed ✅</div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Supabase project live (claims DB, RLS policies, auth)</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">All claim-flow code deployed: /claim, /claim/callback, /dashboard, /api/claim, /api/claim/status</span></div>
-      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">ClaimBadge on every studio detail page — gold gradient CTA "Own this studio? Claim your listing"</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">ClaimBadge on every studio detail page ("Own this studio? Claim your listing")</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">WP Application Password generated + stored in Vercel env vars</span></div>
       <div class="section-head">Legal — Your Action Items</div>
       <div class="phase-item item-you"><span class="check check-todo">○</span><span class="item-todo">Register DMCA designated agent at copyright.gov ($6 one-time fee)<span class="item-note">Required before serious marketing push</span></span><span class="you-badge">YOU</span></div>
@@ -675,9 +674,13 @@
         <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
         <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Stripe + Resend Fully Deployed</strong> — All env vars in Vercel, webhook registered, Supabase migration run. Claim emails (admin + claimant), lead forwarding, ClaimBadge CTA gold gradient, resend+stripe in package.json. Build green. ✅ 2026-04-03</span>
       </div>
-      <div style="display:flex; align-items:flex-start; gap:12px;">
-        <span style="background:#e8c560; color:#0c1428; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">7</span>
-        <span style="font-size:13px; color:#d0d8e8; line-height:1.5;"><strong style="color:#f9f6f0;">Begin Studio Outreach</strong> — Use Hunter.io to find emails for top 20–30 independent studios per market (sort by review count + rating). Send Email 1 from Studio_Outreach_Campaign.docx. Track in Studio_Outreach_Tracker.xlsx. Goal: first paid subscriber.</span>
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1f12; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">7</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">🚀 BEGIN STUDIO OUTREACH — This is the job now.</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">The tech is done. The money comes from outreach. Use Hunter.io to find emails for the top 20–30 <em>independent</em> studios per market — sort by review count + rating to find the most established owners who care about their reputation. Send Email 1 from <strong>Studio_Outreach_Campaign.docx</strong>. Log every contact in <strong>Studio_Outreach_Tracker.xlsx</strong>. Follow up with Email 2 at Day 4, Email 3 at Day 8. <strong>Goal: first paid subscriber.</strong> Everything else waits on this.</span>
+          <span style="display:block; font-size:11px; color:#4ade80; margin-top:8px; font-weight:700;">📋 WORKFLOW: Hunter.io → find email → paste into tracker → send Email 1 → repeat. Start with LA (biggest market, most studios).</span>
+        </div>
       </div>
       <div style="display:flex; align-items:flex-start; gap:12px;">
         <span style="background:#e8c560; color:#0c1428; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">8</span>
