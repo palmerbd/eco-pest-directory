@@ -1,6 +1,6 @@
 "use client";
 
-// ─── ClaimBadge ───────────────────────────────────────────────────────────────
+// ─── ClaimBadge ─────────────────────────────────────────────────────────────────────────────
 // Client component — fetches claim status on hydration and shows a
 // "Verified Owner" badge if the studio has been claimed.
 // Renders nothing until the fetch resolves (no flash of content).
@@ -27,7 +27,7 @@ export default function ClaimBadge({ slug }: Props) {
     if (claimed === false) {
       return (
         <Link
-          href="/claim"
+          href={`/claim?slug=${encodeURIComponent(slug)}`}
           className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full
                      transition-all hover:brightness-110"
           style={{
