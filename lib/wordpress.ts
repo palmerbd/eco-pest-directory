@@ -26,6 +26,27 @@ async function fetchWP<T>(
   return res.json() as T;
 }
 
+// ── HTML entity decoder ───────────────────────────────────────────────────────
+// WordPress REST API returns HTML entities in title.rendered (e.g. &#8217; for ').
+// Decode them so JSX renders clean text instead of literal entity strings.
+
+function decodeHtmlEntities(str: string): string {
+  return str
+    .replace(/&#(\d+);/g,           (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, n) => String.fromCharCode(parseInt(n, 16)))
+    .replace(/&amp;/g,   "&")
+    .replace(/&lt;/g,    "<")
+    .replace(/&gt;/g,    ">")
+    .replace(/&quot;/g,  '"')
+    .replace(/&apos;/g,  "'")
+    .replace(/&rsquo;/g, "\u2019")
+    .replace(/&lsquo;/g, "\u2018")
+    .replace(/&ldquo;/g, "\u201C")
+    .replace(/&rdquo;/g, "\u201D")
+    .replace(/&ndash;/g, "\u2013")
+    .replace(/&mdash;/g, "\u2014");
+}
+
 // ── Chain detection ───────────────────────────────────────────────────────────
 
 function detectChain(title: string): StudioChain {
@@ -56,7 +77,7 @@ const STYLE_MAP: Record<string, DanceStyle> = {
 
 function mapWPPost(post: Record<string, unknown>): Studio {
   const acf   = (post.acf   as Record<string, unknown>) || {};
-  const title = (post.title as Record<string, string>)?.rendered || "";
+  const title = decodeHtmlEntities((post.title as Record<string, string>)?.rendered || "");
 
   const city  = (acf.studio_address_city  as string) || "";
   const state = (acf.studio_address_state as string) || "";
