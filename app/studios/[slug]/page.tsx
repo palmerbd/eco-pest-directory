@@ -9,14 +9,14 @@ import StudioGallery from "@/components/StudioGallery";
 
 export const revalidate = 3600;
 
-// ââ Static params âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Static params
 
 export async function generateStaticParams() {
   const slugs = await getAllStudioSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
-// ââ Metadata ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Metadata
 
 export async function generateMetadata({
   params,
@@ -29,7 +29,7 @@ export async function generateMetadata({
 
   const location = [studio.city, studio.state].filter(Boolean).join(", ");
   return {
-    title: `${studio.title}${location ? ` â ${location}` : ""} | Private Dance Directory`,
+    title: `${studio.title}${location ? " \u2014 " + location : ""} | Private Dance Directory`,
     description:
       studio.description ||
       `Private dance lessons at ${studio.title}${location ? ` in ${location}` : ""}. ${
@@ -42,7 +42,7 @@ export async function generateMetadata({
   };
 }
 
-// ââ Sub-components ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Sub-components
 
 function StarRating({ rating, count }: { rating: number; count?: number }) {
   const full  = Math.floor(rating);
@@ -52,11 +52,11 @@ function StarRating({ rating, count }: { rating: number; count?: number }) {
     <div className="flex items-center gap-2">
       <span className="flex gap-0.5">
         {Array.from({ length: full  }).map((_, i) => (
-          <span key={`f${i}`} className="text-xl" style={{ color: "#e8c560" }}>â</span>
+          <span key={`f${i}`} className="text-xl" style={{ color: "#e8c560" }}>&#9733;</span>
         ))}
-        {half && <span className="text-xl" style={{ color: "#e8c560" }}>â</span>}
+        {half && <span className="text-xl" style={{ color: "#e8c560" }}>&#9733;</span>}
         {Array.from({ length: empty }).map((_, i) => (
-          <span key={`e${i}`} className="text-xl text-gray-300">â</span>
+          <span key={`e${i}`} className="text-xl text-gray-300">&#9733;</span>
         ))}
       </span>
       <span className="font-bold text-gray-900">{rating.toFixed(1)}</span>
@@ -123,7 +123,7 @@ const CalendarIcon = () => (
   </svg>
 );
 
-// ââ Page ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Page
 
 export default async function StudioPage({
   params,
@@ -150,7 +150,6 @@ export default async function StudioPage({
     { day: "Sunday",    val: hours?.sunday    },
   ].filter((r) => r.val);
 
-  // Build Schema.org LocalBusiness JSON-LD
   const schemaOrg = {
     "@context": "https://schema.org",
     "@type": "DanceSchool",
@@ -187,7 +186,6 @@ export default async function StudioPage({
 
   return (
     <main>
-      {/* Schema.org structured data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
@@ -221,7 +219,7 @@ export default async function StudioPage({
                 className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold"
                 style={{ background: "#b8922a22", color: "#e8c560", border: "1px solid #b8922a" }}
               >
-                â­ Featured
+                Featured
               </span>
             )}
           </div>
@@ -249,14 +247,14 @@ export default async function StudioPage({
               <span>{studio.city}{studio.city && studio.state ? ", " : ""}{studio.state}</span>
               {studio.foundedYear && (
                 <>
-                  <span className="text-white/20">Â·</span>
+                  <span className="text-white/20">&middot;</span>
                   <span>Est. {studio.foundedYear}</span>
                 </>
               )}
             </div>
           )}
 
-          {/* Verified Owner badge â client-side hydration */}
+          {/* Verified Owner badge */}
           <div className="mt-4">
             <ClaimBadge slug={studio.slug} />
           </div>
@@ -267,12 +265,12 @@ export default async function StudioPage({
       {studio.tier !== "claimed" && studio.tier !== "paid" && (
         <div className="bg-amber-50 border-b border-amber-200">
           <div className="max-w-5xl mx-auto px-6 py-3 flex items-start gap-2">
-            <span className="text-amber-600 text-xs mt-0.5 shrink-0">â¹ï¸</span>
+            <span className="text-amber-600 text-xs mt-0.5 shrink-0 font-bold italic">i</span>
             <p className="text-xs text-amber-800 leading-relaxed">
               <strong>Independent listing:</strong> Ballroom Dance Directory is not affiliated with{" "}
               {studio.studioChain !== "independent" ? chain.label : "this studio"}. This listing was
               compiled from public sources for informational purposes. Information may not be
-              current â please contact the studio directly to confirm hours, pricing, and availability.{" "}
+              current &mdash; please contact the studio directly to confirm hours, pricing, and availability.{" "}
               <a
                 href={`/claim?slug=${encodeURIComponent(studio.slug)}`}
                 className="underline font-medium hover:text-amber-900"
@@ -298,7 +296,7 @@ export default async function StudioPage({
       <div className="max-w-5xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* ââ Left / Main ââ */}
+          {/* Left / Main */}
           <div className="lg:col-span-2 space-y-8">
 
             {/* About */}
@@ -334,7 +332,7 @@ export default async function StudioPage({
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {studio.amenities.map((a) => (
                     <div key={a} className="flex items-center gap-2 text-sm text-gray-700">
-                      <span className="text-green-500 shrink-0">â</span>
+                      <span className="text-green-500 shrink-0">&#10003;</span>
                       {AMENITY_LABELS[a] || a}
                     </div>
                   ))}
@@ -396,20 +394,20 @@ export default async function StudioPage({
             {/* External Reviews */}
             {(studio.yelpUrl || studio.googleMapsUrl) && (
               <section>
-                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Reviews & Directions</h2>
+                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Reviews &amp; Directions</h2>
                 <div className="flex flex-wrap gap-3">
                   {studio.yelpUrl && (
                     <a href={studio.yelpUrl} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 border-red-100
                                  bg-red-50 text-red-700 font-semibold text-sm hover:bg-red-100 transition-colors">
-                      â Read Yelp Reviews
+                      &#9733; Read Yelp Reviews
                     </a>
                   )}
                   {studio.googleMapsUrl && (
                     <a href={studio.googleMapsUrl} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 border-blue-100
                                  bg-blue-50 text-blue-700 font-semibold text-sm hover:bg-blue-100 transition-colors">
-                      ðº Get Directions
+                      <MapIcon /> Get Directions
                     </a>
                   )}
                 </div>
@@ -417,10 +415,10 @@ export default async function StudioPage({
             )}
           </div>
 
-          {/* ââ Right / Sidebar ââ */}
+          {/* Right / Sidebar */}
           <div className="space-y-6">
 
-            {/* Lead capture form â Featured listings only */}
+            {/* Lead capture form */}
             {studio.tier === "paid" && (
               <LeadCaptureForm
                 studioSlug={studio.slug}
@@ -430,7 +428,7 @@ export default async function StudioPage({
 
             {/* Contact card */}
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <h3 className="font-display font-bold text-gray-900 text-lg mb-4">Contact & Location</h3>
+              <h3 className="font-display font-bold text-gray-900 text-lg mb-4">Contact &amp; Location</h3>
 
               {studio.phone && (
                 <InfoRow
@@ -521,7 +519,7 @@ export default async function StudioPage({
             {/* Back to directory */}
             <Link href="/studios"
               className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-              â Back to all studios
+              &larr; Back to all studios
             </Link>
           </div>
         </div>
