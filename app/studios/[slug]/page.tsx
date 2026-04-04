@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStudio, getAllStudioSlugs } from "@/lib/wordpress";
-import { Studio, CHAIN_CONFIG, STYLE_LABELS, AMENITY_LABELS, DanceStyle } from "@/types/studio";
+import { getStudio, getAllStudioSlugs, getStudiosByCity } from "@/lib/wordpress";
+import { Studio, StudioCard, CHAIN_CONFIG, STYLE_LABELS, AMENITY_LABELS, DanceStyle } from "@/types/studio";
 import ClaimBadge from "@/components/ClaimBadge";
 import LeadCaptureForm from "@/components/LeadCaptureForm";
 import StudioGallery from "@/components/StudioGallery";
@@ -29,7 +29,7 @@ export async function generateMetadata({
 
   const location = [studio.city, studio.state].filter(Boolean).join(", ");
   return {
-    title: `${studio.title}${location ? " \u2014 " + location : ""} | Private Dance Directory`,
+    title: `${studio.title}${location ? " — " + location : ""} | Private Dance Directory`,
     description:
       studio.description ||
       `Private dance lessons at ${studio.title}${location ? ` in ${location}` : ""}. ${
@@ -131,13 +131,30 @@ export default async function StudioPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const studio: Studio | null = await getStudio(slug);
+  const [studio, cityStudiosRaw] = await Promise.all([
+    getStudio(slug),
+    // We resolve city studios after we know the studio; handled below
+    Promise.resolve([] as StudioCard[]),
+  ]);
   if (!studio) notFound();
+
+  // Fetch related studios in the same city (excluding current)
+  const relatedStudios = studio.city
+    ? (await getStudiosByCity(
+        studio.city.toLowerCase().replace(/\s+/g, "-")
+      )).filter((s) => s.slug !== studio.slug).slice(0, 3)
+    : [];
 
   const chain    = CHAIN_CONFIG[studio.studioChain];
   const location = [studio.address, studio.city, studio.state, studio.zip]
     .filter(Boolean).join(", ");
   const cityState = studio.cityState;
+
+  // Map embed query — prefer full address, fall back to city+state
+  const mapQuery = location || [studio.city, studio.state].filter(Boolean).join(", ");
+  const mapEmbedUrl = mapQuery
+    ? `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed&zoom=15`
+    : null;
 
   const hours = studio.hours;
   const hoursRows = [
@@ -184,12 +201,94 @@ export default async function StudioPage({
     "paymentAccepted": "Cash, Credit Card",
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.ballroomdancedirectory.com" },
+      { "@type": "ListItem", "position": 2, "name": "Studios", "item": "https://www.ballroomdancedirectory.com/studios" },
+      ...(studio.city ? [{
+        "@type": "ListItem",
+        "position": 3,
+        "name": `Dance Studios in ${studio.city}`,
+        "item": `https://www.ballroomdancedirectory.com/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}`,
+      }] : []),
+      {
+        "@type": "ListItem",
+        "position": studio.city ? 4 : 3,
+        "name": studio.title,
+        "item": `https://www.ballroomdancedirectory.com/studios/${studio.slug}`,
+      },
+    ],
+  };
+
+  const styleList = studio.danceStyles
+    .map((s) => STYLE_LABELS[s as DanceStyle])
+    .join(", ");
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      ...(studio.danceStyles.length > 0 ? [{
+        "@type": "Question",
+        "name": `What dance styles does ${studio.title} offer?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `${studio.title} offers ${styleList} instruction.`,
+        },
+      }] : []),
+      ...(studio.city || studio.address ? [{
+        "@type": "Question",
+        "name": `Where is ${studio.title} located?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": location || `${studio.city}${studio.state ? ", " + studio.state : ""}`,
+        },
+      }] : []),
+      ...(studio.privateLessonRate || studio.introLessonRate ? [{
+        "@type": "Question",
+        "name": `How much do lessons cost at ${studio.title}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": [
+            studio.introLessonRate ? `Intro lesson: ${studio.introLessonRate}` : null,
+            studio.privateLessonRate ? `Private lesson rate: ${studio.privateLessonRate}` : null,
+            studio.monthlyRate ? `Monthly membership: ${studio.monthlyRate}` : null,
+          ].filter(Boolean).join(". ") + ".",
+        },
+      }] : []),
+      ...(studio.phone || studio.email || studio.website ? [{
+        "@type": "Question",
+        "name": `How can I contact ${studio.title}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": [
+            studio.phone ? `Call ${studio.phone}` : null,
+            studio.email ? `Email ${studio.email}` : null,
+            studio.website ? `Visit ${studio.website}` : null,
+          ].filter(Boolean).join(". ") + ".",
+        },
+      }] : []),
+    ],
+  };
+
   return (
     <main>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      {faqSchema.mainEntity.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
 
       {/* Hero / Title Bar */}
       <section
@@ -282,9 +381,6 @@ export default async function StudioPage({
         </div>
       )}
 
-      {/* Photo Gallery -- currently only shown for claimed/paid studios.
-          To re-enable Unsplash placeholders for ALL studios, remove the
-          (studio.tier === "claimed" || studio.tier === "paid") && wrapper below. */}
       {(studio.tier === "claimed" || studio.tier === "paid") && (
         <div className="max-w-5xl mx-auto px-6 pt-10 pb-0">
           <StudioGallery
@@ -303,7 +399,6 @@ export default async function StudioPage({
           {/* Left / Main */}
           <div className="lg:col-span-2 space-y-8">
 
-            {/* About */}
             {studio.description && (
               <section>
                 <h2 className="font-display font-bold text-gray-900 text-xl mb-3">About</h2>
@@ -311,7 +406,6 @@ export default async function StudioPage({
               </section>
             )}
 
-            {/* Dance Styles */}
             {studio.danceStyles.length > 0 && (
               <section>
                 <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Dance Styles Offered</h2>
@@ -329,7 +423,6 @@ export default async function StudioPage({
               </section>
             )}
 
-            {/* Amenities */}
             {studio.amenities && studio.amenities.length > 0 && (
               <section>
                 <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Amenities</h2>
@@ -344,7 +437,6 @@ export default async function StudioPage({
               </section>
             )}
 
-            {/* Pricing */}
             {(studio.introLessonRate || studio.privateLessonRate || studio.monthlyRate) && (
               <section>
                 <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Pricing</h2>
@@ -377,7 +469,6 @@ export default async function StudioPage({
               </section>
             )}
 
-            {/* Hours */}
             {hoursRows.length > 0 && (
               <section>
                 <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Business Hours</h2>
@@ -395,7 +486,6 @@ export default async function StudioPage({
               </section>
             )}
 
-            {/* External Reviews */}
             {(studio.yelpUrl || studio.googleMapsUrl) && (
               <section>
                 <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Reviews &amp; Directions</h2>
@@ -422,7 +512,6 @@ export default async function StudioPage({
           {/* Right / Sidebar */}
           <div className="space-y-6">
 
-            {/* Lead capture form */}
             {studio.tier === "paid" && (
               <LeadCaptureForm
                 studioSlug={studio.slug}
@@ -474,7 +563,6 @@ export default async function StudioPage({
                 />
               )}
 
-              {/* Primary CTA */}
               {studio.phone && (
                 <a
                   href={`tel:${studio.phone.replace(/\D/g, "")}`}
@@ -499,7 +587,22 @@ export default async function StudioPage({
               )}
             </div>
 
-            {/* Social links */}
+            {/* Google Map embed */}
+            {mapEmbedUrl && (
+              <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
+                <iframe
+                  title={`Map of ${studio.title}`}
+                  src={mapEmbedUrl}
+                  width="100%"
+                  height="220"
+                  style={{ border: 0, display: "block" }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen={false}
+                />
+              </div>
+            )}
+
             {(studio.facebookUrl || studio.instagramUrl) && (
               <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
                 <h3 className="font-display font-bold text-gray-900 text-lg mb-4">Follow</h3>
@@ -520,7 +623,6 @@ export default async function StudioPage({
               </div>
             )}
 
-            {/* Back to directory */}
             <Link href="/studios"
               className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
               &larr; Back to all studios
@@ -528,6 +630,62 @@ export default async function StudioPage({
           </div>
         </div>
       </div>
+
+      {/* Related Studios */}
+      {relatedStudios.length > 0 && (
+        <section className="bg-gray-50 border-t border-gray-100 py-12 px-6">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="font-display font-bold text-gray-900 text-2xl mb-6">
+              More Studios in {studio.city}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {relatedStudios.map((s) => {
+                const sChain = CHAIN_CONFIG[s.studioChain];
+                return (
+                  <Link
+                    key={s.slug}
+                    href={`/studios/${s.slug}`}
+                    className="group bg-white rounded-2xl border border-gray-200 p-5 shadow-sm
+                               hover:shadow-md hover:border-yellow-300 transition-all block"
+                  >
+                    <span
+                      className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold mb-3"
+                      style={{ color: sChain.color, background: sChain.bg }}
+                    >
+                      {sChain.label}
+                    </span>
+                    <h3 className="font-display font-bold text-gray-900 text-base mb-1 group-hover:text-amber-800 transition-colors">
+                      {s.title}
+                    </h3>
+                    {s.tagline && (
+                      <p className="text-gray-500 text-sm italic mb-2 line-clamp-2">{s.tagline}</p>
+                    )}
+                    {s.description && !s.tagline && (
+                      <p className="text-gray-500 text-sm mb-2 line-clamp-2">{s.description}</p>
+                    )}
+                    <div className="flex items-center justify-between mt-3">
+                      {s.privateLessonRate && (
+                        <span className="text-sm font-semibold" style={{ color: "#b8922a" }}>
+                          {s.privateLessonRate}
+                        </span>
+                      )}
+                      <span className="text-xs text-gray-400 ml-auto">View studio &rarr;</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="mt-6">
+              <Link
+                href={`/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}`}
+                className="text-sm font-semibold text-amber-700 hover:text-amber-900 transition-colors"
+              >
+                See all dance studios in {studio.city} &rarr;
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="py-10 px-6 bg-white border-t border-gray-100 mt-8">
