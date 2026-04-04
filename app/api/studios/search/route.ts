@@ -1,4 +1,4 @@
-// ─── /api/studios/search ───────────────────────────────────────────────────────────────────────────────────
+// ─── /api/studios/search ────────────────────────────────────────────────────────────────────
 // Server-side proxy for WP studio lookups, used by the claim page.
 // Avoids mixed-content errors (HTTPS page → HTTP WP backend).
 //
@@ -9,6 +9,26 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const WP_API = process.env.NEXT_PUBLIC_WP_API_URL || "http://5.78.144.42/wp-json";
+
+// WordPress REST API returns titles with HTML entities (e.g. &#8217; for ’). Decode
+// them server-side so the claim form (and anywhere else we use the title) shows
+// clean text rather than literal entity strings.
+function decodeHtmlEntities(str: string): string {
+  return str
+    .replace(/&#(\d+);/g,           (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#x([0-9a-fA-F]+);/g,  (_, n) => String.fromCharCode(parseInt(n, 16)))
+    .replace(/&amp;/g,   "&")
+    .replace(/&lt;/g,    "<")
+    .replace(/&gt;/g,    ">")
+    .replace(/&quot;/g,  '"')
+    .replace(/&apos;/g,  "'")
+    .replace(/&rsquo;/g, "\u2019")
+    .replace(/&lsquo;/g, "\u2018")
+    .replace(/&ldquo;/g, "\u201C")
+    .replace(/&rdquo;/g, "\u201D")
+    .replace(/&ndash;/g, "\u2013")
+    .replace(/&mdash;/g, "\u2014");
+}
 
 interface WPStudio {
   id:    number;
@@ -42,7 +62,7 @@ export async function GET(req: NextRequest) {
     const studios = data.map((p) => ({
       id:    p.id,
       slug:  p.slug,
-      title: p.title?.rendered || "",
+      title: decodeHtmlEntities(p.title?.rendered || ""),
       city:  p.acf?.studio_address_city  || "",
       state: p.acf?.studio_address_state || "",
     }));
