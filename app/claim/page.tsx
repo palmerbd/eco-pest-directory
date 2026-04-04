@@ -1,6 +1,6 @@
 "use client";
 
-// ─── /claim — Studio Claim Flow ───────────────────────────────────────────────
+// ─── /claim — Studio Claim Flow ──────────────────────────────────────────────────────────────────────────────
 // 3-step wizard:
 //   Step 1 → Search for your studio
 //   Step 2 → Confirm selection + enter owner info
@@ -11,7 +11,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// ── Types ──────────────────────────────────────────────────────────────────────────────────────
 
 interface StudioResult {
   id:    number;
@@ -23,12 +23,11 @@ interface StudioResult {
 
 type Step = "search" | "confirm" | "sent" | "already_claimed";
 
-// ── Constants ─────────────────────────────────────────────────────────────────
+// ── Constants ─────────────────────────────────────────────────────────────────────────────────
 
-const WP_API = process.env.NEXT_PUBLIC_WP_API_URL || "http://5.78.144.42/wp-json";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+// ── Sub-components ─────────────────────────────────────────────────────────────────────────────────
 
 function StepIndicator({ current }: { current: number }) {
   const steps = ["Find your studio", "Confirm & verify", "Check your email"];
@@ -67,7 +66,7 @@ function StepIndicator({ current }: { current: number }) {
   );
 }
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
+// ── Main Page ──────────────────────────────────────────────────────────────────────────────────────
 
 function ClaimPageInner() {
   const searchParams = useSearchParams();
@@ -90,19 +89,11 @@ function ClaimPageInner() {
     if (!preloadSlug) return;
     (async () => {
       try {
-        const url = `${WP_API}/wp/v2/dance_studio?slug=${encodeURIComponent(preloadSlug)}&_fields=id,slug,title,acf&status=publish`;
-        const res = await fetch(url);
+        const res = await fetch(`/api/studios/search?slug=${encodeURIComponent(preloadSlug)}`);
         if (!res.ok) return;
-        const data = await res.json();
+        const data: StudioResult[] = await res.json();
         if (!data.length) return;
-        const p = data[0] as Record<string, unknown>;
-        const studio: StudioResult = {
-          id:    p.id as number,
-          slug:  p.slug as string,
-          title: (p.title as Record<string, string>)?.rendered || "",
-          city:  ((p.acf as Record<string, unknown>)?.studio_address_city  as string) || "",
-          state: ((p.acf as Record<string, unknown>)?.studio_address_state as string) || "",
-        };
+        const studio = data[0];
         setSelected(studio);
         setQuery(studio.title);
         setStep("confirm");
@@ -111,24 +102,16 @@ function ClaimPageInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preloadSlug]);
 
-  // Search WP API as user types
+  // Search proxy as user types
   useEffect(() => {
     if (!query.trim() || query.length < 2) { setResults([]); return; }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       setSearching(true);
       try {
-        const url = `${WP_API}/wp/v2/dance_studio?search=${encodeURIComponent(query)}&per_page=8&_fields=id,slug,title,acf&status=publish`;
-        const res = await fetch(url);
+        const res = await fetch(`/api/studios/search?q=${encodeURIComponent(query)}`);
         if (!res.ok) throw new Error();
-        const data = await res.json();
-        const mapped: StudioResult[] = data.map((p: Record<string, unknown>) => ({
-          id:    p.id as number,
-          slug:  p.slug as string,
-          title: (p.title as Record<string, string>)?.rendered || "",
-          city:  ((p.acf as Record<string, unknown>)?.studio_address_city  as string) || "",
-          state: ((p.acf as Record<string, unknown>)?.studio_address_state as string) || "",
-        }));
+        const mapped: StudioResult[] = await res.json();
         setResults(mapped);
       } catch {
         setResults([]);
@@ -152,7 +135,6 @@ function ClaimPageInner() {
     setSubmitting(true);
     setError("");
 
-    // Store pending claim data in localStorage so callback page can read it
     localStorage.setItem("pendingClaim", JSON.stringify({
       studio_id:    selected.id,
       studio_slug:  selected.slug,
@@ -162,7 +144,6 @@ function ClaimPageInner() {
       owner_phone:  ownerPhone.trim(),
     }));
 
-    // Send magic link via Supabase Auth
     const { error: authError } = await supabase.auth.signInWithOtp({
       email: ownerEmail.trim(),
       options: {
@@ -182,14 +163,10 @@ function ClaimPageInner() {
     setStep("sent");
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
-
   const stepNum = step === "search" ? 1 : step === "confirm" ? 2 : 3;
 
   return (
     <main style={{ background: "#f8f7f4", minHeight: "100vh" }}>
-
-      {/* Header */}
       <div style={{ background: "linear-gradient(135deg,#0c1428 0%,#1a2d5a 100%)" }}
         className="py-12 px-6 text-center">
         <nav className="text-sm mb-6">
@@ -206,184 +183,107 @@ function ClaimPageInner() {
         </p>
       </div>
 
-      {/* Card */}
       <div className="max-w-xl mx-auto px-4 py-12">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-
           {step !== "already_claimed" && <StepIndicator current={stepNum} />}
 
-          {/* ── Step 1: Search ── */}
           {step === "search" && (
             <div>
               <h2 className="font-bold text-gray-900 text-lg mb-1">Find your studio</h2>
-              <p className="text-gray-500 text-sm mb-5">
-                Search by studio name, city, or address.
-              </p>
+              <p className="text-gray-500 text-sm mb-5">Search by studio name, city, or address.</p>
               <div className="relative">
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="e.g. Arthur Murray Las Vegas"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm
-                             focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
                   autoFocus
                 />
-                {searching && (
-                  <div className="absolute right-3 top-3.5 text-gray-400 text-xs">Searching…</div>
-                )}
+                {searching && <div className="absolute right-3 top-3.5 text-gray-400 text-xs">Searching…</div>}
               </div>
-
               {results.length > 0 && (
                 <div className="mt-2 border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                   {results.map((s, i) => (
-                    <button
-                      key={s.id}
-                      onClick={() => handleSelect(s)}
-                      className={`w-full text-left px-4 py-3 hover:bg-yellow-50 transition-colors
-                                  flex items-center justify-between group
-                                  ${i > 0 ? "border-t border-gray-100" : ""}`}
-                    >
+                    <button key={s.id} onClick={() => handleSelect(s)}
+                      className={`w-full text-left px-4 py-3 hover:bg-yellow-50 transition-colors flex items-center justify-between group ${i > 0 ? "border-t border-gray-100" : ""}`}>
                       <div>
-                        <div className="font-semibold text-gray-900 text-sm group-hover:text-yellow-800">
-                          {s.title}
-                        </div>
-                        {(s.city || s.state) && (
-                          <div className="text-gray-400 text-xs mt-0.5">
-                            {[s.city, s.state].filter(Boolean).join(", ")}
-                          </div>
-                        )}
+                        <div className="font-semibold text-gray-900 text-sm group-hover:text-yellow-800">{s.title}</div>
+                        {(s.city || s.state) && <div className="text-gray-400 text-xs mt-0.5">{[s.city, s.state].filter(Boolean).join(", ")}</div>}
                       </div>
-                      <span className="text-yellow-500 text-xs font-semibold opacity-0 group-hover:opacity-100">
-                        Select →
-                      </span>
+                      <span className="text-yellow-500 text-xs font-semibold opacity-0 group-hover:opacity-100">Select →</span>
                     </button>
                   ))}
                 </div>
               )}
-
               {query.length >= 2 && !searching && results.length === 0 && (
                 <p className="text-gray-400 text-sm mt-3 text-center">
                   No studios found for &ldquo;{query}&rdquo;.{" "}
-                  <Link href="/contact" className="text-yellow-700 hover:underline">
-                    Contact us
-                  </Link>{" "}
+                  <Link href="/contact" className="text-yellow-700 hover:underline">Contact us</Link>{" "}
                   if your studio isn&apos;t listed yet.
                 </p>
               )}
             </div>
           )}
 
-          {/* ── Step 2: Confirm + owner info ── */}
           {step === "confirm" && selected && (
             <form onSubmit={handleSubmit}>
               <h2 className="font-bold text-gray-900 text-lg mb-1">Confirm your studio</h2>
-              <p className="text-gray-500 text-sm mb-5">
-                Verify this is the correct listing, then enter your contact info.
-              </p>
-
-              {/* Selected studio card */}
-              <div
-                className="rounded-xl p-4 mb-6 flex items-start justify-between"
-                style={{ background: "#fffbf0", border: "1.5px solid #e8c560" }}
-              >
+              <p className="text-gray-500 text-sm mb-5">Verify this is the correct listing, then enter your contact info.</p>
+              <div className="rounded-xl p-4 mb-6 flex items-start justify-between"
+                style={{ background: "#fffbf0", border: "1.5px solid #e8c560" }}>
                 <div>
                   <div className="font-bold text-gray-900">{selected.title}</div>
                   {(selected.city || selected.state) && (
-                    <div className="text-gray-500 text-sm mt-0.5">
-                      {[selected.city, selected.state].filter(Boolean).join(", ")}
-                    </div>
+                    <div className="text-gray-500 text-sm mt-0.5">{[selected.city, selected.state].filter(Boolean).join(", ")}</div>
                   )}
-                  <Link
-                    href={`/studios/${selected.slug}`}
-                    target="_blank"
-                    className="text-xs text-yellow-700 hover:underline mt-1 inline-block"
-                  >
-                    View listing ↗
-                  </Link>
+                  <Link href={`/studios/${selected.slug}`} target="_blank"
+                    className="text-xs text-yellow-700 hover:underline mt-1 inline-block">View listing ↗</Link>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => { setSelected(null); setStep("search"); setQuery(""); }}
-                  className="text-xs text-gray-400 hover:text-gray-700 ml-2 shrink-0"
-                >
-                  Change
-                </button>
+                <button type="button" onClick={() => { setSelected(null); setStep("search"); setQuery(""); }}
+                  className="text-xs text-gray-400 hover:text-gray-700 ml-2 shrink-0">Change</button>
               </div>
-
-              {/* Owner info fields */}
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5">
                     Your Name <span className="text-red-400">*</span>
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={ownerName}
-                    onChange={(e) => setOwnerName(e.target.value)}
+                  <input type="text" required value={ownerName} onChange={(e) => setOwnerName(e.target.value)}
                     placeholder="Jane Smith"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm
-                               focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
-                  />
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5">
                     Email Address <span className="text-red-400">*</span>
                   </label>
-                  <input
-                    type="email"
-                    required
-                    value={ownerEmail}
-                    onChange={(e) => setOwnerEmail(e.target.value)}
+                  <input type="email" required value={ownerEmail} onChange={(e) => setOwnerEmail(e.target.value)}
                     placeholder="you@yourstudio.com"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm
-                               focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
-                  />
-                  <p className="text-xs text-gray-400 mt-1">
-                    We&apos;ll send a magic link to this address to verify your identity.
-                  </p>
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100" />
+                  <p className="text-xs text-gray-400 mt-1">We&apos;ll send a magic link to this address to verify your identity.</p>
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1.5">
                     Phone Number <span className="text-gray-300">(optional)</span>
                   </label>
-                  <input
-                    type="tel"
-                    value={ownerPhone}
-                    onChange={(e) => setOwnerPhone(e.target.value)}
+                  <input type="tel" value={ownerPhone} onChange={(e) => setOwnerPhone(e.target.value)}
                     placeholder="(555) 000-0000"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm
-                               focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
-                  />
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100" />
                 </div>
               </div>
-
-              {error && (
-                <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
-                  {error}
-                </div>
-              )}
-
+              {error && <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>}
               <p className="text-xs text-gray-400 mt-5 mb-4">
                 By submitting this form you confirm you are an authorized representative of{" "}
                 <strong>{selected.title}</strong> and agree to our{" "}
                 <Link href="/terms" className="underline hover:text-gray-600">Terms of Service</Link>.
               </p>
-
-              <button
-                type="submit"
-                disabled={submitting || !ownerName.trim() || !ownerEmail.trim()}
-                className="w-full py-3 rounded-xl font-bold text-gray-900 text-sm
-                           transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}
-              >
+              <button type="submit" disabled={submitting || !ownerName.trim() || !ownerEmail.trim()}
+                className="w-full py-3 rounded-xl font-bold text-gray-900 text-sm transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}>
                 {submitting ? "Sending magic link…" : "Send Verification Email"}
               </button>
             </form>
           )}
 
-          {/* ── Step 3: Email sent ── */}
           {step === "sent" && (
             <div className="text-center py-4">
               <div className="text-5xl mb-5">📬</div>
@@ -394,17 +294,11 @@ function ClaimPageInner() {
               </p>
               <p className="text-gray-400 text-xs">
                 Didn&apos;t receive it? Check your spam folder, or{" "}
-                <button
-                  onClick={() => { setStep("confirm"); setError(""); }}
-                  className="text-yellow-700 hover:underline"
-                >
-                  try again
-                </button>.
+                <button onClick={() => { setStep("confirm"); setError(""); }} className="text-yellow-700 hover:underline">try again</button>.
               </p>
             </div>
           )}
 
-          {/* ── Already claimed ── */}
           {step === "already_claimed" && (
             <div className="text-center py-4">
               <div className="text-5xl mb-5">✋</div>
@@ -414,18 +308,13 @@ function ClaimPageInner() {
                 If you believe this is an error, please{" "}
                 <Link href="/contact" className="text-yellow-700 hover:underline">contact us</Link>.
               </p>
-              <Link
-                href="/studios"
-                className="inline-block mt-2 text-sm font-semibold text-gray-500 hover:text-gray-900"
-              >
+              <Link href="/studios" className="inline-block mt-2 text-sm font-semibold text-gray-500 hover:text-gray-900">
                 ← Back to directory
               </Link>
             </div>
           )}
-
         </div>
 
-        {/* Trust note */}
         {step === "search" || step === "confirm" ? (
           <p className="text-center text-xs text-gray-400 mt-6">
             Claiming your listing is free. We verify ownership before displaying the Verified badge.
