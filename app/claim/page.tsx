@@ -163,7 +163,14 @@ function ClaimPageInner() {
 
     setSubmitting(false);
     if (authError) {
-      setError(authError.message || "Something went wrong. Please try again.");
+      const raw = authError.message?.toLowerCase() || "";
+      if (raw.includes("rate limit") || raw.includes("exceeded") || raw.includes("too many")) {
+        setError(
+          "Too many verification emails sent to this address. Please wait a few minutes, then try again — or check your spam folder for a previous magic link."
+        );
+      } else {
+        setError(authError.message || "Something went wrong. Please try again.");
+      }
       return;
     }
     setStep("sent");
