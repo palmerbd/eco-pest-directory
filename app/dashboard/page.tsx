@@ -1,6 +1,6 @@
 "use client";
 
-// âââ /dashboard â Studio Owner Dashboard âââââââââââââââââââââââââââââââââââââ
+// ─── /dashboard — Studio Owner Dashboard ─────────────────────────────────────────────────
 // Requires Supabase session (redirects to /claim if not logged in).
 // Shows the owner's claimed listing, claim status, and next steps.
 
@@ -66,7 +66,7 @@ export default function DashboardPage() {
     window.location.href = "/";
   }
 
-  // ââ Loading ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Loading ──────────────────────────────────────────────────────────────────────────────
 
   if (pageState === "loading") {
     return (
@@ -77,14 +77,14 @@ export default function DashboardPage() {
     );
   }
 
-  // ââ Not logged in ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Not logged in ──────────────────────────────────────────────────────────────────────────
 
   if (pageState === "unauthenticated") {
     return (
       <main style={{ background: "#f8f7f4", minHeight: "100vh" }}
         className="flex items-center justify-center px-6">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 max-w-md w-full text-center">
-          <div className="text-5xl mb-4">ð</div>
+          <div className="text-5xl mb-4">&#128274;</div>
           <h1 className="font-bold text-gray-900 text-xl mb-2">Sign in required</h1>
           <p className="text-gray-500 text-sm mb-6">
             You need to claim a studio listing before you can access the dashboard.
@@ -102,14 +102,14 @@ export default function DashboardPage() {
     );
   }
 
-  // ââ No claim yet âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── No claim yet ───────────────────────────────────────────────────────────────────────────
 
   if (pageState === "no_claim") {
     return (
       <main style={{ background: "#f8f7f4", minHeight: "100vh" }}
         className="flex items-center justify-center px-6">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 max-w-md w-full text-center">
-          <div className="text-5xl mb-4">ð­</div>
+          <div className="text-5xl mb-4">&#128237;</div>
           <h1 className="font-bold text-gray-900 text-xl mb-2">No claim on file</h1>
           <p className="text-gray-500 text-sm mb-2">
             Logged in as <strong>{email}</strong>.
@@ -137,7 +137,7 @@ export default function DashboardPage() {
     );
   }
 
-  // ââ Dashboard ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Dashboard ──────────────────────────────────────────────────────────────────────────────────
 
   const statusCfg = STATUS_CONFIG[claim!.status] || STATUS_CONFIG.pending;
 
@@ -150,7 +150,7 @@ export default function DashboardPage() {
         <div className="max-w-2xl mx-auto flex items-start justify-between">
           <div>
             <Link href="/" className="text-white/40 hover:text-white text-sm transition-colors">
-              â Back to directory
+              &larr; Back to directory
             </Link>
             <h1 className="font-bold text-white text-2xl mt-3">Studio Dashboard</h1>
             <p className="text-white/50 text-sm mt-1">{email}</p>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
               href={`/studios/${claim!.studio_slug}`}
               className="text-xs text-yellow-700 hover:underline mt-1 inline-block"
             >
-              View listing â
+              View listing &#8599;
             </Link>
           </div>
 
@@ -220,34 +220,56 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Upgrade teaser (shown for verified/approved) */}
+        {/* Upgrade / Featured status card (shown for verified/approved) */}
         {(claim!.status === "verified" || claim!.status === "approved") && (
           <div
             className="rounded-2xl p-6"
             style={{ background: "linear-gradient(135deg,#0c1428 0%,#1a2d5a 100%)" }}
           >
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-2">
-                  Featured Listing â Coming Soon
+            {claim!.tier === "paid" ? (
+              /* ── Already on Featured plan ── */
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-2">
+                    &#11088; Featured Listing &mdash; Active
+                  </div>
+                  <h3 className="font-bold text-white text-lg mb-2">You&apos;re Featured!</h3>
+                  <p className="text-white/60 text-sm">
+                    Your listing has the gold Featured badge, lead capture form, and priority
+                    placement in search results. Students can contact you directly.
+                  </p>
                 </div>
-                <h3 className="font-bold text-white text-lg mb-2">Upgrade to Featured</h3>
-                <p className="text-white/60 text-sm">
-                  Get a lead capture form, &ldquo;Featured&rdquo; badge, priority placement in
-                  search results, and monthly performance insights.
-                </p>
+                <span className="text-3xl ml-4">&#11088;</span>
               </div>
-              <span className="text-3xl ml-4">â­</span>
-            </div>
-            <div className="mt-5">
-              <button
-                disabled
-                className="px-5 py-2.5 rounded-xl font-bold text-xs text-gray-400
-                           border border-gray-600 cursor-not-allowed"
-              >
-                Notify Me When Available
-              </button>
-            </div>
+            ) : (
+              /* ── Upgrade CTA ── */
+              <>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-2">
+                      Featured Listing &mdash; $49/mo
+                    </div>
+                    <h3 className="font-bold text-white text-lg mb-2">Upgrade to Featured</h3>
+                    <p className="text-white/60 text-sm">
+                      Get a lead capture form, &ldquo;Featured&rdquo; badge, priority placement in
+                      search results, and monthly performance insights.
+                    </p>
+                  </div>
+                  <span className="text-3xl ml-4">&#11088;</span>
+                </div>
+                <div className="mt-5">
+                  <Link
+                    href="/upgrade"
+                    className="inline-block px-6 py-2.5 rounded-xl font-bold text-gray-900 text-sm
+                               transition-all hover:brightness-110"
+                    style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}
+                  >
+                    Upgrade to Featured &rarr;
+                  </Link>
+                  <p className="text-white/30 text-xs mt-2">Cancel anytime &middot; Powered by Stripe</p>
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -261,7 +283,7 @@ export default function DashboardPage() {
             href="/contact"
             className="text-sm font-semibold text-yellow-700 hover:underline"
           >
-            Contact us â
+            Contact us &rarr;
           </Link>
         </div>
 
