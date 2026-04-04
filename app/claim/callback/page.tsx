@@ -1,9 +1,11 @@
 "use client";
 
-// ─── /claim/callback — Magic Link Callback ────────────────────────────────────
+// /claim/callback -- Magic Link Callback
 // Supabase redirects here after user clicks the magic link in their email.
-// Exchanges the auth code for a session, reads pending claim from localStorage,
-// calls /api/claim to finalize, then redirects to /dashboard.
+// Exchanges the auth code for a session, reads pending claim data from
+// localStorage (primary) or Supabase user_metadata (fallback -- works when
+// the link is opened in a different browser than where the form was filled).
+// Then calls /api/claim to finalize, and redirects to /dashboard.
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -14,10 +16,11 @@ type Status = "verifying" | "claiming" | "success" | "error";
 export default function ClaimCallbackPage() {
   const router = useRouter();
   const [status,  setStatus]  = useState<Status>("verifying");
-  const [message, setMessage] = useState("Verifying your identity…");
+  const [message, setMessage] = useState("Verifying your identity...");
 
   useEffect(() => {
     async function handleCallback() {
+      // Step 1: Exchange the code for a session
       const { data: sessionData, error: sessionError } =
         await supabase.auth.getSession();
 
@@ -27,24 +30,52 @@ export default function ClaimCallbackPage() {
         return;
       }
 
-      const raw = localStorage.getItem("pendingClaim");
-      if (!raw) { router.push("/dashboard"); return; }
-
+      // Step 2: Read pending claim data.
+      // Primary source: localStorage (set on the same device/browser before the magic link was sent).
+      // Fallback: Supabase user_metadata (set in signInWithOtp options.data -- works even when the
+      // magic link is opened in a different browser or email app than where the form was filled out).
       let claim: Record<string, string>;
-      try { claim = JSON.parse(raw); } catch {
-        setStatus("error");
-        setMessage("Claim data was corrupted. Please start the claim process again.");
-        return;
+
+      const raw = localStorage.getItem("pendingClaim");
+      if (raw) {
+        try {
+          claim = JSON.parse(raw);
+        } catch {
+          setStatus("error");
+          setMessage("Claim data was corrupted. Please start the claim process again.");
+          return;
+        }
+      } else {
+        // localStorage empty -- try user metadata embedded in the magic link session
+        const meta = sessionData.session.user.user_metadata || {};
+        if (meta.studio_slug && meta.owner_name && meta.owner_email) {
+          claim = {
+            studio_id:    String(meta.studio_id || ""),
+            studio_slug:  String(meta.studio_slug),
+            studio_title: String(meta.studio_title || ""),
+            owner_name:   String(meta.owner_name),
+            owner_email:  String(meta.owner_email),
+            owner_phone:  String(meta.owner_phone || ""),
+          };
+        } else {
+          // Neither source has data -- session exists but no claim in flight
+          router.push("/dashboard");
+          return;
+        }
       }
 
+      // Step 3: POST to /api/claim to record claim in Supabase + update WP
       setStatus("claiming");
-      setMessage("Recording your claim…");
+      setMessage("Recording your claim...");
 
       try {
         const res = await fetch("/api/claim", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...claim, user_id: sessionData.session.user.id }),
+          body: JSON.stringify({
+            ...claim,
+            user_id: sessionData.session.user.id,
+          }),
         });
 
         const body = await res.json();
@@ -59,9 +90,10 @@ export default function ClaimCallbackPage() {
           return;
         }
 
+        // Success -- clear localStorage and go to dashboard
         localStorage.removeItem("pendingClaim");
         setStatus("success");
-        setMessage("Claim verified! Redirecting to your dashboard…");
+        setMessage("Claim verified! Redirecting to your dashboard...");
         setTimeout(() => router.push("/dashboard"), 1500);
 
       } catch (err) {
@@ -75,7 +107,10 @@ export default function ClaimCallbackPage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const iconMap: Record<Status, string> = {
-    verifying: "🔐", claiming: "📝", success: "✅", error: "⚠️",
+    verifying: "&#128272;",
+    claiming:  "&#128196;",
+    success:   "&#9989;",
+    error:     "&#9888;",
   };
 
   return (
@@ -84,18 +119,22 @@ export default function ClaimCallbackPage() {
       className="flex items-center justify-center px-6"
     >
       <div className="bg-white rounded-2xl shadow-lg p-10 max-w-md w-full text-center">
-        <div className="text-5xl mb-5">{iconMap[status]}</div>
+        <div className="text-5xl mb-5" dangerouslySetInnerHTML={{ __html: iconMap[status] }} />
         <h1 className="font-bold text-gray-900 text-xl mb-3">
           {status === "success" ? "Claim Verified!" :
            status === "error"   ? "Something went wrong" :
-                                  "Processing your claim…"}
+                                  "Processing your claim..."}
         </h1>
         <p className="text-gray-500 text-sm leading-relaxed">{message}</p>
         {status === "error" && (
-          <a href="/claim"
-            className="inline-block mt-6 px-6 py-2.5 rounded-xl font-bold text-sm text-gray-900 transition-all hover:brightness-110"
+          <a
+            href="/claim"
+            className="inline-block mt-6 px-6 py-2.5 rounded-xl font-bold text-sm text-gray-900
+                       transition-all hover:brightness-110"
             style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}
-          >Try Again</a>
+          >
+            Try Again
+          </a>
         )}
         {(status === "verifying" || status === "claiming") && (
           <div className="flex justify-center mt-6">
