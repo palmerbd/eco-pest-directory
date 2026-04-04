@@ -148,9 +148,15 @@ function ClaimPageInner() {
       email: ownerEmail.trim(),
       options: {
         emailRedirectTo: `${SITE_URL}/claim/callback`,
+        // Pass ALL claim fields so the callback can read them via user_metadata
+        // even if the magic link is opened in a different browser (localStorage fallback)
         data: {
-          studio_slug: selected.slug,
-          owner_name:  ownerName.trim(),
+          studio_id:    selected.id,
+          studio_slug:  selected.slug,
+          studio_title: selected.title,
+          owner_name:   ownerName.trim(),
+          owner_email:  ownerEmail.trim(),
+          owner_phone:  ownerPhone.trim(),
         },
       },
     });
