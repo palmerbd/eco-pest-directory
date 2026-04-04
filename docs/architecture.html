@@ -435,27 +435,27 @@
 
   <div class="overall-bar">
     <h2>Ballroom Dance Directory — Project Pipeline</h2>
-    <div class="big-progress-bar"><div class="big-progress-fill" style="width:91%"></div></div>
-    <div class="you-are-here">▲ ~91% Complete — You are here &nbsp;·&nbsp; Updated Apr 3, 2026</div>
+    <div class="big-progress-bar"><div class="big-progress-fill" style="width:95%"></div></div>
+    <div class="you-are-here">▲ ~95% Complete — You are here &nbsp;·&nbsp; Updated Apr 4, 2026</div>
     <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:16px;">
       <div class="progress-bar-wrap">
         <div class="progress-label"><span style="color:#4ade80">Phase 1</span><span>100%</span></div>
         <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#22c55e;"></div></div>
       </div>
       <div class="progress-bar-wrap">
-        <div class="progress-label"><span style="color:#60a5fa">Phase 2</span><span>90%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:90%; background:#3b82f6;"></div></div>
+        <div class="progress-label"><span style="color:#60a5fa">Phase 2</span><span>97%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:97%; background:#3b82f6;"></div></div>
       </div>
       <div class="progress-bar-wrap">
-        <div class="progress-label"><span style="color:#60a5fa">Phase 3</span><span>90%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:90%; background:#3b82f6;"></div></div>
+        <div class="progress-label"><span style="color:#60a5fa">Phase 3</span><span>98%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:98%; background:#3b82f6;"></div></div>
       </div>
       <div class="progress-bar-wrap">
-        <div class="progress-label"><span style="color:#fbbf24">Phase 4</span><span>90%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:90%; background:#f59e0b;"></div></div>
+        <div class="progress-label"><span style="color:#fbbf24">Phase 4</span><span>98%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:98%; background:#f59e0b;"></div></div>
       </div>
       <div class="progress-bar-wrap">
-        <div class="progress-label"><span style="color:#f472b6">Phase 5</span><span>85%</span></div>
+        <div class="progress-label"><span style="color:#f472b6">Phase 5</span><span>95%</span></div>
         <div class="progress-bar"><div class="progress-fill" style="width:85%; background:#ec4899;"></div></div>
       </div>
       <div class="progress-bar-wrap">
@@ -499,7 +499,7 @@
     <div class="phase-header" onclick="togglePhase(this)">
       <span class="phase-title">Phase 2 — Data Layer</span>
       <span class="phase-badge">🔄 IN PROGRESS</span>
-      <span class="phase-progress">~90%</span>
+      <span class="phase-progress">~97%</span>
       <button class="toggle-btn">▾</button>
     </div>
     <div class="phase-items">
@@ -511,10 +511,12 @@
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">ISR revalidation webhook: WordPress save_post_dance_studio → /api/revalidate → revalidatePath()</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">ISR end-to-end test confirmed Apr 2 — HTTP 200 {"revalidated":true} ✅</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">ISR hook URL updated to ballroomdancedirectory.com (was dance-directory.vercel.app) ✅</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Supabase claims as authoritative tier source — getStudio() reads claims table, overrides WP ACF (which doesn't have studio_tier field). lib/wordpress.ts fixed. ✅ Apr 4</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Claim bar hides correctly after claiming — ISR revalidatePath() + Supabase tier fix. Amber "Own this studio?" bar no longer shows for claimed studios. ✅ Apr 4</span></div>
       <div class="section-head">Remaining Data Work</div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Studio photos — owner uploads via claim flow (primary source); licensed stock as placeholders <span style="color:#f87171;font-weight:700;">[Google Places API NOT permitted — legal memo 2026-04-02]</span></span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Pricing fields — intro, monthly, drop-in prices mostly unpopulated</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Taglines — mostly empty; would strengthen studio cards</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Taglines — <code>scripts/generate-taglines.ts</code> created (WP + Anthropic claude-haiku). Run <code>ANTHROPIC_API_KEY=… npx tsx scripts/generate-taglines.ts</code> to fill all studios. DRY_RUN=true supported. ✅ Apr 4</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Chain detection — most studios flagged as independent; no Fred Astaire / Arthur Murray auto-detected by name</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Suburb city grouping — Frisco, Plano show separately instead of under "Dallas"</span></div>
     </div>
@@ -525,7 +527,7 @@
     <div class="phase-header" onclick="togglePhase(this)">
       <span class="phase-title">Phase 3 — Frontend (Next.js)</span>
       <span class="phase-badge">🔄 MOSTLY DONE</span>
-      <span class="phase-progress">~90%</span>
+      <span class="phase-progress">~98%</span>
       <button class="toggle-btn">▾</button>
     </div>
     <div class="phase-items">
@@ -541,15 +543,16 @@
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">/dashboard — studio owner dashboard (claim status, studio link, upgrade teaser)</span></div>
       <div class="section-head">Remaining Frontend Work</div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Studio photos / gallery display — build upload UI in claim flow; use licensed stock as placeholders <span style="color:#f87171;font-weight:700;">[Google Places API NOT permitted]</span></span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Embedded Google Map on studio detail pages (directions link exists but no map embed)</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Embedded Google Map on studio detail pages — iframe embed via maps.google.com/q=…&output=embed in detail sidebar. ✅ Apr 4</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Pricing section on studio detail pages (most studios have no pricing data)</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Lead capture form on studio detail pages (paid tier feature — requires Stripe)</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Related studios section (same city) — not yet built</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Breadcrumb structured data (Schema.org BreadcrumbList) on studio + city pages</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">HTML entities decoded in studio titles — decodeHtmlEntities() added to mapWPPost() in lib/wordpress.ts. Fixes &#8217; and other entities rendering literally on detail pages. ✅ Apr 4</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Lead capture form on studio detail pages (paid tier feature — requires Stripe)</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Related studios section (same city) — shows up to 3 studios in the same city at bottom of detail page. ✅ Apr 4</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Breadcrumb structured data (Schema.org BreadcrumbList) on studio + city pages — 4-level breadcrumb on detail pages, 3-level on city pages. ✅ Apr 4</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">URL-synced filter state on /studios (filters reset on page refresh)</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Pagination or infinite scroll (all 932 load at once — will need it at ~1,000+)</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Suburb cities missing content on city landing pages</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Mobile nav menu (currently footer-only)</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Suburb + extra city content — CITY_CONTENT expanded to 24 markets: added Austin, San Antonio, Tampa, Orlando, Frisco, Plano, Scottsdale, Bellevue + 16 more. "Browse Other Cities" sidebar expanded to 17 links. ✅ Apr 4</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Mobile nav menu — SiteNav.tsx shared component with hamburger drawer, sticky header, active-link detection. Added to layout.tsx — live on all pages. ✅ Apr 4</span></div>
     </div>
   </div>
 
@@ -558,7 +561,7 @@
     <div class="phase-header" onclick="togglePhase(this)">
       <span class="phase-title">Phase 4 — SEO Launch</span>
       <span class="phase-badge">🔄 IN PROGRESS</span>
-      <span class="phase-progress">~90%</span>
+      <span class="phase-progress">~98%</span>
       <button class="toggle-btn">▾</button>
     </div>
     <div class="phase-items">
@@ -572,8 +575,8 @@
       <div class="section-head">Still To Do</div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Studio photos — owner uploads (claimed listings) + licensed stock placeholders <span style="color:#f87171;font-weight:700;">[Google Places API NOT permitted — legal memo 2026-04-02]</span></span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Homepage studio count: replace "500+ studios" placeholder with real count (932)</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">City landing page copy for suburb cities (currently no content)</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">FAQ schema markup on studio detail pages</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">City landing page copy — CITY_CONTENT now covers 24 markets with unique intros, neighborhoods, and FAQ per city. ✅ Apr 4</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">FAQ schema markup on studio detail pages — FAQPage JSON-LD with 4 questions (styles, location, pricing, contact). ✅ Apr 4</span></div>
     </div>
   </div>
 
@@ -582,7 +585,7 @@
     <div class="phase-header" onclick="togglePhase(this)">
       <span class="phase-title">Phase 5 — Monetization</span>
       <span class="phase-badge">🔄 MOSTLY DONE</span>
-      <span class="phase-progress">~85%</span>
+      <span class="phase-progress">~95%</span>
       <button class="toggle-btn">▾</button>
     </div>
     <div class="phase-items">
@@ -598,6 +601,9 @@
       <div class="section-head">Paid Tier — Deployed ✅</div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Stripe Subscriptions: $49/month featured tier — live keys, checkout, webhook configured</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">/upgrade flow for claimed studio owners — /upgrade + /upgrade/success pages live</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">lib/stripe.ts + app/api/stripe/checkout/route.ts + app/api/stripe/webhook/route.ts — all three files committed to GitHub (were missing, causing "Network error"). Build green. ✅ Apr 4</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Checkout page confirmed loading in browser — "Upgrade to Featured" button redirects to Stripe Checkout successfully ✅ Apr 4</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">All Vercel env vars confirmed present: STRIPE_WEBHOOK_SECRET, STRIPE_SECRET_KEY, STRIPE_PRICE_ID, WP_APP_USER, WP_APP_PASSWORD, WP_API_URL ✅ Apr 4</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Lead capture form on paid studio pages (name, email, message → owner inbox via Resend)</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Resend integration: claim confirmations (admin + claimant) + lead forwarding deployed ✅ Apr 3</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Featured badge + priority placement in search results for paid tier</span></div>
@@ -674,21 +680,54 @@
         <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
         <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Stripe + Resend Fully Deployed</strong> — All env vars in Vercel, webhook registered, Supabase migration run. Claim emails (admin + claimant), lead forwarding, ClaimBadge CTA gold gradient, resend+stripe in package.json. Build green. ✅ 2026-04-03</span>
       </div>
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1f12; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
-        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">7</span>
+      <div style="display:flex; align-items:flex-start; gap:12px;">
+        <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
+        <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Stripe API Routes Deployed</strong> — lib/stripe.ts + checkout/route.ts + webhook/route.ts all committed to GitHub. "Network error" on /upgrade fixed. Checkout page confirmed loading. ✅ 2026-04-04</span>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:12px;">
+        <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
+        <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>ISR + Claim Bar Fix</strong> — Supabase is now authoritative tier source (not WP ACF). Claim bar correctly hides for claimed studios. HTML entities decoded in titles. ✅ 2026-04-04</span>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:12px;">
+        <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
+        <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Phase 2+3 Polish Sprint</strong> — SiteNav.tsx (mobile nav hamburger, sticky header), Google Map embed on detail sidebar, related studios section (same city, up to 3), BreadcrumbList JSON-LD (studio + city pages), FAQPage JSON-LD (4 questions), CITY_CONTENT expanded to 24 markets, <code>scripts/generate-taglines.ts</code> (Anthropic Haiku → WP API). All 5 commits deployed to Vercel. ✅ 2026-04-04</span>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a10; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</span>
         <div>
-          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">🚀 BEGIN STUDIO OUTREACH — This is the job now.</span>
-          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">The tech is done. The money comes from outreach. Use Hunter.io to find emails for the top 20–30 <em>independent</em> studios per market — sort by review count + rating to find the most established owners who care about their reputation. Send Email 1 from <strong>Studio_Outreach_Campaign.docx</strong>. Log every contact in <strong>Studio_Outreach_Tracker.xlsx</strong>. Follow up with Email 2 at Day 4, Email 3 at Day 8. <strong>Goal: first paid subscriber.</strong> Everything else waits on this.</span>
-          <span style="display:block; font-size:11px; color:#4ade80; margin-top:8px; font-weight:700;">📋 WORKFLOW: Hunter.io → find email → paste into tracker → send Email 1 → repeat. Start with LA (biggest market, most studios).</span>
+          <span style="font-size:13px; color:#d1fae5; line-height:1.5; font-weight:700;">🏷️ Run Tagline Generator — Quick Win (30 min)</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add <code style="background:#012210; padding:1px 5px; border-radius:3px;">ANTHROPIC_API_KEY=sk-ant-…</code> to <code>dance-directory/.env.local</code>. Then from the <code>dance-directory/</code> folder run: <code style="background:#012210; padding:1px 5px; border-radius:3px;">DRY_RUN=true npx tsx scripts/generate-taglines.ts</code> to preview, then without DRY_RUN to write taglines to all 1,138 studios. This pumps up every studio card's visual quality before outreach.</span>
+        </div>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0f00; border:1px solid #f59e0b; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#d97706; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</span>
+        <div>
+          <span style="font-size:13px; color:#fef3c7; line-height:1.5; font-weight:700;">⚡ Configure Stripe Webhook — Your Task</span>
+          <span style="display:block; font-size:12px; color:#fcd34d; line-height:1.6; margin-top:6px;">Go to <strong>dashboard.stripe.com/webhooks</strong> → find existing endpoint or click "Add endpoint". URL: <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">https://www.ballroomdancedirectory.com/api/stripe/webhook</code>. Events: <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">checkout.session.completed</code>, <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">customer.subscription.deleted</code>, <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">invoice.payment_failed</code>. Verify the signing secret matches STRIPE_WEBHOOK_SECRET in Vercel (starts whsec_ZCUt…).</span>
+        </div>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #3b82f6; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#1d4ed8; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</span>
+        <div>
+          <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">🧪 End-to-End Paid Tier Smoke Test</span>
+          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">After webhook is configured: use Buerti's Dance Studio (already claimed). Click "Upgrade to Featured" → Stripe checkout → use test card <code style="background:#0d1f3c; padding:1px 5px; border-radius:3px;">4242 4242 4242 4242</code> → verify webhook fires → Supabase claims.tier flips to "paid" → Featured badge appears on studio page. If all green, the monetization stack is fully live.</span>
+        </div>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1f12; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">4</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">🚀 BEGIN STUDIO OUTREACH — This is where the money comes from.</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Use Hunter.io to find emails for the top 20–30 <em>independent</em> studios per market — sort by review count + rating. Send Email 1 from <strong>Studio_Outreach_Campaign.docx</strong>. Log in <strong>Studio_Outreach_Tracker.xlsx</strong>. Follow up Email 2 at Day 4, Email 3 at Day 8. <strong>Goal: first paid subscriber.</strong></span>
+          <span style="display:block; font-size:11px; color:#4ade80; margin-top:8px; font-weight:700;">📋 Start with LA (biggest market). Hunter.io → email → tracker → send → repeat.</span>
         </div>
       </div>
       <div style="display:flex; align-items:flex-start; gap:12px;">
-        <span style="background:#e8c560; color:#0c1428; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">8</span>
-        <span style="font-size:13px; color:#d0d8e8; line-height:1.5;"><strong style="color:#f9f6f0;">Confirm Resend Domain Verification</strong> — DNS propagation (DKIM + SPF + DMARC) typically clears within 24–48 hrs. Log into resend.com → Domains and verify status shows "Verified". Until then, claim emails will send but may land in spam.</span>
+        <span style="background:#e8c560; color:#0c1428; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">5</span>
+        <span style="font-size:13px; color:#d0d8e8; line-height:1.5;"><strong style="color:#f9f6f0;">Confirm Resend Domain Verification</strong> — Log into resend.com → Domains → verify status is "Verified" (DKIM + SPF + DMARC). Until verified, claim emails may land in spam. Should be clear ~24–48 hrs after DNS was set.</span>
       </div>
       <div style="display:flex; align-items:flex-start; gap:12px;">
-        <span style="background:#e8c560; color:#0c1428; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">9</span>
-        <span style="font-size:13px; color:#d0d8e8; line-height:1.5;"><strong style="color:#f9f6f0;">End-to-End Paid Tier Test</strong> — Set a studio to tier=claimed in WP admin, go through /upgrade Stripe checkout (test card 4242…), verify webhook fires, Supabase tier flips to "paid", Featured badge appears, lead capture form emails owner. Full smoke test before first real subscriber.</span>
+        <span style="background:#e8c560; color:#0c1428; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">6</span>
+        <span style="font-size:13px; color:#d0d8e8; line-height:1.5;"><strong style="color:#f9f6f0;">Legal Baseline</strong> — (a) Register DMCA designated agent at copyright.gov ($6 one-time). (b) Engage IP attorney for Terms + Privacy review before first real subscriber. (c) Send franchise outreach emails to Arthur Murray, Fred Astaire, Dance With Me — drafts already written.</span>
       </div>
     </div>
     <div style="margin-top:16px; padding-top:14px; border-top:1px solid #1e3a5f; font-size:11px; color:#f87171;">
