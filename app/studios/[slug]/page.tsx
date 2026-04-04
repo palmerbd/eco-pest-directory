@@ -282,15 +282,19 @@ export default async function StudioPage({
         </div>
       )}
 
-      {/* Photo Gallery */}
-      <div className="max-w-5xl mx-auto px-6 pt-10 pb-0">
-        <StudioGallery
-          studioId={studio.id}
-          danceStyles={studio.danceStyles}
-          chain={studio.studioChain}
-          featuredImageUrl={studio.featuredImage}
-        />
-      </div>
+      {/* Photo Gallery -- currently only shown for claimed/paid studios.
+          To re-enable Unsplash placeholders for ALL studios, remove the
+          (studio.tier === "claimed" || studio.tier === "paid") && wrapper below. */}
+      {(studio.tier === "claimed" || studio.tier === "paid") && (
+        <div className="max-w-5xl mx-auto px-6 pt-10 pb-0">
+          <StudioGallery
+            studioId={studio.id}
+            danceStyles={studio.danceStyles}
+            chain={studio.studioChain}
+            featuredImageUrl={studio.featuredImage}
+          />
+        </div>
+      )}
 
       {/* Body */}
       <div className="max-w-5xl mx-auto px-6 py-8">
