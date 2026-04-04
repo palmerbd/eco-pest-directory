@@ -7,6 +7,7 @@
 // 5. Sends admin notification email + claimant confirmation email via Resend
 // 6. Returns { success: true, claim_id }
 
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { Resend } from "resend";
@@ -106,6 +107,10 @@ export async function POST(req: NextRequest) {
         console.warn("WP tier update threw:", wpErr);
       }
     }
+
+      // Bust the ISR cache so the studio page rebuilds immediately and
+      // the amber “claim this listing” bar disappears on next request.
+      try { revalidatePath(`/studios/${studio_slug}`); } catch { /* non-fatal */ }
 
     // ── Send emails via Resend (non-fatal on failure) ──────────────────────
     try {
