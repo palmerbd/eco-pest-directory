@@ -209,6 +209,47 @@ export async function getAllStudios(perPage = 100): Promise<StudioCard[]> {
   }
 }
 
+// ── Paginated studio fetch result ─────────────────────────────────────────────
+
+export interface StudiosPageResult {
+  studios: StudioCard[];
+  total: number;
+  totalPages: number;
+}
+
+/**
+ * Fetches a single page of studios — used by the /studios listing page.
+ * Replaces getAllStudios() for the browse view to avoid shipping the full
+ * 3,400+ studio dataset to the client on every request.
+ */
+export async function getStudiosPage(
+  page = 1,
+  perPage = 48
+): Promise<StudiosPageResult> {
+  try {
+    const url = new URL(`${WP_API_URL}/wp/v2/dance_studio?${FIELDS}`);
+    url.searchParams.set("per_page", String(perPage));
+    url.searchParams.set("status", "publish");
+    url.searchParams.set("page", String(Math.max(1, page)));
+    url.searchParams.set("orderby", "date");
+    url.searchParams.set("order", "desc");
+
+    const res = await fetch(url.toString(), {
+      next: { revalidate: 3600 },
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!res.ok) throw new Error(`WP API ${res.status}`);
+
+    const total      = Number(res.headers.get("X-WP-Total")      || "0");
+    const totalPages = Number(res.headers.get("X-WP-TotalPages") || "1");
+    const raw: Record<string, unknown>[] = await res.json();
+
+    return { studios: raw.map(mapWPPost).map(toCard), total, totalPages };
+  } catch {
+    return { studios: [], total: 0, totalPages: 1 };
+  }
+}
+
 /** Single studio by slug — full detail */
 export async function getStudio(slug: string): Promise<Studio | null> {
   try {
