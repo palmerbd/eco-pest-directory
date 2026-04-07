@@ -109,7 +109,7 @@ function StudioListCard({ studio }: { studio: StudioCard }) {
         ) : null}
 
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-4">
-          y(studio.city || studio.state) && (
+          {(studio.city || studio.state) && (
             <span className="flex items-center gap-1">
               <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
