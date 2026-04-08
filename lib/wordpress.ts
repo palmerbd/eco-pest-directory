@@ -308,3 +308,30 @@ export async function getStudiosByCity(citySlug: string): Promise<StudioCard[]> 
   const all = await getAllStudios(500);
   return all.filter((s) => s.city.toLowerCase() === cityName);
 }
+
+/** Studios filtered by dance style — fetches ALL studios to search across full directory */
+export async function getStudiosByStyle(style: string): Promise<StudioCard[]> {
+  const all = await getAllStudios(100);
+  return all.filter((s) => s.danceStyles.includes(style as DanceStyle));
+}
+
+/** All cities with studio counts — used for the city browsing page */
+export async function getAllCities(): Promise<{ city: string; state: string; count: number; slug: string }[]> {
+  const all = await getAllStudios(100);
+  const map = new Map<string, { city: string; state: string; count: number; slug: string }>();
+  for (const s of all) {
+    if (!s.city) continue;
+    const key = `${s.city}|${s.state}`;
+    if (map.has(key)) {
+      map.get(key)!.count++;
+    } else {
+      map.set(key, {
+        city: s.city,
+        state: s.state,
+        count: 1,
+        slug: s.city.toLowerCase().replace(/\s+/g, "-"),
+      });
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => b.count - a.count);
+}

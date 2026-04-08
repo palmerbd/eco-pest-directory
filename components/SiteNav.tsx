@@ -5,10 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
-  { href: "/studios",           label: "Browse Studios" },
-  { href: "/studios?style=ballroom", label: "By Style" },
-  { href: "/studios/city",      label: "By City" },
-  { href: "/claim",             label: "Claim Your Studio" },
+  { href: "/studios", label: "Browse Studios" },
+  { href: "/styles",  label: "By Style" },
+  { href: "/cities",  label: "By City" },
+  { href: "/claim",   label: "Claim Your Studio" },
 ];
 
 export default function SiteNav() {

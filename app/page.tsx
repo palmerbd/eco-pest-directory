@@ -12,12 +12,12 @@ export const metadata: Metadata = {
 };
 
 const FEATURED_STYLES = [
-  { key: "ballroom",      label: "Ballroom",      desc: "Classic elegance, refined technique" },
-  { key: "latin",         label: "Latin",          desc: "Salsa, Rumba, Cha-Cha & more" },
-  { key: "tango",         label: "Tango",          desc: "Passion and precision" },
-  { key: "wedding-dance", label: "Wedding Dance",  desc: "Your perfect first dance" },
-  { key: "swing",         label: "Swing",          desc: "Jive, East Coast, West Coast" },
-  { key: "competition",   label: "Competition",    desc: "Train to compete and win" },
+  { key: "ballroom",    href: "/ballroom-dance-lessons",    label: "Ballroom",      desc: "Classic elegance, refined technique" },
+  { key: "latin",       href: "/latin-dance-lessons",       label: "Latin",          desc: "Salsa, Rumba, Cha-Cha & more" },
+  { key: "tango",       href: "/tango-dance-lessons",       label: "Tango",          desc: "Passion and precision" },
+  { key: "wedding",     href: "/wedding-dance-lessons",     label: "Wedding Dance",  desc: "Your perfect first dance" },
+  { key: "swing",       href: "/swing-dance-lessons",       label: "Swing",          desc: "Jive, East Coast, West Coast" },
+  { key: "competition", href: "/competition-dance-lessons", label: "Competition",    desc: "Train to compete and win" },
 ];
 
 export default async function HomePage() {
@@ -49,7 +49,7 @@ export default async function HomePage() {
           </p>
           <form action="/studios" method="GET"
             className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
-            <input type="text" name="q" placeholder="City or dance style"
+            <input type="text" name="q" placeholder="Search by studio name or city…"
               className="flex-1 px-5 py-4 rounded-lg text-gray-900 text-base bg-white
                          border-2 border-transparent focus:outline-none focus:border-yellow-400
                          placeholder:text-gray-400" />
@@ -86,7 +86,7 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {FEATURED_STYLES.map((style) => (
-              <Link key={style.key} href={`/${style.key}-dance-lessons`}
+              <Link key={style.key} href={style.href}
                 className="group p-6 bg-white rounded-xl border border-gray-200
                            hover:border-yellow-400 hover:shadow-lg transition-all duration-200">
                 <h3 className="font-display font-bold text-gray-900 text-xl mb-1
