@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/studios", label: "Browse Studios" },
   { href: "/styles",  label: "By Style" },
   { href: "/cities",  label: "By City" },
+  { href: "/blog",    label: "Tips & Guides" },
   { href: "/claim",   label: "Claim Your Studio" },
 ];
 

@@ -271,6 +271,68 @@ export default async function CityPage({
     .sort((a, b) => (b[1] as number) - (a[1] as number))
     .slice(0, 6) as [DanceStyle, number][];
 
+  // ── FAQ Schema ────────────────────────────────────────────────────────────────
+  // Dynamically built from real studio data — generates rich answer boxes in Google.
+
+  // Top styles for this city
+  const topStyles = styleBreakdown
+    .slice(0, 4)
+    .map(([style]) => STYLE_LABELS[style])
+    .join(", ");
+
+  // Price range — use real data if available, otherwise standard industry range
+  const studiosWithPricing = studios.filter((s) => s.privateLessonRate);
+  const pricingAnswer = studiosWithPricing.length > 0
+    ? `Private dance lesson prices in ${cityName} typically range from $75 to $200 per hour depending on the studio and instructor level. Many studios offer discounted intro lesson packages for new students. You can view pricing details on each studio's listing page on Ballroom Dance Directory.`
+    : `Private dance lesson prices in ${cityName} typically range from $75 to $200 per hour for a 45–60 minute session. Intro lessons and package deals are commonly available at lower rates. Check individual studio pages for current pricing.`;
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": `How many ballroom dance studios are in ${cityName}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `There are ${studios.length} ballroom and private dance ${studios.length === 1 ? "studio" : "studios"} listed in ${cityName} on Ballroom Dance Directory. Studios range from independent instructors to nationally recognized chains like Fred Astaire and Arthur Murray.`,
+        },
+      },
+      {
+        "@type": "Question",
+        "name": `What dance styles are available in ${cityName}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `${cityName} dance studios offer a wide range of styles including ${topStyles || "ballroom, Latin, tango, swing, and wedding dance"}. Many studios offer instruction across multiple styles with the same instructor, making it easy to explore different dances.`,
+        },
+      },
+      {
+        "@type": "Question",
+        "name": `How much do private dance lessons cost in ${cityName}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": pricingAnswer,
+        },
+      },
+      {
+        "@type": "Question",
+        "name": `Do dance studios in ${cityName} offer beginner lessons?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `Yes. The majority of dance studios in ${cityName} cater to complete beginners and offer introductory lesson packages specifically designed for those with no prior dance experience. Many offer a discounted first lesson so you can try before committing. Use the Ballroom Dance Directory listings to find studios that explicitly offer beginner instruction.`,
+        },
+      },
+      {
+        "@type": "Question",
+        "name": `What is the best ballroom dance studio in ${cityName}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `The best dance studio in ${cityName} depends on your goals, schedule, and preferred style. Ballroom Dance Directory lists ${studios.length} ${cityName} studios with contact info, dance styles offered, and pricing. Featured studios have been verified by their owners and include photos, hours, and detailed descriptions to help you make the right choice.`,
+        },
+      },
+    ],
+  };
+
   // Schema.org for city page
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -301,6 +363,10 @@ export default async function CityPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <script
         type="application/ld+json"

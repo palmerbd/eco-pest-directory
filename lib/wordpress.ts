@@ -338,3 +338,94 @@ export async function getAllCities(): Promise<{ city: string; state: string; cou
   }
   return Array.from(map.values()).sort((a, b) => b.count - a.count);
 }
+
+// ─── Blog Post API ────────────────────────────────────────────────────────────
+// Uses WordPress's built-in /wp/v2/posts endpoint (no custom post type needed).
+
+export interface BlogPost {
+  id:            number;
+  slug:          string;
+  title:         string;
+  excerpt:       string;
+  content:       string;
+  date:          string;        // ISO 8601
+  featuredImage: string | null;
+  categories:    string[];
+}
+
+interface WPPost {
+  id:      number;
+  slug:    string;
+  date:    string;
+  title:   { rendered: string };
+  excerpt: { rendered: string };
+  content: { rendered: string };
+  _embedded?: {
+    "wp:featuredmedia"?: Array<{ source_url: string }>;
+    "wp:term"?:          Array<Array<{ name: string }>>;
+  };
+}
+
+function decodeHtml(str: string): string {
+  return str
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#8217;/g, "'")
+    .replace(/&#8216;/g, "'")
+    .replace(/&#8220;/g, "\u201c")
+    .replace(/&#8221;/g, "\u201d")
+    .replace(/&#8230;/g, "…");
+}
+
+function mapWPPost(p: WPPost): BlogPost {
+  return {
+    id:            p.id,
+    slug:          p.slug,
+    title:         decodeHtml(p.title.rendered),
+    excerpt:       decodeHtml(p.excerpt.rendered.replace(/<[^>]+>/g, "").trim()),
+    content:       p.content.rendered,
+    date:          p.date,
+    featuredImage: p._embedded?.["wp:featuredmedia"]?.[0]?.source_url ?? null,
+    categories:    (p._embedded?.["wp:term"]?.[0] ?? []).map((t) => t.name),
+  };
+}
+
+/** Latest blog posts for the index page */
+export async function getBlogPosts(perPage = 12): Promise<BlogPost[]> {
+  try {
+    const url = new URL(`${WP_API_URL}/wp/v2/posts`);
+    url.searchParams.set("per_page", String(perPage));
+    url.searchParams.set("status", "publish");
+    url.searchParams.set("_embed", "1");
+    const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
+    if (!res.ok) return [];
+    const posts = (await res.json()) as WPPost[];
+    return posts.map(mapWPPost);
+  } catch {
+    return [];
+  }
+}
+
+/** Single blog post by slug */
+export async function getBlogPost(slug: string): Promise<BlogPost | null> {
+  try {
+    const url = new URL(`${WP_API_URL}/wp/v2/posts`);
+    url.searchParams.set("slug", slug);
+    url.searchParams.set("status", "publish");
+    url.searchParams.set("_embed", "1");
+    const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
+    const posts = (await res.json()) as WPPost[];
+    return posts.length ? mapWPPost(posts[0]) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** All published post slugs — used for generateStaticParams */
+export async function getBlogSlugs(): Promise<string[]> {
+  const posts = await getBlogPosts(100);
+  return posts.map((p) => p.slug);
+}

@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getAllStudios } from "@/lib/wordpress";
+import { getAllStudios, getBlogSlugs } from "@/lib/wordpress";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.privatedancedirectory.com";
 
@@ -17,7 +17,7 @@ const CITIES = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const studios = await getAllStudios();
+  const [studios, blogSlugs] = await Promise.all([getAllStudios(), getBlogSlugs()]);
 
   const studioEntries: MetadataRoute.Sitemap = studios.map((studio) => ({
     url: `${BASE_URL}/studios/${studio.slug}`,
@@ -33,6 +33,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  const blogEntries: MetadataRoute.Sitemap = blogSlugs.map((slug) => ({
+    url: `${BASE_URL}/blog/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
+
   const staticEntries: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
@@ -46,7 +53,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.9,
     },
+    {
+      url: `${BASE_URL}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
   ];
 
-  return [...staticEntries, ...cityEntries, ...studioEntries];
+  return [...staticEntries, ...cityEntries, ...studioEntries, ...blogEntries];
 }
