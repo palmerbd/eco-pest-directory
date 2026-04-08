@@ -218,7 +218,7 @@ export default async function StudioPage({
         "addressCountry": "US",
       }
     } : {}),
-    ...(studio.rating ? {
+    ...(studio.rating && studio.tier !== "free" ? {
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": studio.rating.toFixed(1),
@@ -365,8 +365,8 @@ export default async function StudioPage({
             <p className="text-white/60 text-lg italic mb-4">{studio.tagline}</p>
           )}
 
-          {/* Rating */}
-          {studio.rating && (
+          {/* Rating — only shown for claimed/paid studios */}
+          {studio.tier !== "free" && studio.rating && (
             <div className="mb-4">
               <StarRating rating={studio.rating} count={studio.reviewCount} />
             </div>

@@ -134,7 +134,7 @@ export default async function CompetitionDanceLessonsPage() {
                 className="block rounded-xl border border-gray-200 p-5 hover:border-yellow-400 hover:shadow-md transition-all group">
                 <h3 className="font-semibold text-gray-900 text-sm leading-snug group-hover:text-yellow-700 transition-colors mb-2">{studio.title}</h3>
                 <p className="text-xs text-gray-400 mb-3">{studio.city}{studio.city && studio.state ? ", " : ""}{studio.state}</p>
-                {studio.rating && (
+                {studio.tier !== "free" && studio.rating && (
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm" style={{ color: "#e8c560" }}>{"\u2605"}</span>
                     <span className="text-sm font-semibold text-gray-700">{studio.rating.toFixed(1)}</span>

@@ -102,7 +102,7 @@ function StudioListCard({ studio }: { studio: StudioCard }) {
           <p className="text-sm text-gray-500 mb-3 line-clamp-2">{studio.description}</p>
         ) : null}
 
-        {studio.rating ? (
+        {studio.tier !== "free" && studio.rating ? (
           <div className="flex items-center gap-2 mb-3">
             <Stars rating={studio.rating} />
             {studio.reviewCount ? (

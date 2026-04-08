@@ -172,7 +172,7 @@ export default async function BallroomDanceLessonsPage() {
                 <p className="text-xs text-gray-400 mb-3">
                   {studio.city}{studio.city && studio.state ? ", " : ""}{studio.state}
                 </p>
-                {studio.rating && (
+                {studio.tier !== "free" && studio.rating && (
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm" style={{ color: "#e8c560" }}>{"\u2605"}</span>
                     <span className="text-sm font-semibold text-gray-700">{studio.rating.toFixed(1)}</span>
