@@ -28,17 +28,33 @@ export async function generateMetadata({
   const studio = await getStudio(slug);
   if (!studio) return { title: "Studio Not Found" };
 
-  const location = [studio.city, studio.state].filter(Boolean).join(", ");
+  const cityState = [studio.city, studio.state].filter(Boolean).join(", ");
+  const cityOnly  = studio.city || "";
+  const styleList = studio.danceStyles
+    .map((s) => STYLE_LABELS[s as DanceStyle])
+    .slice(0, 2)
+    .join(" & ");
+
+  // Title: keyword-optimised — "Studio Name | Private Dance Lessons in City, State"
+  // Keeps user-recognisable studio name first (good for branded queries) and adds
+  // the "private dance lessons in [city]" phrase that drives non-branded impressions.
+  const titleCity = cityState ? ` in ${cityState}` : "";
+  const title = `${studio.title} | Private Dance Lessons${titleCity}`;
+
+  // Description: action-oriented, includes style + city + clear CTA (~150 chars)
+  const stylePhrase = styleList ? `${styleList} lessons` : "private dance lessons";
+  const cityPhrase  = cityOnly ? ` in ${cityOnly}` : "";
+  const description =
+    `Find ${stylePhrase}${cityPhrase} at ${studio.title}. ` +
+    `View contact info, hours, pricing, and book your intro lesson today. ` +
+    `Listed on Ballroom Dance Directory.`;
+
   return {
-    title: `${studio.title}${location ? " \u2014 " + location : ""} | Ballroom Dance Directory`,
-    description:
-      studio.description ||
-      `Private dance lessons at ${studio.title}${location ? ` in ${location}` : ""}. ${
-        studio.danceStyles.map((s) => STYLE_LABELS[s as DanceStyle]).join(", ")
-      } instruction available.`,
+    title,
+    description,
     openGraph: {
-      title: studio.title,
-      description: studio.tagline || studio.description,
+      title,
+      description: studio.tagline || description,
     },
   };
 }
@@ -681,6 +697,23 @@ export default async function StudioPage({
                     </a>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* City hub link — always visible, passes crawl authority to city pages */}
+            {studio.city && (
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                <p className="text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">
+                  More in {studio.city}
+                </p>
+                <Link
+                  href={`/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}`}
+                  className="flex items-center justify-between text-sm font-semibold text-amber-700
+                             hover:text-amber-900 transition-colors group"
+                >
+                  <span>Browse all {studio.city} dance studios</span>
+                  <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                </Link>
               </div>
             )}
 
