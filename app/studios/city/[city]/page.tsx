@@ -257,6 +257,20 @@ export default async function CityPage({
     .filter((s) => s.rating)
     .reduce((sum, s) => sum + (s.rating || 0), 0) / studios.filter((s) => s.rating).length;
 
+  // Sponsored (paid-tier) studios for featured cards
+  const sponsored = studios.filter((s) => s.tier === "paid").slice(0, 3);
+
+  // Style breakdown: count studios per style
+  const styleCounts: Partial<Record<DanceStyle, number>> = {};
+  for (const s of studios) {
+    for (const style of s.danceStyles) {
+      styleCounts[style] = (styleCounts[style] ?? 0) + 1;
+    }
+  }
+  const styleBreakdown = Object.entries(styleCounts)
+    .sort((a, b) => (b[1] as number) - (a[1] as number))
+    .slice(0, 6) as [DanceStyle, number][];
+
   // Schema.org for city page
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -338,6 +352,48 @@ export default async function CityPage({
 
           {/* Studio grid */}
           <div className="lg:col-span-2">
+
+            {/* Sponsored featured studios */}
+            {sponsored.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-xs font-bold uppercase tracking-widest text-yellow-700 bg-yellow-50 border border-yellow-200 px-2.5 py-1 rounded-full">
+                    ★ Featured Studios
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {sponsored.map((studio) => (
+                    <Link key={studio.id} href={`/studios/${studio.slug}`}
+                      className="group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200"
+                      style={{ border: "2px solid #e8c560" }}>
+                      <div className="px-5 py-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <span className="text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-yellow-700"
+                            style={{ background: "linear-gradient(135deg,#fef9e7,#fdf0c0)" }}>
+                            Sponsored
+                          </span>
+                        </div>
+                        <h3 className="font-display font-bold text-gray-900 text-base mb-1 group-hover:text-yellow-700 transition-colors">
+                          {studio.title}
+                        </h3>
+                        <p className="text-sm text-gray-500 mb-3 line-clamp-2">{studio.description}</p>
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="text-yellow-500 text-base">★</span>
+                          <span className="font-semibold text-gray-800">{studio.rating?.toFixed(1)}</span>
+                          {studio.reviewCount && <span className="text-gray-400">({studio.reviewCount} reviews)</span>}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* All studios heading */}
+            <h2 className="font-display font-bold text-gray-900 text-lg mb-4">
+              All Studios in {cityName}
+              <span className="ml-2 text-sm font-normal text-gray-400">({studios.length})</span>
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {studios.map((studio) => (
                 <StudioListCard key={studio.id} studio={studio} />
@@ -390,9 +446,55 @@ export default async function CityPage({
               );
             })()}
 
+            {/* Style breakdown */}
+            {styleBreakdown.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                <h3 className="font-display font-bold text-gray-900 text-base mb-3">Browse by Style</h3>
+                <p className="text-xs text-gray-400 mb-3">Available in {cityName}</p>
+                <div className="space-y-0.5">
+                  {styleBreakdown.map(([style, count]) => (
+                    <Link key={style} href={`/studios?style=${style}&city=${cityName}`}
+                      className="flex items-center justify-between py-2 px-3 rounded-lg text-sm
+                                 text-gray-700 hover:bg-yellow-50 hover:text-yellow-800 transition-colors">
+                      <span>{STYLE_LABELS[style]}</span>
+                      <span className="text-xs text-gray-400 font-medium">{count} studios</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Advertise CTA */}
+            <div className="rounded-2xl p-6 text-white" style={{ background: "linear-gradient(135deg,#0c1428,#1a2d5a)" }}>
+              <h3 className="font-display font-bold text-lg mb-2">
+                Studio Owners
+              </h3>
+              <p className="text-white/70 text-sm mb-4">
+                Get Featured in {cityName}
+              </p>
+              <p className="text-white/60 text-xs mb-4 leading-relaxed">
+                Reach students actively searching for dance lessons in {cityName}. Sponsored listings appear first, above all standard listings.
+              </p>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center justify-between bg-white/10 rounded-lg px-3 py-2">
+                  <span className="text-sm font-semibold">Featured listing</span>
+                  <span className="text-yellow-300 font-bold text-sm">$149/mo</span>
+                </div>
+                <div className="flex items-center justify-between bg-white/10 rounded-lg px-3 py-2">
+                  <span className="text-sm font-semibold">Premium + gallery</span>
+                  <span className="text-yellow-300 font-bold text-sm">$299/mo</span>
+                </div>
+              </div>
+              <Link href="/claim"
+                className="block text-center py-2.5 rounded-xl text-sm font-bold text-gray-900 hover:brightness-110 transition-all"
+                style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}>
+                Claim Your Studio →
+              </Link>
+            </div>
+
             {/* Browse by city */}
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <h3 className="font-display font-bold text-gray-900 text-base mb-3">Browse Other Cities</h3>
+              <h3 className="font-display font-bold text-gray-900 text-base mb-3">Other Top Markets</h3>
               <div className="space-y-1">
                 {[
                   { slug: "los-angeles",    name: "Los Angeles" },
@@ -426,9 +528,13 @@ export default async function CityPage({
               </div>
             </div>
 
+            <Link href="/cities"
+              className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+              View all cities →
+            </Link>
             <Link href="/studios"
               className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-              ← View all studios
+              ← All studios directory
             </Link>
           </div>
         </div>

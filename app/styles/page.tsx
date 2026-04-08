@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 // Style metadata: description, emoji, and link destination
-const STYLE_META: Record<DanceStyle, { desc: string; emoji: string; href: string; color: string; bg: string }> = {
+const STYLE_META: Partial<Record<DanceStyle, { desc: string; emoji: string; href: string; color: string; bg: string }>> = {
   ballroom:     {
     desc: "Elegant partner dancing — Waltz, Foxtrot, Viennese Waltz, and Quickstep. The foundation of all social dance.",
     emoji: "🥂",
@@ -124,8 +124,8 @@ export default async function StylesPage() {
         <div className="max-w-6xl mx-auto">
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {DANCE_STYLES.map((style) => {
-              const meta  = STYLE_META[style];
+            {DANCE_STYLES.filter((style) => !!STYLE_META[style]).map((style) => {
+              const meta  = STYLE_META[style]!;
               const count = styleCounts[style] || 0;
 
               return (

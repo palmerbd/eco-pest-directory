@@ -461,10 +461,10 @@ export default async function StudioPage({
               </section>
             )}
 
-            {/* Pricing */}
-            {(studio.introLessonRate || studio.privateLessonRate || studio.monthlyRate) && (
-              <section>
-                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Pricing</h2>
+            {/* Pricing — always shown */}
+            <section>
+              <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Pricing</h2>
+              {(studio.introLessonRate || studio.privateLessonRate || studio.monthlyRate) ? (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {studio.introLessonRate && (
                     <div className="p-4 rounded-xl border border-gray-200 text-center">
@@ -491,8 +491,39 @@ export default async function StudioPage({
                     </div>
                   )}
                 </div>
-              </section>
-            )}
+              ) : (
+                /* No pricing data — show contact CTA */
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-800 mb-1">Pricing available upon inquiry</p>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      Private lesson rates vary by instructor and package. Contact {studio.title} directly
+                      for current pricing and to book a free introductory lesson.
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+                    {studio.phone && (
+                      <a href={`tel:${studio.phone}`}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
+                                   bg-white border border-gray-300 text-gray-700 hover:border-yellow-400 transition-colors">
+                        📞 Call for Pricing
+                      </a>
+                    )}
+                    {studio.website && (
+                      <a href={studio.website} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
+                                   text-gray-900 hover:brightness-110 transition-all"
+                        style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}>
+                        Visit Website →
+                      </a>
+                    )}
+                    {!studio.phone && !studio.website && (
+                      <span className="text-sm text-gray-400 italic">Contact studio directly</span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </section>
 
             {/* Hours */}
             {hoursRows.length > 0 && (

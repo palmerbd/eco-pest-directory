@@ -2,7 +2,7 @@
 // Fetches data from WordPress REST API on the Hetzner server (5.78.144.42).
 // ACF field names match the "Dance Studio Details" field group (imported 2026-03-30).
 
-import { Studio, StudioCard, DanceStyle, StudioChain } from "@/types/studio";
+import { Studio, StudioCard, DanceStyle, StudioChain, ListingTier } from "@/types/studio";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 const WP_API_URL =
@@ -141,7 +141,9 @@ function mapWPPost(post: Record<string, unknown>): Studio {
     },
     featuredImage: undefined,
     claimed:       ["claimed", "paid"].includes((acf.studio_tier as string) || ""),
-    tier:          (acf.studio_tier as string) || "free",
+    tier:          (["free","claimed","paid"].includes((acf.studio_tier as string) || "")
+                    ? (acf.studio_tier as ListingTier)
+                    : "free"),
     cityState:     `${city.toLowerCase().replace(/\s+/g, "-")}-${state.toLowerCase()}`,
   };
 }
@@ -276,7 +278,8 @@ export async function getStudio(slug: string): Promise<Studio | null> {
 
       if (claim) {
         studio.claimed = true;
-        studio.tier = (claim.tier as string) || "claimed";
+        const rawTier = (claim.tier as string) || "claimed";
+        studio.tier = (["free","claimed","paid"].includes(rawTier) ? rawTier as ListingTier : "claimed");
       }
     } catch {
       // Non-fatal — fall back to WP tier value
