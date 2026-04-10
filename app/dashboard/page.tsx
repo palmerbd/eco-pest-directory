@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase, type Claim } from "@/lib/supabase";
 import PhotoManager from "@/components/PhotoManager";
+import StudioProfileEditor from "@/components/StudioProfileEditor";
 
 type PageState = "loading" | "unauthenticated" | "no_claim" | "ready";
 
@@ -281,6 +282,17 @@ export default function DashboardPage() {
           <PhotoManager
             claimId={claim!.id}
             studioSlug={claim!.studio_slug}
+          />
+        )}
+
+        {/* Featured listing customisation — description, social, reviews, promo */}
+        {claim!.tier === "paid" && (
+          <StudioProfileEditor
+            claimId={claim!.id}
+            studioSlug={claim!.studio_slug}
+            studioTitle={claim!.studio_title}
+            studioCity={(claim as Claim & { studio_city?: string }).studio_city ?? ""}
+            studioState={(claim as Claim & { studio_state?: string }).studio_state ?? ""}
           />
         )}
 

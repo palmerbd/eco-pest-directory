@@ -6,14 +6,19 @@ import { Studio, StudioCard, CHAIN_CONFIG, STYLE_LABELS, AMENITY_LABELS, DanceSt
 import ClaimBadge from "@/components/ClaimBadge";
 import LeadCaptureForm from "@/components/LeadCaptureForm";
 import StudioGallery, { type UploadedPhoto } from "@/components/StudioGallery";
+import PromoBar from "@/components/PromoBar";
+import SocialLinks from "@/components/SocialLinks";
+import ReviewsSection, { type GoogleReview } from "@/components/ReviewsSection";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { type StudioProfile } from "@/lib/supabase";
 
 export const revalidate = 3600;
 
 // Static params
 
+// Return empty array — 4,000+ pages are generated on-demand via ISR (revalidate=3600).
+// Pre-rendering all slugs at build time exceeded Vercel's build resources.
 export async function generateStaticParams() {
-  // 4,000+ pages render on-demand via ISR (revalidate=3600) to keep builds fast.
   return [];
 }
 
@@ -28,33 +33,17 @@ export async function generateMetadata({
   const studio = await getStudio(slug);
   if (!studio) return { title: "Studio Not Found" };
 
-  const cityState = [studio.city, studio.state].filter(Boolean).join(", ");
-  const cityOnly  = studio.city || "";
-  const styleList = studio.danceStyles
-    .map((s) => STYLE_LABELS[s as DanceStyle])
-    .slice(0, 2)
-    .join(" & ");
-
-  // Title: keyword-optimised — "Studio Name | Private Dance Lessons in City, State"
-  // Keeps user-recognisable studio name first (good for branded queries) and adds
-  // the "private dance lessons in [city]" phrase that drives non-branded impressions.
-  const titleCity = cityState ? ` in ${cityState}` : "";
-  const title = `${studio.title} | Private Dance Lessons${titleCity}`;
-
-  // Description: action-oriented, includes style + city + clear CTA (~150 chars)
-  const stylePhrase = styleList ? `${styleList} lessons` : "private dance lessons";
-  const cityPhrase  = cityOnly ? ` in ${cityOnly}` : "";
-  const description =
-    `Find ${stylePhrase}${cityPhrase} at ${studio.title}. ` +
-    `View contact info, hours, pricing, and book your intro lesson today. ` +
-    `Listed on Ballroom Dance Directory.`;
-
+  const location = [studio.city, studio.state].filter(Boolean).join(", ");
   return {
-    title,
-    description,
+    title: `${studio.title}${location ? " \u2014 " + location : ""} | Ballroom Dance Directory`,
+    description:
+      studio.description ||
+      `Private dance lessons at ${studio.title}${location ? ` in ${location}` : ""}. ${
+        studio.danceStyles.map((s) => STYLE_LABELS[s as DanceStyle]).join(", ")
+      } instruction available.`,
     openGraph: {
-      title,
-      description: studio.tagline || description,
+      title: studio.title,
+      description: studio.tagline || studio.description,
     },
   };
 }
@@ -162,6 +151,30 @@ export default async function StudioPage({
       )).filter((s) => s.slug !== studio.slug).slice(0, 3)
     : [];
 
+  // Fetch live GBP rating for paid-tier studios (non-fatal)
+  let gbpRating:      number | null = null;
+  let gbpReviewCount: number | null = null;
+  let gbpConnected                  = false;
+  if (studio.tier === "paid") {
+    try {
+      const { data: gbp } = await supabaseAdmin
+        .from("gbp_connections")
+        .select("rating, review_count, gbp_location_id")
+        .eq("studio_slug", slug)
+        .maybeSingle();
+      if (gbp) {
+        gbpConnected  = !!gbp.gbp_location_id;
+        gbpRating      = gbp.rating     ? Number(gbp.rating)     : null;
+        gbpReviewCount = gbp.review_count ? Number(gbp.review_count) : null;
+        // Override WP-sourced rating with live GBP data when available
+        if (gbpRating) {
+          studio.rating      = gbpRating;
+          studio.reviewCount = gbpReviewCount ?? studio.reviewCount;
+        }
+      }
+    } catch { /* non-fatal */ }
+  }
+
   // Fetch uploaded photos for paid-tier studios (non-fatal if table doesn't exist yet)
   let studioPhotos: UploadedPhoto[] = [];
   if (studio.tier === "paid") {
@@ -176,6 +189,36 @@ export default async function StudioPage({
     } catch {
       // Table may not exist yet — fall back to Unsplash placeholders silently
     }
+  }
+
+  // Fetch studio profile (custom description, social links, promo) — paid tier only
+  let studioProfile: StudioProfile | null = null;
+  let googleReviews: GoogleReview[]       = [];
+  if (studio.tier === "paid") {
+    try {
+      const { data: prof } = await supabaseAdmin
+        .from("studio_profiles")
+        .select("*")
+        .eq("studio_slug", slug)
+        .maybeSingle();
+      studioProfile = prof ?? null;
+
+      // Fetch cached Google reviews if owner has enabled them
+      if (prof?.show_google_reviews) {
+        const { data: revs } = await supabaseAdmin
+          .from("studio_reviews")
+          .select("*")
+          .eq("studio_slug", slug)
+          .order("fetched_at", { ascending: false })
+          .limit(5);
+        googleReviews = revs ?? [];
+      }
+
+      // Override scraped description with owner-written one if present
+      if (prof?.custom_description) {
+        studio.description = prof.custom_description;
+      }
+    } catch { /* non-fatal */ }
   }
 
   const chain    = CHAIN_CONFIG[studio.studioChain];
@@ -218,7 +261,7 @@ export default async function StudioPage({
         "addressCountry": "US",
       }
     } : {}),
-    ...(studio.rating && studio.tier !== "free" ? {
+    ...(studio.rating ? {
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": studio.rating.toFixed(1),
@@ -365,8 +408,8 @@ export default async function StudioPage({
             <p className="text-white/60 text-lg italic mb-4">{studio.tagline}</p>
           )}
 
-          {/* Rating — only shown for claimed/paid studios */}
-          {studio.tier !== "free" && studio.rating && (
+          {/* Rating */}
+          {studio.rating && (
             <div className="mb-4">
               <StarRating rating={studio.rating} count={studio.reviewCount} />
             </div>
@@ -386,10 +429,33 @@ export default async function StudioPage({
             </div>
           )}
 
+          {/* Social media links — Featured studios */}
+          {studioProfile && (studioProfile.facebook_url || studioProfile.instagram_url || studioProfile.tiktok_url) && (
+            <div className="mt-3">
+              <SocialLinks
+                facebookUrl={studioProfile.facebook_url}
+                instagramUrl={studioProfile.instagram_url}
+                tiktokUrl={studioProfile.tiktok_url}
+              />
+            </div>
+          )}
+
           {/* Verified Owner badge */}
           <div className="mt-4">
             <ClaimBadge slug={studio.slug} />
           </div>
+
+          {/* Promo banner — Featured studios with active promotion */}
+          {studioProfile?.promo_text && (
+            <div className="mt-5">
+              <PromoBar
+                promoText={studioProfile.promo_text}
+                promoType={studioProfile.promo_type}
+                promoSavings={studioProfile.promo_savings}
+                promoEndDate={studioProfile.promo_end_date}
+              />
+            </div>
+          )}
         </div>
       </section>
 
@@ -441,7 +507,15 @@ export default async function StudioPage({
               <section>
                 <h2 className="font-display font-bold text-gray-900 text-xl mb-3">About</h2>
                 <p className="text-gray-600 leading-relaxed">{studio.description}</p>
+                {studioProfile?.custom_description && (
+                  <p className="text-xs text-gray-400 mt-2 italic">Description provided by studio owner.</p>
+                )}
               </section>
+            )}
+
+            {/* Google Reviews — Featured studios */}
+            {googleReviews.length > 0 && (
+              <ReviewsSection reviews={googleReviews} />
             )}
 
             {/* Dance Styles */}
@@ -477,7 +551,7 @@ export default async function StudioPage({
               </section>
             )}
 
-            {/* Pricing — always shown */}
+            {/* Pricing */}
             <section>
               <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Pricing</h2>
               {(studio.introLessonRate || studio.privateLessonRate || studio.monthlyRate) ? (
@@ -508,33 +582,47 @@ export default async function StudioPage({
                   )}
                 </div>
               ) : (
-                /* No pricing data — show contact CTA */
+                /* No pricing data — show a CTA to contact the studio */
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <div className="flex-1">
                     <p className="font-semibold text-gray-800 mb-1">Pricing available upon inquiry</p>
                     <p className="text-sm text-gray-500 leading-relaxed">
                       Private lesson rates vary by instructor and package. Contact {studio.title} directly
-                      for current pricing and to book a free introductory lesson.
+                      for current pricing, intro offers, and availability.
                     </p>
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+                  <div className="flex flex-col gap-2 shrink-0">
                     {studio.phone && (
-                      <a href={`tel:${studio.phone}`}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
-                                   bg-white border border-gray-300 text-gray-700 hover:border-yellow-400 transition-colors">
-                        📞 Call for Pricing
+                      <a
+                        href={`tel:${studio.phone.replace(/\D/g, "")}`}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-gray-900
+                                   text-sm transition-all hover:brightness-110 whitespace-nowrap"
+                        style={{ background: "linear-gradient(135deg, #b8922a, #e8c560)" }}
+                      >
+                        <PhoneIcon /> Call for Pricing
                       </a>
                     )}
                     {studio.website && (
-                      <a href={studio.website} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
-                                   text-gray-900 hover:brightness-110 transition-all"
-                        style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}>
-                        Visit Website →
+                      <a
+                        href={studio.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-gray-700
+                                   text-sm border-2 border-gray-200 hover:border-yellow-400 hover:text-yellow-800
+                                   transition-all whitespace-nowrap"
+                      >
+                        <GlobeIcon /> Visit Website
                       </a>
                     )}
                     {!studio.phone && !studio.website && (
-                      <span className="text-sm text-gray-400 italic">Contact studio directly</span>
+                      <a
+                        href={`/claim?slug=${encodeURIComponent(studio.slug)}`}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-gray-600
+                                   text-sm border-2 border-dashed border-gray-300 hover:border-yellow-400
+                                   hover:text-yellow-800 transition-all whitespace-nowrap"
+                      >
+                        Own this studio? Add pricing
+                      </a>
                     )}
                   </div>
                 </div>
@@ -592,6 +680,51 @@ export default async function StudioPage({
                 studioSlug={studio.slug}
                 studioTitle={studio.title}
               />
+            )}
+
+            {/* Google Business Profile connect — Featured studios only */}
+            {studio.tier === "paid" && !gbpConnected && (
+              <div className="rounded-2xl border border-dashed border-gray-200 p-5 bg-gray-50 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">⭐</span>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                      Show Live Google Ratings
+                    </h3>
+                    <p className="text-xs text-gray-500 leading-relaxed mb-3">
+                      Connect your Google Business Profile to display live star ratings and
+                      review counts directly on this listing.
+                    </p>
+                    <a
+                      href={`/api/auth/google?studio_slug=${encodeURIComponent(studio.slug)}`}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold
+                                 text-white transition-all hover:brightness-110"
+                      style={{ background: "#4285f4" }}
+                    >
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                      </svg>
+                      Connect Google Business
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* GBP connected confirmation */}
+            {studio.tier === "paid" && gbpConnected && (
+              <div className="rounded-2xl border border-green-100 p-4 bg-green-50 shadow-sm">
+                <div className="flex items-center gap-2 text-green-700 text-sm font-semibold">
+                  <span>✅</span> Google ratings connected
+                </div>
+                <p className="text-xs text-green-600 mt-1">
+                  Ratings refresh daily. Last sync shows {gbpRating?.toFixed(1)}★
+                  {gbpReviewCount ? ` · ${gbpReviewCount.toLocaleString()} reviews` : ""}.
+                </p>
+              </div>
             )}
 
             {/* Contact card */}
@@ -697,23 +830,6 @@ export default async function StudioPage({
                     </a>
                   )}
                 </div>
-              </div>
-            )}
-
-            {/* City hub link — always visible, passes crawl authority to city pages */}
-            {studio.city && (
-              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-                <p className="text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">
-                  More in {studio.city}
-                </p>
-                <Link
-                  href={`/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="flex items-center justify-between text-sm font-semibold text-amber-700
-                             hover:text-amber-900 transition-colors group"
-                >
-                  <span>Browse all {studio.city} dance studios</span>
-                  <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
-                </Link>
               </div>
             )}
 
