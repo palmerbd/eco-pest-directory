@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ballroom Dance Directory — Competitions Section Scope & Build Plan</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; padding: 32px 24px; }
+
+  .page-header { max-width: 960px; margin: 0 auto 36px; }
+  .page-title { font-size: 26px; font-weight: 800; color: #e8c560; margin-bottom: 6px; }
+  .page-subtitle { font-size: 14px; color: #718096; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-left: 10px; background: #1e3a5f; color: #60a5fa; vertical-align: middle; }
+
+  .container { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+
+  /* ── SECTION ── */
+  .section { background: #0d1526; border: 1px solid #2d3748; border-radius: 14px; padding: 24px 28px; }
+  .section-title { font-size: 15px; font-weight: 700; color: #e8c560; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .section-body { font-size: 13px; color: #a0aec0; line-height: 1.8; }
+  .section-body p + p { margin-top: 10px; }
+  .section-body strong { color: #e2e8f0; }
+  hr.sep { border: none; border-top: 1px solid #1f2937; margin: 16px 0; }
+
+  /* ── STAGE CARDS ── */
+  .stage { border-radius: 12px; border: 1px solid; overflow: hidden; }
+  .stage-header { display: flex; align-items: center; gap: 16px; padding: 18px 22px; }
+  .stage-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; flex-shrink: 0; }
+  .stage-info { flex: 1; }
+  .stage-title { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
+  .stage-subtitle { font-size: 12px; }
+  .stage-time { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; flex-shrink: 0; }
+  .stage-body { padding: 20px 22px; border-top: 1px solid; }
+
+  /* Stage 1 — Listings */
+  .s1 { border-color: #d97706; }
+  .s1 .stage-header { background: #1a0f00; }
+  .s1 .stage-num { background: #d97706; color: #fff; }
+  .s1 .stage-title { color: #fef3c7; }
+  .s1 .stage-subtitle { color: #fbbf24; }
+  .s1 .stage-time { background: #451a03; color: #fbbf24; }
+  .s1 .stage-body { background: #110d00; border-color: #451a03; }
+
+  /* Stage 2 — Claim */
+  .s2 { border-color: #3b82f6; }
+  .s2 .stage-header { background: #0d1526; }
+  .s2 .stage-num { background: #1d4ed8; color: #fff; }
+  .s2 .stage-title { color: #dbeafe; }
+  .s2 .stage-subtitle { color: #93c5fd; }
+  .s2 .stage-time { background: #0d1f4a; color: #93c5fd; }
+  .s2 .stage-body { background: #080f1f; border-color: #1e3a8a; }
+
+  /* Stage 3 — Dashboard */
+  .s3 { border-color: #22c55e; }
+  .s3 .stage-header { background: #0a1a0f; }
+  .s3 .stage-num { background: #16a34a; color: #fff; }
+  .s3 .stage-title { color: #f0fdf4; }
+  .s3 .stage-subtitle { color: #86efac; }
+  .s3 .stage-time { background: #052e16; color: #86efac; }
+  .s3 .stage-body { background: #060f09; border-color: #166534; }
+
+  /* Stage 4 — Featured / Upgrade */
+  .s4 { border-color: #a855f7; }
+  .s4 .stage-header { background: #140d26; }
+  .s4 .stage-num { background: #7c3aed; color: #fff; }
+  .s4 .stage-title { color: #f3e8ff; }
+  .s4 .stage-subtitle { color: #d8b4fe; }
+  .s4 .stage-time { background: #2e1065; color: #d8b4fe; }
+  .s4 .stage-body { background: #0d0820; border-color: #4c1d95; }
+
+  /* ── DELIVERABLE ROWS ── */
+  .deliverable { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1a2035; }
+  .deliverable:last-child { border-bottom: none; }
+  .del-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .del-content { flex: 1; }
+  .del-title { font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 3px; }
+  .del-desc { font-size: 12px; color: #718096; line-height: 1.5; }
+  .del-mirror { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-block; margin-top: 5px; background: #111827; border: 1px solid #374151; color: #6b7280; }
+  .del-mirror::before { content: 'mirrors → '; }
+
+  /* ── DB TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
+  th { text-align: left; padding: 8px 12px; background: #111827; color: #9ca3af; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #1f2937; }
+  td { padding: 8px 12px; border-bottom: 1px solid #1a2035; color: #d1d5db; vertical-align: top; font-size: 12px; }
+  tr:last-child td { border-bottom: none; }
+  td code { font-family: monospace; font-size: 11px; background: #111827; padding: 1px 5px; border-radius: 4px; color: #93c5fd; }
+
+  /* ── ROUTE TABLE ── */
+  .route-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  .route-table th { text-align: left; padding: 8px 12px; background: #111827; color: #9ca3af; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .route-table td { padding: 9px 12px; border-bottom: 1px solid #1a2035; font-size: 12px; vertical-align: top; }
+  .route-table tr:last-child td { border-bottom: none; }
+  .route-path { font-family: monospace; color: #fbbf24; font-weight: 700; white-space: nowrap; }
+  .route-mirror { font-family: monospace; color: #6b7280; font-size: 11px; }
+  .route-desc { color: #a0aec0; }
+
+  /* ── SUPABASE SCHEMA ── */
+  .schema-block { background: #0a0e1a; border: 1px solid #1f2937; border-radius: 10px; padding: 16px 20px; margin-top: 12px; font-family: monospace; font-size: 12px; line-height: 1.8; }
+  .schema-comment { color: #4a5568; }
+  .schema-type { color: #60a5fa; }
+  .schema-name { color: #fbbf24; }
+  .schema-constraint { color: #86efac; }
+  .schema-ref { color: #c4b5fd; }
+
+  /* ── CALLOUT ── */
+  .callout { border-radius: 8px; padding: 14px 18px; margin-top: 12px; font-size: 12px; line-height: 1.7; }
+  .callout-warn { background: #1a0f00; border: 1px solid #d97706; color: #fcd34d; }
+  .callout-info { background: #0d1526; border: 1px solid #3b82f6; color: #93c5fd; }
+  .callout-success { background: #0a1a0f; border: 1px solid #22c55e; color: #86efac; }
+  .callout-purple { background: #140d26; border: 1px solid #a855f7; color: #d8b4fe; }
+
+  /* ── FILTER CHIPS ── */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+  .chip { font-size: 11px; font-weight: 700; padding: 3px 11px; border-radius: 20px; border: 1px solid; }
+  .chip-style { background: #1a0f00; color: #fbbf24; border-color: #92400e; }
+  .chip-level { background: #0d1526; color: #93c5fd; border-color: #1e3a8a; }
+  .chip-org { background: #0a1a0f; color: #86efac; border-color: #166534; }
+  .chip-region { background: #1f1535; color: #c4b5fd; border-color: #4c1d95; }
+  .chip-time { background: #1a1535; color: #f0abfc; border-color: #6b21a8; }
+
+  /* ── COMP LIST ── */
+  .comp-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
+  .comp-table th { text-align: left; padding: 7px 10px; background: #111827; color: #9ca3af; font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #1f2937; }
+  .comp-table td { padding: 7px 10px; border-bottom: 1px solid #1a2035; color: #d1d5db; vertical-align: middle; }
+  .comp-table tr:last-child td { border-bottom: none; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 12px; }
+  .tag-ndca { background: #1a0f00; color: #fb923c; border: 1px solid #92400e; }
+  .tag-usa { background: #0d1f4a; color: #93c5fd; border: 1px solid #1e3a8a; }
+  .tag-ind { background: #1f1535; color: #c4b5fd; border: 1px solid #4c1d95; }
+
+  /* ── EFFORT ── */
+  .effort-row { display: flex; align-items: center; gap: 12px; margin-bottom: 7px; }
+  .effort-label { font-size: 12px; color: #9ca3af; width: 220px; flex-shrink: 0; }
+  .effort-bar { flex: 1; background: #1f2937; border-radius: 4px; height: 7px; overflow: hidden; }
+  .effort-fill { height: 100%; border-radius: 4px; }
+  .effort-hrs { font-size: 11px; color: #6b7280; width: 55px; text-align: right; }
+
+  /* ── CITY AD MOCKUP ── */
+  .city-widget { background: #111827; border: 1px solid #d97706; border-radius: 10px; padding: 14px 18px; margin-top: 12px; }
+  .city-widget-header { font-size: 11px; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .city-comp-card { display: flex; align-items: center; gap: 12px; background: #0d1526; border: 1px solid #1f2937; border-radius: 8px; padding: 10px 14px; margin-bottom: 6px; }
+  .city-comp-card:last-child { margin-bottom: 0; }
+  .city-comp-date { background: #d97706; color: #fff; border-radius: 6px; padding: 6px 8px; text-align: center; font-size: 10px; font-weight: 800; min-width: 38px; flex-shrink: 0; }
+  .city-comp-info { flex: 1; }
+  .city-comp-name { font-size: 13px; font-weight: 700; color: #e2e8f0; }
+  .city-comp-sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
+  .city-comp-cta { font-size: 11px; font-weight: 700; color: #fbbf24; border: 1px solid #d97706; border-radius: 6px; padding: 4px 10px; white-space: nowrap; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-title">🏆 Competitions Section — Full Scope & 4-Stage Build Plan <span class="badge">Updated Apr 12, 2026</span></div>
+  <div class="page-subtitle">ballroomdancedirectory.com/competitions · Mirrors the studio listing → claim → dashboard → featured pattern exactly</div>
+</div>
+
+<div class="container">
+
+  <!-- ── OVERVIEW ── -->
+  <div class="section">
+    <div class="section-title">🎯 What We're Building</div>
+    <div class="section-body">
+      <p>A full <strong>Competitions section</strong> built on the same four-layer architecture as the studios — public listings → claim → dashboard → featured upgrade. Competition organizers follow the same funnel studio owners use: their event is already listed, they claim it for free, and they can upgrade to Featured to advertise on city pages and drive registrations.</p>
+      <p>By mirroring the studio pattern precisely, we reuse existing Supabase auth, Stripe checkout, Resend email, ISR revalidation, and dashboard patterns. The net result is <strong>~50% less code</strong> compared to building this from scratch, with no rework on shared infrastructure.</p>
+    </div>
+    <div class="callout callout-success">
+      <strong>Key revenue insight:</strong> Competition organizers have direct financial incentive to pay for city page advertising — a $199/year Featured listing that puts their competition in front of thousands of dancers in their city is an easy sell. One Featured competition organizer covers months of server costs.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STAGE 1 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="stage s1">
+    <div class="stage-header">
+      <div class="stage-num">1</div>
+      <div class="stage-info">
+        <div class="stage-title">Public Competition Listings</div>
+        <div class="stage-subtitle">Search, filter, and detail pages — the foundation everything else is built on</div>
+      </div>
+      <div class="stage-time">~2–3 days</div>
+    </div>
+    <div class="stage-body">
+
+      <div class="deliverable">
+        <div class="del-icon">📄</div>
+        <div class="del-content">
+          <div class="del-title">types/competition.ts — Full TypeScript type definition</div>
+          <div class="del-desc">Competition interface with all fields: id, slug, name, dateStart, dateEnd, venue, city, state, stateAbbr, region, organization, styles[], levels[], description, website, registrationUrl, registrationDeadline, entryFeeRange, isFeatured, isRecurring, imageUrl, tier ("free" | "claimed" | "paid"). ClaimTier reused from existing supabase.ts pattern.</div>
+          <div class="del-mirror">types/studio.ts → StudioCard, DanceStyle, ListingTier</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🗂️</div>
+        <div class="del-content">
+          <div class="del-title">lib/competitions-data.ts — Static seed file with 30 major competitions</div>
+          <div class="del-desc">Fully typed array of Competition objects. All 30 major US competitions pre-seeded (NDCA, USA Dance, Independent). AI-generated descriptions via a one-time Haiku script. Same approach as the static data used early in the studio build before WP was fully populated.</div>
+          <div class="del-mirror">lib/wordpress.ts → getAllStudios() (same data shape, static first)</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🔍</div>
+        <div class="del-content">
+          <div class="del-title">app/competitions/page.tsx — Competitions home with search + filter</div>
+          <div class="del-desc">Hero section with tagline + search input. "Featured Competitions" highlighted row at top (isFeatured=true comps). Full filterable grid below. Client-side filters: dance style, level/division, organization (NDCA/USA Dance/WDSF/Ind), region, and date window. Sort by: Soonest, A–Z, Region. Schema.org ItemList markup. ISR revalidate=3600.</div>
+          <div class="del-mirror">app/studios/page.tsx + StudioSearch.tsx</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🃏</div>
+        <div class="del-content">
+          <div class="del-title">components/CompetitionCard.tsx — Search result card</div>
+          <div class="del-desc">Date badge (month/day, amber), competition name, city + state, style tags (Standard/Latin/Smooth/Rhythm), org badge (NDCA/USA Dance), "Register" CTA button, Featured gold border + badge if paid tier, "Claim this listing" subtle link if unclaimed. Urgent "Registration closes in X days" badge when deadline is within 14 days.</div>
+          <div class="del-mirror">app/studios/StudioSearch.tsx → StudioListCard</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🏟️</div>
+        <div class="del-content">
+          <div class="del-title">app/competitions/[slug]/page.tsx — Competition detail page</div>
+          <div class="del-desc">Full competition info: hero image, name, dates, venue, city (with Google Map embed), styles/levels/org tags, description, registration link + deadline countdown, entry fee range. "Prepare for this competition" section cross-links to studios in the same city (pulls from getAllStudios filtered by city). "Claim this listing" amber bar at top (hidden if claimed). Schema.org Event markup for Google rich results + date display in SERP.</div>
+          <div class="del-mirror">app/studios/[slug]/page.tsx + ClaimBadge component</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🗺️</div>
+        <div class="del-content">
+          <div class="del-title">app/competitions/region/[region]/page.tsx — 6 regional landing pages</div>
+          <div class="del-desc">Northeast · Southeast · Midwest · Southwest · West Coast · Mountain. Each with unique intro copy, competitions filtered by region, and cross-links to city studio pages in that region. Targets "ballroom competitions [region]" keyword cluster.</div>
+          <div class="del-mirror">app/studios/city/[city]/page.tsx → CITY_CONTENT pattern</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">💃</div>
+        <div class="del-content">
+          <div class="del-title">app/competitions/style/[style]/page.tsx — 7 style landing pages</div>
+          <div class="del-desc">Standard · Latin · Smooth · Rhythm · Swing · Country · Multi-Dance. Targets "American Smooth competitions", "International Latin competition calendar" etc. Each page lists competitions offering that style with intro copy.</div>
+          <div class="del-mirror">app/styles/page.tsx + app/latin-dance-lessons/page.tsx pattern</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🧭</div>
+        <div class="del-content">
+          <div class="del-title">SiteNav.tsx — Add "Competitions" nav link</div>
+          <div class="del-desc">Insert <code>&#123; href: "/competitions", label: "Competitions" &#125;</code> into NAV_LINKS between "By City" and "Tips &amp; Guides". Same amber active-state styling. Appears in both desktop nav and mobile hamburger drawer.</div>
+          <div class="del-mirror">components/SiteNav.tsx → NAV_LINKS array</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🗺️</div>
+        <div class="del-content">
+          <div class="del-title">Sitemap + ISR integration</div>
+          <div class="del-desc">Dynamic sitemap.xml includes all /competitions/[slug], /competitions/region/[region], and /competitions/style/[style] paths. ISR revalidate=3600 on all competition pages (1-hour cache, appropriate for event data).</div>
+          <div class="del-mirror">app/sitemap.ts → existing studio sitemap logic</div>
+        </div>
+      </div>
+
+      <hr class="sep">
+      <div style="font-size:12px; color:#fbbf24; font-weight:700; margin-bottom:12px;">📋 Phase 1 Seed — 30 Major US Competitions</div>
+      <table class="comp-table">
+        <thead><tr><th>Competition</th><th>City, State</th><th>Month</th><th>Org</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Ohio Star Ball Championships</strong></td><td>Columbus, OH</td><td>November</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>United States Dance Championships</strong></td><td>Orlando, FL</td><td>September</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Manhattan Dance Championships</strong></td><td>New York, NY</td><td>July</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Embassy Ball DanceSport Championships</strong></td><td>Irvine, CA</td><td>November</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Emerald Ball DanceSport Championships</strong></td><td>Los Angeles, CA</td><td>May</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Desert Classic DanceSport Championships</strong></td><td>Palm Springs, CA</td><td>February</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Heritage Classic DanceSport</strong></td><td>Dallas, TX</td><td>April</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Grand Nationals DanceSport Championship</strong></td><td>Orlando, FL</td><td>November</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>American Star Ball</strong></td><td>Parsippany, NJ</td><td>October</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>California Star Ball</strong></td><td>Los Angeles, CA</td><td>October</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>New York Dance Festival</strong></td><td>New York, NY</td><td>February</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Chicago Open DanceSport Championship</strong></td><td>Chicago, IL</td><td>March</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Millennium DanceSport Championship</strong></td><td>Los Angeles, CA</td><td>January</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Hollywood DanceSport Championship</strong></td><td>Hollywood, FL</td><td>August</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Philadelphia DanceSport Championship</strong></td><td>Philadelphia, PA</td><td>June</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Indiana Grand DanceSport</strong></td><td>Indianapolis, IN</td><td>March</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Atlanta DanceSport Championship</strong></td><td>Atlanta, GA</td><td>May</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Denver DanceSport Championship</strong></td><td>Denver, CO</td><td>June</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Las Vegas DanceSport Championship</strong></td><td>Las Vegas, NV</td><td>July</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Houston DanceSport Championship</strong></td><td>Houston, TX</td><td>March</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Pacific Coast Classic DanceSport</strong></td><td>Los Angeles, CA</td><td>September</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>San Francisco Open DanceSport</strong></td><td>San Francisco, CA</td><td>October</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>Carolina Crown DanceSport</strong></td><td>Charlotte, NC</td><td>September</td><td><span class="tag tag-ndca">NDCA</span></td></tr>
+          <tr><td><strong>USA Dance National DanceSport Championships</strong></td><td>Pittsburgh, PA</td><td>March</td><td><span class="tag tag-usa">USA Dance</span></td></tr>
+          <tr><td><strong>US National Amateur DanceSport Championships</strong></td><td>Provo, UT</td><td>March</td><td><span class="tag tag-usa">USA Dance</span></td></tr>
+          <tr><td><strong>USA Dance National Collegiate Championships</strong></td><td>Pittsburgh, PA</td><td>March</td><td><span class="tag tag-usa">USA Dance</span></td></tr>
+          <tr><td><strong>Eastern Seaboard DanceSport</strong></td><td>Washington, DC</td><td>October</td><td><span class="tag tag-usa">USA Dance</span></td></tr>
+          <tr><td><strong>Minnesota Star Ball</strong></td><td>Minneapolis, MN</td><td>February</td><td><span class="tag tag-ind">Independent</span></td></tr>
+          <tr><td><strong>Boston DanceSport Challenge</strong></td><td>Boston, MA</td><td>January</td><td><span class="tag tag-ind">Independent</span></td></tr>
+          <tr><td><strong>Seattle Star Ball</strong></td><td>Seattle, WA</td><td>April</td><td><span class="tag tag-ind">Independent</span></td></tr>
+        </tbody>
+      </table>
+
+      <hr class="sep">
+      <div style="font-size:12px; color:#fbbf24; font-weight:700; margin-bottom:8px;">🔍 Filter Dimensions</div>
+      <div style="font-size:11px; color:#6b7280; margin-bottom:4px;">Dance Style</div>
+      <div class="chip-row">
+        <span class="chip chip-style">International Standard</span><span class="chip chip-style">International Latin</span><span class="chip chip-style">American Smooth</span><span class="chip chip-style">American Rhythm</span><span class="chip chip-style">Swing</span><span class="chip chip-style">Country Western</span><span class="chip chip-style">Multi-Dance</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-top:10px; margin-bottom:4px;">Level / Division</div>
+      <div class="chip-row">
+        <span class="chip chip-level">Professional Open</span><span class="chip chip-level">Amateur</span><span class="chip chip-level">Pro/Am</span><span class="chip chip-level">Collegiate</span><span class="chip chip-level">Senior</span><span class="chip chip-level">All Levels</span>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-top:10px; margin-bottom:4px;">Organization · Region · Timing</div>
+      <div class="chip-row">
+        <span class="chip chip-org">NDCA</span><span class="chip chip-org">USA Dance</span><span class="chip chip-org">WDSF</span><span class="chip chip-org">Independent</span>
+        <span class="chip chip-region">Northeast</span><span class="chip chip-region">Southeast</span><span class="chip chip-region">Midwest</span><span class="chip chip-region">Southwest</span><span class="chip chip-region">West Coast</span>
+        <span class="chip chip-time">Upcoming 90 days</span><span class="chip chip-time">This Month</span><span class="chip chip-time">2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STAGE 2 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="stage s2">
+    <div class="stage-header">
+      <div class="stage-num">2</div>
+      <div class="stage-info">
+        <div class="stage-title">Competition Claim Flow</div>
+        <div class="stage-subtitle">Competition organizers verify ownership of their listing — free, same magic-link pattern as studios</div>
+      </div>
+      <div class="stage-time">~1 day</div>
+    </div>
+    <div class="stage-body">
+
+      <div class="callout callout-info" style="margin-top:0; margin-bottom:16px;">
+        This stage is almost entirely a copy of the studio claim flow with "studio" renamed to "competition" throughout. The Supabase auth, magic-link email, and callback pattern are identical — the only new code is the <code>competition_claims</code> table and a new claim wizard page.
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🗄️</div>
+        <div class="del-content">
+          <div class="del-title">Supabase — competition_claims table</div>
+          <div class="del-desc">New table mirroring the <code>claims</code> table exactly. Fields: id, competition_id (slug), competition_name, organizer_name, organizer_email, organizer_phone, user_id (FK → Supabase auth.users), status (pending/verified/approved), tier (claimed/paid), stripe_customer_id, stripe_subscription_id, created_at. Same RLS policies as claims table.</div>
+          <div class="del-mirror">Supabase claims table (Migration 005)</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🧙</div>
+        <div class="del-content">
+          <div class="del-title">app/competitions/claim/page.tsx — 3-step claim wizard</div>
+          <div class="del-desc">Step 1: Search for your competition by name. Step 2: Confirm competition details + enter organizer info (name, email, phone, organization role). Step 3: Magic link sent — "Check your email." Identical UX to /claim — just competition-specific copy and search against competitions-data.ts instead of WP studios.</div>
+          <div class="del-mirror">app/claim/page.tsx</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🔗</div>
+        <div class="del-content">
+          <div class="del-title">app/competitions/claim/callback/page.tsx — Magic link handler</div>
+          <div class="del-desc">Exchanges Supabase magic link token for session, inserts row into competition_claims with status="verified", tier="claimed", then redirects to /competitions/dashboard. Exact same logic as /claim/callback — only the table name and redirect path differ.</div>
+          <div class="del-mirror">app/claim/callback/page.tsx</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">📡</div>
+        <div class="del-content">
+          <div class="del-title">app/api/competition-claims/route.ts — POST handler</div>
+          <div class="del-desc">Receives claim form submission, sends magic link via Supabase auth.signInWithOtp(), fires Resend emails: admin notification (to bpalmer@...) + organizer confirmation with magic link. Same Resend templates as studio claim emails with competition copy.</div>
+          <div class="del-mirror">app/api/claim/route.ts + app/api/claim/status/route.ts</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🏷️</div>
+        <div class="del-content">
+          <div class="del-title">CompetitionClaimBadge component</div>
+          <div class="del-desc">Amber banner on competition detail pages: "Organize this competition? Claim your listing — it's free." Hidden once tier is claimed or paid. Same gradient and styling as ClaimBadge.tsx. Links to /competitions/claim?comp=[slug] to pre-fill the search.</div>
+          <div class="del-mirror">components/ClaimBadge.tsx</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STAGE 3 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="stage s3">
+    <div class="stage-header">
+      <div class="stage-num">3</div>
+      <div class="stage-info">
+        <div class="stage-title">Organizer Dashboard</div>
+        <div class="stage-subtitle">Claimed organizers manage their listing, upload logo/photos, and see the Featured upgrade CTA</div>
+      </div>
+      <div class="stage-time">~1–2 days</div>
+    </div>
+    <div class="stage-body">
+
+      <div class="deliverable">
+        <div class="del-icon">🖥️</div>
+        <div class="del-content">
+          <div class="del-title">app/competitions/dashboard/page.tsx — Organizer dashboard</div>
+          <div class="del-desc">Server component. Reads Supabase session → looks up competition_claims row → renders dashboard. Shows: competition name + link, claim status badge (Verified / Featured), upgrade CTA if tier="claimed". For paid tier: full profile editor panel. Same layout and auth pattern as /dashboard.</div>
+          <div class="del-mirror">app/dashboard/page.tsx</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">✏️</div>
+        <div class="del-content">
+          <div class="del-title">CompetitionProfileEditor component (paid tier only)</div>
+          <div class="del-desc">4-section panel (visible only when tier="paid"): (1) Competition logo upload. (2) Custom description — organizer-written text, overrides the AI-generated default. (3) Social media links — Facebook, Instagram, TikTok, YouTube. (4) Promo builder — "Early Bird $50 off through June 1" style banner with type, savings text, end date + live preview. Saves to competition_profiles table via POST /api/competitions/[slug]/profile.</div>
+          <div class="del-mirror">components/StudioProfileEditor.tsx → same 4-section pattern</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🗄️</div>
+        <div class="del-content">
+          <div class="del-title">Supabase — competition_profiles table (Migration 006)</div>
+          <div class="del-desc">Fields: id, competition_slug (UNIQUE), claim_id (FK → competition_claims), logo_url, custom_description, facebook_url, instagram_url, tiktok_url, youtube_url, promo_text, promo_type, promo_savings, promo_end_date, created_at, updated_at. RLS: service-role full access + anon public read. Mirrors studio_profiles table exactly.</div>
+          <div class="del-mirror">supabase/migrations/004_studio_profiles.sql → Migration 006</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">📡</div>
+        <div class="del-content">
+          <div class="del-title">API routes: /api/competitions/[slug]/profile</div>
+          <div class="del-desc">GET: returns competition_profiles row for slug. POST: validates competition_claims.tier="paid", sanitizes social URLs, upserts to competition_profiles, triggers ISR revalidate for /competitions/[slug]. Identical logic to /api/studios/[slug]/profile.</div>
+          <div class="del-mirror">app/api/studios/[slug]/profile/route.ts</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STAGE 4 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="stage s4">
+    <div class="stage-header">
+      <div class="stage-num">4</div>
+      <div class="stage-info">
+        <div class="stage-title">Featured Upgrade + City Page Advertising</div>
+        <div class="stage-subtitle">$199/year tier — enhanced listing + "Upcoming Competitions" widget on city studio pages</div>
+      </div>
+      <div class="stage-time">~2 days</div>
+    </div>
+    <div class="stage-body">
+
+      <div class="deliverable">
+        <div class="del-icon">💳</div>
+        <div class="del-content">
+          <div class="del-title">Stripe — Competition Featured product ($199/year)</div>
+          <div class="del-desc">New Stripe product: "Competition Featured Listing — Annual". Separate from the studio $49/month plan. One-time annual billing, auto-renews. New env var: STRIPE_COMPETITION_PRICE_ID. Organizer pays once, listing is Featured for 12 months. Much simpler billing than monthly subscription — lower churn risk for event-based businesses.</div>
+          <div class="del-mirror">lib/stripe.ts + STRIPE_PRICE_ID pattern — new product alongside existing</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">⬆️</div>
+        <div class="del-content">
+          <div class="del-title">app/competitions/upgrade/page.tsx + /success page</div>
+          <div class="del-desc">/competitions/upgrade: "Upgrade to Featured Competition Listing" page. Lists benefits (city page ads, promo banner, logo, custom description, priority placement). Stripe Checkout button → redirects to /competitions/upgrade/success on completion. Webhook flips competition_claims.tier to "paid" in Supabase.</div>
+          <div class="del-mirror">app/upgrade/page.tsx + app/upgrade/success/page.tsx</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">📡</div>
+        <div class="del-content">
+          <div class="del-title">app/api/stripe/competition-webhook/route.ts</div>
+          <div class="del-desc">Handles checkout.session.completed events for competition checkouts. Updates competition_claims.tier="paid" and sets stripe_customer_id + stripe_subscription_id. Fires Resend confirmation email to organizer. Triggers ISR revalidate for the competition detail page. Separate webhook endpoint from studio payments to keep concerns isolated.</div>
+          <div class="del-mirror">app/api/stripe/webhook/route.ts → same logic, different table</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🏙️</div>
+        <div class="del-content">
+          <div class="del-title">City pages — "Upcoming Competitions Near You" widget (KEY FEATURE)</div>
+          <div class="del-desc">A new widget section added to /studios/city/[city]/page.tsx. Shows up to 3 Featured competitions happening in or near that city within the next 12 months. Each competition card shows date badge, competition name, styles offered, and a "Learn More" CTA. Widget only appears if ≥1 Featured competition matches that city. This is the core advertising value prop — Featured competition organizers are paying to appear on high-traffic city studio pages.</div>
+          <div class="del-mirror">app/studios/city/[city]/page.tsx — new section, same ISR pattern</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">⭐</div>
+        <div class="del-content">
+          <div class="del-title">Featured enhancements on competition detail page (paid tier)</div>
+          <div class="del-desc">When tier="paid": competition logo displayed in hero, custom description replaces AI text, PromoBar amber banner (reused from StudioProfileEditor), SocialLinks row (reused component), Featured gold badge + priority position in search results. All components already exist — just wired to competition_profiles data.</div>
+          <div class="del-mirror">PromoBar.tsx + SocialLinks.tsx — zero new components needed</div>
+        </div>
+      </div>
+
+      <div class="deliverable">
+        <div class="del-icon">🏠</div>
+        <div class="del-content">
+          <div class="del-title">Homepage — "Upcoming Competitions" section</div>
+          <div class="del-desc">New section on the homepage showing the next 2–3 Featured upcoming competitions. Small cards with date, name, city, and CTA. Drives discoverability and reinforces the site as a full ballroom ecosystem resource (studios + competitions together). Only shows Featured comps — further incentive to upgrade.</div>
+          <div class="del-mirror">app/page.tsx — new section after "Browse by Style"</div>
+        </div>
+      </div>
+
+      <!-- City page widget mockup -->
+      <hr class="sep">
+      <div style="font-size:12px; color:#d8b4fe; font-weight:700; margin-bottom:10px;">📐 City Page Widget — Visual Preview (Los Angeles example)</div>
+      <div class="city-widget">
+        <div class="city-widget-header">🏆 Upcoming Competitions Near Los Angeles</div>
+        <div class="city-comp-card">
+          <div class="city-comp-date">MAY<br>14</div>
+          <div class="city-comp-info">
+            <div class="city-comp-name">Emerald Ball DanceSport Championships</div>
+            <div class="city-comp-sub">Los Angeles, CA · NDCA · Standard · Latin · Smooth · Rhythm</div>
+          </div>
+          <div class="city-comp-cta">Learn More →</div>
+        </div>
+        <div class="city-comp-card">
+          <div class="city-comp-date">SEP<br>22</div>
+          <div class="city-comp-info">
+            <div class="city-comp-name">Pacific Coast Classic DanceSport</div>
+            <div class="city-comp-sub">Los Angeles, CA · NDCA · Pro/Am · Amateur</div>
+          </div>
+          <div class="city-comp-cta">Learn More →</div>
+        </div>
+        <div class="city-comp-card">
+          <div class="city-comp-date">OCT<br>8</div>
+          <div class="city-comp-info">
+            <div class="city-comp-name">California Star Ball</div>
+            <div class="city-comp-sub">Los Angeles, CA · NDCA · All Levels</div>
+          </div>
+          <div class="city-comp-cta">Learn More →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SUPABASE SCHEMA ── -->
+  <div class="section">
+    <div class="section-title">🗄️ New Supabase Tables (Migrations 005 + 006)</div>
+    <div class="section-body">Two new tables. Both mirror existing patterns exactly — no new architectural patterns required.</div>
+
+    <div style="font-size:12px; color:#fbbf24; font-weight:700; margin:14px 0 4px;">Migration 005 — competition_claims</div>
+    <div class="schema-block">
+      <span class="schema-comment">-- Mirrors: claims table</span><br>
+      CREATE TABLE <span class="schema-name">competition_claims</span> (<br>
+      &nbsp;&nbsp;id                    <span class="schema-type">uuid</span> DEFAULT gen_random_uuid() <span class="schema-constraint">PRIMARY KEY</span>,<br>
+      &nbsp;&nbsp;competition_slug      <span class="schema-type">text</span> <span class="schema-constraint">NOT NULL</span>,<br>
+      &nbsp;&nbsp;competition_name      <span class="schema-type">text</span> <span class="schema-constraint">NOT NULL</span>,<br>
+      &nbsp;&nbsp;organizer_name        <span class="schema-type">text</span> <span class="schema-constraint">NOT NULL</span>,<br>
+      &nbsp;&nbsp;organizer_email       <span class="schema-type">text</span> <span class="schema-constraint">NOT NULL</span>,<br>
+      &nbsp;&nbsp;organizer_phone       <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;user_id               <span class="schema-type">uuid</span> <span class="schema-ref">REFERENCES auth.users(id)</span>,<br>
+      &nbsp;&nbsp;status                <span class="schema-type">text</span> DEFAULT 'pending' <span class="schema-constraint">CHECK (status IN ('pending','verified','approved','rejected'))</span>,<br>
+      &nbsp;&nbsp;tier                  <span class="schema-type">text</span> DEFAULT 'claimed' <span class="schema-constraint">CHECK (tier IN ('claimed','paid'))</span>,<br>
+      &nbsp;&nbsp;stripe_customer_id    <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;stripe_subscription_id <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;created_at            <span class="schema-type">timestamptz</span> DEFAULT now()<br>
+      );<br>
+      <span class="schema-comment">-- RLS: service-role full access, owner can read own row</span>
+    </div>
+
+    <div style="font-size:12px; color:#fbbf24; font-weight:700; margin:14px 0 4px;">Migration 006 — competition_profiles</div>
+    <div class="schema-block">
+      <span class="schema-comment">-- Mirrors: studio_profiles table (Migration 004)</span><br>
+      CREATE TABLE <span class="schema-name">competition_profiles</span> (<br>
+      &nbsp;&nbsp;id                    <span class="schema-type">uuid</span> DEFAULT gen_random_uuid() <span class="schema-constraint">PRIMARY KEY</span>,<br>
+      &nbsp;&nbsp;competition_slug      <span class="schema-type">text</span> <span class="schema-constraint">UNIQUE NOT NULL</span>,<br>
+      &nbsp;&nbsp;claim_id              <span class="schema-type">uuid</span> <span class="schema-ref">REFERENCES competition_claims(id)</span>,<br>
+      &nbsp;&nbsp;logo_url              <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;custom_description    <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;facebook_url          <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;instagram_url         <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;tiktok_url            <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;youtube_url           <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;promo_text            <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;promo_type            <span class="schema-type">text</span> <span class="schema-constraint">CHECK (promo_type IN ('percentage','dollar','free_trial','custom'))</span>,<br>
+      &nbsp;&nbsp;promo_savings         <span class="schema-type">text</span>,<br>
+      &nbsp;&nbsp;promo_end_date        <span class="schema-type">date</span>,<br>
+      &nbsp;&nbsp;created_at            <span class="schema-type">timestamptz</span> DEFAULT now(),<br>
+      &nbsp;&nbsp;updated_at            <span class="schema-type">timestamptz</span> DEFAULT now()<br>
+      );<br>
+      <span class="schema-comment">-- RLS: service-role full access, anon public read</span>
+    </div>
+  </div>
+
+  <!-- ── FULL ROUTE MAP ── -->
+  <div class="section">
+    <div class="section-title">🗺️ Complete Route Map</div>
+    <table class="route-table">
+      <thead><tr><th>Route</th><th>Stage</th><th>Mirrors</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="route-path">/competitions</td><td style="color:#fbbf24;">1</td><td class="route-mirror">/studios</td><td class="route-desc">Home page — hero, featured grid, filterable list, ItemList schema</td></tr>
+        <tr><td class="route-path">/competitions/[slug]</td><td style="color:#fbbf24;">1</td><td class="route-mirror">/studios/[slug]</td><td class="route-desc">Detail page — full info, Event schema, nearby studios, ClaimBadge</td></tr>
+        <tr><td class="route-path">/competitions/region/[region]</td><td style="color:#fbbf24;">1</td><td class="route-mirror">/studios/city/[city]</td><td class="route-desc">Regional landing — 6 regions, unique copy, SEO targets</td></tr>
+        <tr><td class="route-path">/competitions/style/[style]</td><td style="color:#fbbf24;">1</td><td class="route-mirror">/latin-dance-lessons</td><td class="route-desc">Style landing — 7 styles, SEO for "American Smooth competitions" etc.</td></tr>
+        <tr><td class="route-path">/competitions/claim</td><td style="color:#93c5fd;">2</td><td class="route-mirror">/claim</td><td class="route-desc">3-step claim wizard — search comp → organizer info → magic link</td></tr>
+        <tr><td class="route-path">/competitions/claim/callback</td><td style="color:#93c5fd;">2</td><td class="route-mirror">/claim/callback</td><td class="route-desc">Magic link handler — inserts competition_claims row, redirects to dashboard</td></tr>
+        <tr><td class="route-path">/competitions/dashboard</td><td style="color:#86efac;">3</td><td class="route-mirror">/dashboard</td><td class="route-desc">Organizer dashboard — claim status, profile editor (paid), upgrade CTA</td></tr>
+        <tr><td class="route-path">/competitions/upgrade</td><td style="color:#d8b4fe;">4</td><td class="route-mirror">/upgrade</td><td class="route-desc">Featured upgrade page — benefits, $199/year, Stripe Checkout button</td></tr>
+        <tr><td class="route-path">/competitions/upgrade/success</td><td style="color:#d8b4fe;">4</td><td class="route-mirror">/upgrade/success</td><td class="route-desc">Post-payment confirmation — dashboard link, what's unlocked</td></tr>
+        <tr><td class="route-path">/api/competition-claims</td><td style="color:#93c5fd;">2</td><td class="route-mirror">/api/claim</td><td class="route-desc">POST — submit claim, send magic link + Resend emails</td></tr>
+        <tr><td class="route-path">/api/competitions/[slug]/profile</td><td style="color:#86efac;">3</td><td class="route-mirror">/api/studios/[slug]/profile</td><td class="route-desc">GET/POST — read/upsert competition_profiles (paid tier only)</td></tr>
+        <tr><td class="route-path">/api/stripe/competition-checkout</td><td style="color:#d8b4fe;">4</td><td class="route-mirror">/api/stripe/checkout</td><td class="route-desc">POST — create Stripe Checkout session for competition upgrade</td></tr>
+        <tr><td class="route-path">/api/stripe/competition-webhook</td><td style="color:#d8b4fe;">4</td><td class="route-mirror">/api/stripe/webhook</td><td class="route-desc">POST — handle checkout.session.completed, flip tier to "paid"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── EFFORT ESTIMATE ── -->
+  <div class="section">
+    <div class="section-title">⏱️ Effort Estimate by Stage</div>
+    <div style="margin-top:8px;">
+      <div style="font-size:11px; color:#fbbf24; font-weight:700; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Stage 1 — Public Listings</div>
+      <div class="effort-row"><div class="effort-label">Types + seed data file (30 comps)</div><div class="effort-bar"><div class="effort-fill" style="width:25%; background:#d97706;"></div></div><div class="effort-hrs">~3 hrs</div></div>
+      <div class="effort-row"><div class="effort-label">Competitions home + filter UI</div><div class="effort-bar"><div class="effort-fill" style="width:35%; background:#d97706;"></div></div><div class="effort-hrs">~4 hrs</div></div>
+      <div class="effort-row"><div class="effort-label">Competition detail page + Event schema</div><div class="effort-bar"><div class="effort-fill" style="width:30%; background:#d97706;"></div></div><div class="effort-hrs">~3 hrs</div></div>
+      <div class="effort-row"><div class="effort-label">CompetitionCard component</div><div class="effort-bar"><div class="effort-fill" style="width:20%; background:#d97706;"></div></div><div class="effort-hrs">~2 hrs</div></div>
+      <div class="effort-row"><div class="effort-label">Regional + style landing pages</div><div class="effort-bar"><div class="effort-fill" style="width:25%; background:#d97706;"></div></div><div class="effort-hrs">~3 hrs</div></div>
+      <div class="effort-row"><div class="effort-label">Nav update + sitemap + AI descriptions</div><div class="effort-bar"><div class="effort-fill" style="width:20%; background:#d97706;"></div></div><div class="effort-hrs">~2 hrs</div></div>
+      <div style="font-size:12px; color:#fbbf24; font-weight:700; margin:4px 0 14px; text-align:right;">Stage 1 subtotal: ~17 hrs (~2–3 sessions)</div>
+
+      <div style="font-size:11px; color:#93c5fd; font-weight:700; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Stage 2 — Claim Flow</div>
+      <div class="effort-row"><div class="effort-label">competition_claims Supabase migration</div><div class="effort-bar"><div class="effort-fill" style="width:10%; background:#3b82f6;"></div></div><div class="effort-hrs">~1 hr</div></div>
+      <div class="effort-row"><div class="effort-label">Claim wizard + callback + API route</div><div class="effort-bar"><div class="effort-fill" style="width:20%; background:#3b82f6;"></div></div><div class="effort-hrs">~4 hrs</div></div>
+      <div class="effort-row"><div class="effort-label">CompetitionClaimBadge + Resend emails</div><div class="effort-bar"><div class="effort-fill" style="width:10%; background:#3b82f6;"></div></div><div class="effort-hrs">~2 hrs</div></div>
+      <div style="font-size:12px; color:#93c5fd; font-weight:700; margin:4px 0 14px; text-align:right;">Stage 2 subtotal: ~7 hrs (~1 session)</div>
+
+      <div style="font-size:11px; color:#86efac; font-weight:700; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Stage 3 — Dashboard</div>
+      <div class="effort-row"><div class="effort-label">Dashboard page + competition_profiles table</div><div class="effort-bar"><div class="effort-fill" style="width:20%; background:#22c55e;"></div></div><div class="effort-hrs">~3 hrs</div></div>
+      <div class="effort-row"><div class="effort-label">CompetitionProfileEditor + API route</div><div class="effort-bar"><div class="effort-fill" style="width:25%; background:#22c55e;"></div></div><div class="effort-hrs">~4 hrs</div></div>
+      <div style="font-size:12px; color:#86efac; font-weight:700; margin:4px 0 14px; text-align:right;">Stage 3 subtotal: ~7 hrs (~1 session)</div>
+
+      <div style="font-size:11px; color:#d8b4fe; font-weight:700; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Stage 4 — Featured + City Ads</div>
+      <div class="effort-row"><div class="effort-label">Stripe product + upgrade page + webhook</div><div class="effort-bar"><div class="effort-fill" style="width:25%; background:#a855f7;"></div></div><div class="effort-hrs">~4 hrs</div></div>
+      <div class="effort-row"><div class="effort-label">City page widget + homepage section</div><div class="effort-bar"><div class="effort-fill" style="width:20%; background:#a855f7;"></div></div><div class="effort-hrs">~4 hrs</div></div>
+      <div class="effort-row"><div class="effort-label">Featured detail page enhancements</div><div class="effort-bar"><div class="effort-fill" style="width:10%; background:#a855f7;"></div></div><div class="effort-hrs">~2 hrs</div></div>
+      <div style="font-size:12px; color:#d8b4fe; font-weight:700; margin:4px 0 14px; text-align:right;">Stage 4 subtotal: ~10 hrs (~1–2 sessions)</div>
+
+      <hr class="sep">
+      <div class="effort-row">
+        <div class="effort-label" style="color:#e8c560; font-weight:700; font-size:13px;">Total — all 4 stages</div>
+        <div class="effort-bar"><div class="effort-fill" style="width:75%; background:#e8c560;"></div></div>
+        <div class="effort-hrs" style="color:#e8c560; font-weight:700; font-size:13px;">~41 hrs</div>
+      </div>
+    </div>
+    <div class="callout callout-success" style="margin-top:16px;">
+      <strong>Stage 1 ships in 2–3 sessions and immediately starts ranking for competition keywords.</strong> Stages 2–4 can follow in any order — each is independently deployable. The entire 4-stage build is roughly 5–6 sessions total, with revenue unlocked at Stage 4.
+    </div>
+  </div>
+
+</div>
+
+<div style="max-width:960px; margin:40px auto 0; padding:20px 0; border-top:1px solid #1f2937; font-size:11px; color:#4a5568; text-align:center;">
+  Ballroom Dance Directory — Competitions Section Full Scope · Updated Apr 12, 2026
+</div>
+
+</body>
+</html>
