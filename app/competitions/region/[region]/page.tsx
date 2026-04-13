@@ -3,7 +3,6 @@ import { notFound }  from "next/navigation";
 import Link          from "next/link";
 import { Suspense }  from "react";
 import {
-  COMPETITIONS,
   getByRegion,
   sortedByDate,
 } from "@/lib/competitions-data";
@@ -25,10 +24,13 @@ export function generateStaticParams() {
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
-export async function generateMetadata(
-  { params }: { params: { region: string } }
-): Promise<Metadata> {
-  const label = COMP_REGION_LABELS[params.region as CompRegion];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ region: string }>;
+}): Promise<Metadata> {
+  const { region } = await params;
+  const label = COMP_REGION_LABELS[region as CompRegion];
   if (!label) return {};
   return {
     title: `${label} Ballroom Dance Competitions`,
@@ -43,16 +45,19 @@ export async function generateMetadata(
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default function RegionPage({ params }: { params: { region: string } }) {
-  const region = params.region as CompRegion;
+export default async function RegionPage({
+  params,
+}: {
+  params: Promise<{ region: string }>;
+}) {
+  const { region } = await params;
+  const typedRegion = region as CompRegion;
 
-  if (!VALID_REGIONS.includes(region)) notFound();
+  if (!VALID_REGIONS.includes(typedRegion)) notFound();
 
-  const label = COMP_REGION_LABELS[region];
+  const label = COMP_REGION_LABELS[typedRegion];
   const comps = sortedByDate(getByRegion(region));
-
-  // Related regions — all except current
-  const otherRegions = VALID_REGIONS.filter((r) => r !== region);
+  const otherRegions = VALID_REGIONS.filter((r) => r !== typedRegion);
 
   return (
     <main>

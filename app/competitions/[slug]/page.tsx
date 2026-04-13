@@ -1,7 +1,7 @@
-import { Metadata } from "next";
-import { notFound }  from "next/navigation";
-import Link          from "next/link";
-import Image         from "next/image";
+import { Metadata }  from "next";
+import { notFound }   from "next/navigation";
+import Link           from "next/link";
+import Image          from "next/image";
 import {
   COMPETITIONS,
   getBySlug,
@@ -9,6 +9,7 @@ import {
   sortedByDate,
 } from "@/lib/competitions-data";
 import {
+  Competition,
   COMP_STYLE_LABELS,
   COMP_ORG_LABELS,
   COMP_LEVEL_LABELS,
@@ -27,10 +28,13 @@ export async function generateStaticParams() {
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
-export async function generateMetadata(
-  { params }: { params: { slug: string } }
-): Promise<Metadata> {
-  const comp = getBySlug(params.slug);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const comp = getBySlug(slug);
   if (!comp) return {};
   return {
     title: `${comp.name} | Ballroom Dance Competition`,
@@ -75,32 +79,32 @@ const STYLE_IMAGE: Record<string, string> = {
 
 // ── Schema.org Event JSON-LD ──────────────────────────────────────────────────
 
-function EventSchema({ comp }: { comp: ReturnType<typeof getBySlug> & {} }) {
+function EventSchema({ comp }: { comp: Competition }) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "DanceEvent",
-    name:     comp.name,
+    name:        comp.name,
     description: comp.description,
-    url:      comp.website || `https://www.ballroomdancedirectory.com/competitions/${comp.slug}`,
+    url:         comp.website || `https://www.ballroomdancedirectory.com/competitions/${comp.slug}`,
     location: {
       "@type": "Place",
       name:    comp.venue,
       address: {
-        "@type":           "PostalAddress",
-        addressLocality:   comp.city,
-        addressRegion:     comp.stateAbbr,
-        addressCountry:    "US",
+        "@type":         "PostalAddress",
+        addressLocality: comp.city,
+        addressRegion:   comp.stateAbbr,
+        addressCountry:  "US",
       },
     },
     ...(comp.dateStart && {
       startDate: comp.dateStart,
       ...(comp.dateEnd && { endDate: comp.dateEnd }),
     }),
-    eventStatus: "https://schema.org/EventScheduled",
+    eventStatus:         "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     organizer: {
       "@type": "Organization",
-      name: COMP_ORG_LABELS[comp.organization],
+      name:    COMP_ORG_LABELS[comp.organization],
     },
   };
   return (
@@ -122,8 +126,13 @@ const ORG_BADGE: Record<string, { color: string; bg: string }> = {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default function CompetitionDetailPage({ params }: { params: { slug: string } }) {
-  const comp = getBySlug(params.slug);
+export default async function CompetitionDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const comp = getBySlug(slug);
   if (!comp) notFound();
 
   const badge    = ORG_BADGE[comp.organization] ?? ORG_BADGE["Independent"];
@@ -230,13 +239,11 @@ export default function CompetitionDetailPage({ params }: { params: { slug: stri
 
             {/* Sidebar */}
             <div className="space-y-4">
-
-              {/* Quick info card */}
               <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4 sticky top-24">
                 <h3 className="font-display font-bold text-gray-900 text-lg">Competition Info</h3>
 
-                <InfoRow icon="📅" label="Dates" value={dateStr} />
-                <InfoRow icon="📍" label="Venue" value={comp.venue} />
+                <InfoRow icon="📅" label="Dates"  value={dateStr} />
+                <InfoRow icon="📍" label="Venue"  value={comp.venue} />
                 <InfoRow icon="🌍" label="Region" value={COMP_REGION_LABELS[comp.region]} />
 
                 {comp.registrationDeadline && (
@@ -259,7 +266,6 @@ export default function CompetitionDetailPage({ params }: { params: { slug: stri
 
                 <hr className="border-gray-100" />
 
-                {/* CTA buttons */}
                 {comp.website && (
                   <a
                     href={comp.website}

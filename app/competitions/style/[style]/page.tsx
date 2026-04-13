@@ -3,7 +3,6 @@ import { notFound }  from "next/navigation";
 import Link          from "next/link";
 import { Suspense }  from "react";
 import {
-  COMPETITIONS,
   getByStyle,
   sortedByDate,
 } from "@/lib/competitions-data";
@@ -37,17 +36,20 @@ const STYLE_DESCRIPTION: Record<CompStyle, string> = {
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
-export async function generateMetadata(
-  { params }: { params: { style: string } }
-): Promise<Metadata> {
-  const label = COMP_STYLE_LABELS[params.style as CompStyle];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ style: string }>;
+}): Promise<Metadata> {
+  const { style } = await params;
+  const label = COMP_STYLE_LABELS[style as CompStyle];
   if (!label) return {};
   return {
     title: `${label} Ballroom Dance Competitions`,
-    description: STYLE_DESCRIPTION[params.style as CompStyle],
+    description: STYLE_DESCRIPTION[style as CompStyle],
     openGraph: {
       title: `${label} Competitions`,
-      description: STYLE_DESCRIPTION[params.style as CompStyle],
+      description: STYLE_DESCRIPTION[style as CompStyle],
       type: "website",
     },
   };
@@ -55,17 +57,20 @@ export async function generateMetadata(
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default function StylePage({ params }: { params: { style: string } }) {
-  const style = params.style as CompStyle;
+export default async function StylePage({
+  params,
+}: {
+  params: Promise<{ style: string }>;
+}) {
+  const { style } = await params;
+  const typedStyle = style as CompStyle;
 
-  if (!VALID_STYLES.includes(style)) notFound();
+  if (!VALID_STYLES.includes(typedStyle)) notFound();
 
-  const label = COMP_STYLE_LABELS[style];
-  const comps = sortedByDate(getByStyle(style));
-  const description = STYLE_DESCRIPTION[style];
-
-  // Other styles for navigation
-  const otherStyles = VALID_STYLES.filter((s) => s !== style);
+  const label       = COMP_STYLE_LABELS[typedStyle];
+  const comps       = sortedByDate(getByStyle(style));
+  const description = STYLE_DESCRIPTION[typedStyle];
+  const otherStyles = VALID_STYLES.filter((s) => s !== typedStyle);
 
   return (
     <main>
