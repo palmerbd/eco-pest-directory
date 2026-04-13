@@ -610,7 +610,7 @@
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Featured badge + priority placement in search results for paid tier</span></div>
       <div class="section-head">Studio Outreach Campaign</div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">3-email outreach sequence written — Studio_Outreach_Campaign.docx + Studio_Outreach_Tracker.xlsx delivered</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Use Hunter.io to find emails for top 20–30 independent studios per market</span></div>
+      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Use Apollo.io to find emails for top 20–30 independent studios per market (replaced Hunter.io)</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Send Email 1 to first batch of studios — "You're already listed. $49/mo to get their contact info."</span></div>
     </div>
   </div>
@@ -746,48 +746,60 @@
         <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
         <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Photo Upload System — Dashboard + Studio Pages</strong> — Supabase Storage bucket <code>studio-photos</code> + <code>studio_photos</code> table live. PhotoManager.tsx (Featured tier only): upload/delete up to 6 photos with hover overlay. StudioGallery.tsx: renders real photos with Unsplash fallback + dynamic attribution. 3 API routes: GET /api/studios/[slug]/photos, POST /api/upload/studio-photo, DELETE /api/upload/studio-photo. ISR revalidate on change. GitHub PAT "Cowork Deploy" (no expiry) set up — terminal push workflow now permanent. ✅ Apr 7</span>
       </div>
+      <div style="display:flex; align-items:flex-start; gap:12px;">
+        <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
+        <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Blog ISR Fix</strong> — <code>revalidate = 60</code> on /blog/page.tsx so category/tag changes propagate in under 60s. Commit ea6fc0e. ✅ Apr 10</span>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:12px;">
+        <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
+        <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Featured Studio Listing Enhancements</strong> — Dashboard (paid tier only): StudioProfileEditor component — (1) custom description overrides scraped text, (2) social media links FB/IG/TT, (3) Google Reviews toggle (fetch + cache via Places API → studio_reviews table), (4) Promotion builder (type/savings/end date + live preview). Public studio detail page: PromoBar amber hero banner, SocialLinks icon row, ReviewsSection with star rows + author avatars. API routes: GET/POST /api/studios/[slug]/profile + GET/POST /api/studios/[slug]/reviews. Supabase migration 004: studio_profiles + studio_reviews tables with RLS. Commit c9403a5. ✅ Apr 10</span>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:12px;">
+        <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
+        <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Custom Dance Style Images — All Unsplash Placeholders Replaced</strong> — 8 custom photos added to /public/images/: ballroom.png, waltz.png, latin.png, salsa.png, tango.png, wedding.png, swing.png, competition.png. UnsplashPhoto type extended with optional <code>localSrc</code> field. <code>photoUrl()</code> helper returns local asset when present. StudioGallery + StudioSearch updated. All style + chain mappings now use local photos. Commits 0d2b34b + f0b7fc7. ✅ Apr 12</span>
+      </div>
 
       <!-- NEXT 5 DEVELOPMENT TASKS -->
-      <div style="margin:16px 0 8px; font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px;">⬇ Next Tasks — Priority Order</div>
+      <div style="margin:16px 0 8px; font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px;">⬇ Next Tasks — Priority Order (Updated Apr 12)</div>
 
       <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0f00; border:1px solid #f59e0b; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
         <span style="background:#d97706; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</span>
         <div>
-          <span style="font-size:13px; color:#fef3c7; line-height:1.5; font-weight:700;">🧪 Stripe Webhook End-to-End Test</span>
-          <span style="display:block; font-size:12px; color:#fcd34d; line-height:1.6; margin-top:6px;">dashboard.stripe.com/webhooks → verify endpoint for ballroomdancedirectory.com/api/stripe/webhook → send test event <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">checkout.session.completed</code> using a claimed studio + test card <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">4242 4242 4242 4242</code> → confirm Supabase claims.tier flips to "paid" → Featured badge + PhotoManager appear on dashboard → studio page shows as Featured. Full path must work before outreach.</span>
+          <span style="font-size:13px; color:#fef3c7; line-height:1.5; font-weight:700;">🧪 Stripe Webhook End-to-End Test <span style="font-weight:400; font-size:11px; color:#fcd34d;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#fcd34d; line-height:1.6; margin-top:6px;">dashboard.stripe.com/webhooks → verify endpoint for ballroomdancedirectory.com/api/stripe/webhook → send test event <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">checkout.session.completed</code> using a claimed studio + test card <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">4242 4242 4242 4242</code> → confirm Supabase claims.tier flips to "paid" → Featured badge + StudioProfileEditor + PhotoManager appear on dashboard → PromoBar + SocialLinks + ReviewsSection show on studio page. Full path must work before outreach.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0800; border:1px solid #f97316; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#ea580c; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</span>
+        <div>
+          <span style="font-size:13px; color:#fed7aa; line-height:1.5; font-weight:700;">📊 Google Search Console Data Review — OVERDUE <span style="font-weight:400; font-size:11px; color:#fb923c;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#fdba74; line-height:1.6; margin-top:6px;">Sitemap submitted Apr 1 — data window is now open (Apr 12). Pull the Performance report in GSC: which studio/city pages are getting impressions? Which queries are driving clicks? Look for any near-page-1 terms (positions 6–15) to prioritize for content + outreach. This is the first real signal on where to focus investment.</span>
         </div>
       </div>
 
       <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1f12; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
-        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</span>
+        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</span>
         <div>
-          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">🚀 BEGIN STUDIO OUTREACH — This is where the money comes from.</span>
-          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Use Hunter.io to find emails for the top 20–30 <em>independent</em> LA studios — sort by review count + rating. Send Email 1 from <strong>Studio_Outreach_Campaign.docx</strong>. Log in <strong>Studio_Outreach_Tracker.xlsx</strong>. Follow up Email 2 Day 4, Email 3 Day 8. <strong>Goal: first paid subscriber.</strong></span>
-          <span style="display:block; font-size:11px; color:#4ade80; margin-top:8px; font-weight:700;">📋 LA is the biggest market (450+ studios). Highest density of independent studios willing to pay for leads. Photo upload system is now live — featured studios have a compelling new benefit to sell.</span>
-        </div>
-      </div>
-
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #3b82f6; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
-        <span style="background:#1d4ed8; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</span>
-        <div>
-          <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">📊 First Google Search Console Data Review</span>
-          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">Sitemap submitted Apr 1 — first impressions data should be appearing now (~Apr 7–15). Pull the Performance report: which studio/city pages are getting impressions? Which queries trigger clicks? Use this to identify which cities and dance styles to prioritize for outreach and content investment. First data signal is a major milestone.</span>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">🚀 Connect Apollo.io + Begin Studio Outreach <span style="font-weight:400; font-size:11px; color:#86efac;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Set up Apollo.io account → search for studio owner contacts in the LA market (sort by review count + rating, target independent studios first). Load the 3-email Day 0/4/8 sequence from <strong>Studio_Outreach_Campaign.docx</strong> into Apollo's sequencer for automated follow-ups. Log responses in <strong>Studio_Outreach_Tracker.xlsx</strong>. <strong>Goal: first paid subscriber.</strong></span>
+          <span style="display:block; font-size:11px; color:#4ade80; margin-top:8px; font-weight:700;">📋 Featured studios now have a compelling suite to sell: custom description, social links, Google Reviews, promo banner, and photo gallery. This is the strongest value prop yet.</span>
         </div>
       </div>
 
       <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #3b82f6; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
         <span style="background:#1d4ed8; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">4</span>
         <div>
-          <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">✉️ Confirm Resend Domain Verification + Test Claim Email</span>
-          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">Log into resend.com → Domains → verify status is "Verified" (DKIM + SPF + DMARC). Then do a full end-to-end claim test: claim a studio, confirm the magic link email arrives (not spam), confirm admin notification fires. Until verified, all transactional emails risk spam folder.</span>
+          <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">🔗 Connect GoHighLevel CRM <span style="font-weight:400; font-size:11px; color:#93c5fd;">[YOU + DEV]</span></span>
+          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">Set up a 2-stage pipeline in GoHighLevel: <strong>Claimed → Featured</strong>. Wire Supabase claim webhook to auto-create a contact when a studio is claimed. Wire Stripe paid webhook to move the contact to the Featured stage. Use this to track all studio owner interactions — follow-ups, objections, churn risk — in one place.</span>
         </div>
       </div>
 
       <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #3b82f6; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
         <span style="background:#1d4ed8; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">5</span>
         <div>
-          <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">⚖️ Legal Baseline</span>
-          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">(a) Register DMCA designated agent at copyright.gov ($6 one-time). (b) Engage IP attorney for Terms + Privacy review before first real subscriber. (c) Send franchise outreach emails to Arthur Murray, Fred Astaire, Dance With Me — drafts in <code>outreach-emails/</code>. All three are YOUR actions — no code needed.</span>
+          <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">⚖️ Legal Baseline <span style="font-weight:400; font-size:11px; color:#93c5fd;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">(a) Register DMCA designated agent at copyright.gov ($6 one-time — required before marketing push). (b) Engage IP attorney for Terms + Privacy review before first paid subscriber. (c) Send franchise outreach emails to Arthur Murray, Fred Astaire, Dance With Me — drafts in <code>outreach-emails/</code>. All three are YOUR actions — no code needed.</span>
         </div>
       </div>
     </div>
