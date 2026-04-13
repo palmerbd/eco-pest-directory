@@ -4,7 +4,7 @@
 // All photos fall back gracefully to a branded gradient if the image fails.
 
 import Image from "next/image";
-import { getStudioPhotos, unsplashUrl, type UnsplashPhoto } from "@/lib/studio-photos";
+import { getStudioPhotos, photoUrl, type UnsplashPhoto } from "@/lib/studio-photos";
 import type { DanceStyle, StudioChain } from "@/types/studio";
 
 // ── Sub-component: single photo slot ─────────────────────────────────────────
@@ -25,7 +25,7 @@ function PhotoSlot({
   return (
     <div className={`relative overflow-hidden rounded-xl bg-gradient-to-br from-[#0c1428] to-[#1a2d5a] ${className}`}>
       <Image
-        src={unsplashUrl(photo.id, width, height)}
+        src={photoUrl(photo, width, height)}
         alt={photo.alt}
         fill
         sizes={`(max-width: 768px) 100vw, ${width}px`}
@@ -154,7 +154,7 @@ export default function StudioGallery({
         <p className="text-xs text-gray-400 mt-2 text-right italic">
           Photos provided by the studio owner
         </p>
-      ) : (
+      ) : !placeholders.hero.localSrc ? (
         <p className="text-xs text-gray-400 mt-2 text-right">
           Photos via{" "}
           <a
@@ -172,6 +172,13 @@ export default function StudioGallery({
               upload their own photos
             </a>
           </span>
+        </p>
+      ) : (
+        <p className="text-xs text-gray-400 mt-2 text-right italic">
+          Studio owners can{" "}
+          <a href="/dashboard" className="underline hover:text-gray-600">
+            upload their own photos
+          </a>
         </p>
       )}
     </section>

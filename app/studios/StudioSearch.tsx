@@ -12,7 +12,7 @@ import {
   DanceStyle,
   StudioChain,
 } from "@/types/studio";
-import { getStudioPhotos, unsplashUrl } from "@/lib/studio-photos";
+import { getStudioPhotos, photoUrl } from "@/lib/studio-photos";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -49,7 +49,7 @@ function StudioListCard({ studio }: { studio: StudioCard }) {
   const chain  = CHAIN_CONFIG[studio.studioChain];
   const styles = studio.danceStyles.slice(0, 4);
   const photos = getStudioPhotos(studio.id, studio.danceStyles, studio.studioChain);
-  const heroSrc = studio.featuredImage || unsplashUrl(photos.hero.id, 600, 240);
+  const heroSrc = studio.featuredImage || photoUrl(photos.hero, 600, 240);
 
   return (
     <Link

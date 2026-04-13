@@ -7,10 +7,25 @@
 import type { DanceStyle, StudioChain } from "@/types/studio";
 
 export interface UnsplashPhoto {
-  id:          string;
-  alt:         string;
-  authorName:  string;
-  authorUrl:   string;
+  id:           string;
+  alt:          string;
+  authorName:   string;
+  authorUrl:    string;
+  /** If set, this local /public path is used instead of the Unsplash CDN */
+  localSrc?:   string;
+}
+
+/**
+ * Returns the best URL for a photo — prefers a local /public asset if
+ * `localSrc` is set, otherwise falls back to the Unsplash CDN.
+ */
+export function photoUrl(
+  photo: UnsplashPhoto,
+  width  = 800,
+  height = 500,
+): string {
+  if (photo.localSrc) return photo.localSrc;
+  return unsplashUrl(photo.id, width, height);
 }
 
 export interface StudioPhotoSet {
@@ -26,11 +41,15 @@ const BALLROOM_PHOTOS: UnsplashPhoto[] = [
   { id: "1504609813442-a8924e83f76e",alt: "Ballroom dance competition on stage",        authorName: "Ahmad Odeh",  authorUrl: "https://unsplash.com/@aoddeh" },
 ];
 
+const LATIN_LOCAL: UnsplashPhoto = {
+  id: "", alt: "Latin dance couple in elegant performance",
+  authorName: "", authorUrl: "", localSrc: "/images/latin.png",
+};
 const LATIN_PHOTOS: UnsplashPhoto[] = [
-  { id: "1612444894087-c4a9e7c56fdb", alt: "Latin dance couple in vibrant performance", authorName: "Ahmad Odeh",  authorUrl: "https://unsplash.com/@aoddeh" },
-  { id: "1547226991-3c9e08e02e44",    alt: "Energetic salsa dancers in motion",         authorName: "Ahmad Odeh",  authorUrl: "https://unsplash.com/@aoddeh" },
-  { id: "1500462918357-ac4dde89a80c", alt: "Couple dancing Latin style",                authorName: "Ahmad Odeh",  authorUrl: "https://unsplash.com/@aoddeh" },
-  { id: "1558618666-fcd25c85cd64",    alt: "Passionate tango embrace",                  authorName: "Ahmad Odeh",  authorUrl: "https://unsplash.com/@aoddeh" },
+  LATIN_LOCAL,
+  LATIN_LOCAL,
+  LATIN_LOCAL,
+  LATIN_LOCAL,
 ];
 
 const TANGO_PHOTOS: UnsplashPhoto[] = [
