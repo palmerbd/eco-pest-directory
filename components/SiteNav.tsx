@@ -6,11 +6,11 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
-  { href: "/studios", label: "Browse Studios" },
-  { href: "/styles",  label: "By Style" },
-  { href: "/cities",  label: "By City" },
-  { href: "/blog",    label: "Tips & Guides" },
-  { href: "/claim",   label: "Claim Your Studio" },
+  { href: "/studios",      label: "Browse Studios" },
+  { href: "/competitions", label: "Competitions" },
+  { href: "/styles",       label: "By Style" },
+  { href: "/cities",       label: "By City" },
+  { href: "/blog",         label: "Tips & Guides" },
 ];
 
 export default function SiteNav() {
