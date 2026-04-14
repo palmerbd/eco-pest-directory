@@ -133,21 +133,45 @@ export default async function CompetitionDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const comp = getBySlug(slug);
-  if (!comp) notFound();
+  const seedComp = getBySlug(slug);
+  if (!seedComp) notFound();
+
+  // ── Apply organizer overrides (Stage 3) ────────────────────────────────────
+  // Fetch any organizer-submitted edits from competition_overrides and merge
+  // them over the static seed data. Only non-null override fields win.
+  const [claimResult, overrideResult] = await Promise.all([
+    supabaseAdmin
+      .from("competition_claims")
+      .select("status, tier")
+      .eq("competition_slug", slug)
+      .eq("status", "approved")
+      .maybeSingle(),
+    supabaseAdmin
+      .from("competition_overrides")
+      .select("date_start,date_end,venue,description,website,registration_url,registration_deadline")
+      .eq("competition_slug", slug)
+      .maybeSingle(),
+  ]);
+
+  const isVerified = !!claimResult.data;
+  const ov         = overrideResult.data;
+
+  // Merge: override fields win over seed data when present
+  const comp = {
+    ...seedComp,
+    ...(ov?.date_start            && { dateStart:            ov.date_start }),
+    ...(ov?.date_end              && { dateEnd:              ov.date_end }),
+    ...(ov?.venue                 && { venue:                ov.venue }),
+    ...(ov?.description           && { description:          ov.description }),
+    ...(ov?.website               && { website:              ov.website }),
+    ...(ov?.registration_url      && { registrationUrl:      ov.registration_url }),
+    ...(ov?.registration_deadline && { registrationDeadline: ov.registration_deadline }),
+  };
 
   const badge    = ORG_BADGE[comp.organization] ?? ORG_BADGE["Independent"];
   const heroSrc  = (comp.styles[0] && STYLE_IMAGE[comp.styles[0]]) || "/images/competition.png";
   const dateStr  = formatDateRange(comp.dateStart, comp.dateEnd, comp.typicalMonth);
 
-  // Check if this competition has an approved claim (for Verified Organizer badge)
-  const { data: claimRow } = await supabaseAdmin
-    .from("competition_claims")
-    .select("status, tier")
-    .eq("competition_slug", slug)
-    .eq("status", "approved")
-    .maybeSingle();
-  const isVerified = !!claimRow;
   const related  = sortedByDate(
     getByRegion(comp.region).filter((c) => c.slug !== comp.slug)
   ).slice(0, 3);
