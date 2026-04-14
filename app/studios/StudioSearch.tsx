@@ -153,6 +153,37 @@ const STATE_NAMES: Record<string, string> = {
   "virginia":"VA","washington":"WA","west virginia":"WV","wisconsin":"WI","wyoming":"WY",
 };
 
+// Abbreviation → abbreviation identity map (so normalizeState("TX") works)
+const STATE_ABBRS = new Set(Object.values(STATE_NAMES));
+
+/**
+ * Normalize any state string to an uppercase 2-letter abbreviation.
+ * Handles full names ("Texas" → "TX"), abbreviations ("tx" → "TX"),
+ * and mixed case ("New york" → "NY"). Returns "" if unrecognized.
+ */
+function normalizeState(s: string): string {
+  if (!s) return "";
+  const lower = s.toLowerCase().trim();
+  if (STATE_NAMES[lower]) return STATE_NAMES[lower];
+  const upper = s.toUpperCase().trim();
+  if (upper.length === 2 && STATE_ABBRS.has(upper)) return upper;
+  return "";
+}
+
+/**
+ * Compare a studio's stored state value against a search abbreviation.
+ * Handles WP storing states as full names ("Texas"), abbreviations ("TX"),
+ * or any mixed case variant.
+ */
+function stateMatches(storedState: string, searchAbbr: string): boolean {
+  if (!storedState || !searchAbbr) return false;
+  // Try normalizing stored value first
+  const normalized = normalizeState(storedState);
+  if (normalized) return normalized === searchAbbr.toUpperCase();
+  // Fallback: raw case-insensitive comparison
+  return storedState.toUpperCase() === searchAbbr.toUpperCase();
+}
+
 /**
  * Expand a search query to a set of city names to match against.
  * Returns null when no metro/state expansion applies (use normal text search).
@@ -450,9 +481,10 @@ export function StudioSearch({
       const exp = expandQuery(q);
 
       if (exp.stateAbbr) {
-        // State search: "Texas" or "TX" → show all studios in that state
+        // State search: "Texas" or "TX" → show all studios in that state.
+        // stateMatches() handles WP storing full names OR abbreviations.
         const abbr = exp.stateAbbr.toUpperCase();
-        result = result.filter((s) => s.state.toUpperCase() === abbr);
+        result = result.filter((s) => stateMatches(s.state, abbr));
       } else if (exp.cities) {
         // Metro expansion: "Dallas" → DFW suburb set
         // Include studios whose city is in the metro, OR whose name/address contains the query
@@ -476,17 +508,20 @@ export function StudioSearch({
 
     if (city)  result = result.filter((s) => s.city === city);
 
-    // State filter: accepts abbreviation ("TX"), full name ("Texas"), or partial match
+    // State filter: accepts abbreviation ("TX"), full name ("Texas"), or partial match.
+    // Uses stateMatches() so it works whether WP stores "Texas" or "TX".
     if (stateSearch.trim()) {
-      const stExp = expandQuery(stateSearch.trim());
-      if (stExp.stateAbbr) {
-        // Matched a full state name or abbreviation — exact abbr match
-        const abbr = stExp.stateAbbr.toUpperCase();
-        result = result.filter((s) => s.state.toUpperCase() === abbr);
+      const searchAbbr = normalizeState(stateSearch.trim());
+      if (searchAbbr) {
+        // Recognized state — use bidirectional normalization
+        result = result.filter((s) => stateMatches(s.state, searchAbbr));
       } else {
-        // Free-text: partial match on state field (e.g. "New York" → "NY", "new" → all "New *" states)
+        // Unknown input: partial text match on stored value
         const sq = stateSearch.trim().toLowerCase();
-        result = result.filter((s) => s.state.toLowerCase().includes(sq));
+        result = result.filter((s) =>
+          s.state.toLowerCase().includes(sq) ||
+          normalizeState(s.state).toLowerCase().includes(sq)
+        );
       }
     }
 
