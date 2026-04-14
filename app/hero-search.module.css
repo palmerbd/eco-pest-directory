@@ -1,0 +1,12 @@
+/* Desktop: 3 inputs in one row, button spans full width below.
+   Mobile/tablet layout is handled entirely by Tailwind on the element. */
+
+@media (min-width: 1024px) {
+  .form {
+    grid-template-columns: 2fr 1fr 1.5fr;
+  }
+
+  .button {
+    grid-column: 1 / -1;
+  }
+}
