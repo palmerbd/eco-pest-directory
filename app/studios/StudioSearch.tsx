@@ -18,6 +18,164 @@ import { getStudioPhotos, photoUrl } from "@/lib/studio-photos";
 
 const PAGE_SIZE = 24;
 
+// ── Metro area expansion ──────────────────────────────────────────────────────
+// Maps a major city name → all cities in that metro area.
+// Allows "Dallas" to surface studios in Plano, Frisco, Irving, etc.
+// Also covers state-level searches: "texas" or "tx" → state abbr match.
+
+const METRO_CITIES: Record<string, string[]> = {
+  // Texas
+  "dallas": ["dallas","plano","irving","garland","carrollton","richardson","mesquite",
+             "grand prairie","arlington","denton","frisco","mckinney","allen","lewisville",
+             "flower mound","euless","bedford","hurst","grapevine","southlake","coppell",
+             "addison","farmers branch","cedar hill","desoto","duncanville","mansfield",
+             "rowlett","rockwall","forney","wylie","sachse","murphy","prosper","celina"],
+  "fort worth": ["fort worth","arlington","mansfield","burleson","crowley","haltom city",
+                 "north richland hills","watauga","keller","colleyville","euless","bedford",
+                 "hurst","grapevine","southlake","benbrook","white settlement","lake worth"],
+  "houston": ["houston","sugar land","pearland","pasadena","league city","baytown",
+              "conroe","the woodlands","spring","katy","missouri city","friendswood",
+              "stafford","galveston","friendswood","humble","deer park","la porte"],
+  "san antonio": ["san antonio","new braunfels","schertz","cibolo","converse","universal city",
+                  "live oak","selma","leon valley","helotes","boerne","pleasanton"],
+  "austin": ["austin","round rock","cedar park","pflugerville","georgetown","kyle","buda",
+             "san marcos","leander","hutto","manor","bastrop","lakeway","bee cave"],
+  // Florida
+  "miami": ["miami","miami beach","hialeah","coral gables","miami gardens","homestead",
+            "doral","kendall","pembroke pines","miramar","hollywood","fort lauderdale",
+            "boca raton","delray beach","pompano beach","north miami","opa locka"],
+  "orlando": ["orlando","kissimmee","sanford","altamonte springs","oviedo","winter park",
+              "apopka","clermont","st. cloud","celebration","lake buena vista","maitland",
+              "casselberry","longwood","lake mary","deltona","daytona beach"],
+  "tampa": ["tampa","st. petersburg","clearwater","largo","bradenton","sarasota","venice",
+            "brandon","riverview","valrico","plant city","lakeland","dunedin","safety harbor",
+            "new port richey","spring hill","wesley chapel","lutz","land o lakes"],
+  // New York / New Jersey
+  "new york": ["new york","brooklyn","queens","bronx","staten island","manhattan",
+               "jersey city","newark","hoboken","yonkers","white plains","new rochelle",
+               "mount vernon","stamford","bridgeport","long island city","flushing"],
+  "long island": ["garden city","hempstead","mineola","valley stream","great neck",
+                  "manhasset","port washington","roslyn","syosset","huntington","babylon",
+                  "bay shore","commack","smithtown","hauppauge","central islip"],
+  // California
+  "los angeles": ["los angeles","santa monica","culver city","inglewood","hawthorne",
+                  "torrance","gardena","compton","long beach","carson","lakewood",
+                  "burbank","glendale","pasadena","monrovia","west hollywood","beverly hills",
+                  "manhattan beach","hermosa beach","redondo beach","el segundo"],
+  "san francisco": ["san francisco","oakland","berkeley","san jose","santa clara","sunnyvale",
+                    "mountain view","palo alto","redwood city","san mateo","burlingame",
+                    "daly city","south san francisco","fremont","hayward","milpitas",
+                    "san rafael","marin","sausalito"],
+  "san diego": ["san diego","chula vista","el cajon","santee","la mesa","national city",
+                "escondido","oceanside","carlsbad","vista","san marcos","encinitas",
+                "del mar","la jolla","coronado","imperial beach"],
+  "sacramento": ["sacramento","elk grove","roseville","folsom","rocklin","lincoln",
+                 "auburn","rancho cordova","citrus heights","natomas","davis","woodland"],
+  // Illinois
+  "chicago": ["chicago","evanston","skokie","oak park","cicero","berwyn","brookfield",
+              "la grange","aurora","joliet","naperville","schaumburg","arlington heights",
+              "palatine","des plaines","rosemont","lombard","glen ellyn","wheaton",
+              "downers grove","oak lawn","orland park","tinley park","homewood"],
+  // Georgia
+  "atlanta": ["atlanta","marietta","sandy springs","roswell","alpharetta","johns creek",
+              "dunwoody","brookhaven","smyrna","kennesaw","acworth","woodstock",
+              "lawrenceville","duluth","norcross","decatur","tucker","stone mountain",
+              "east point","college park","union city","newnan","mcdonough"],
+  // Arizona
+  "phoenix": ["phoenix","scottsdale","tempe","mesa","chandler","gilbert","glendale",
+              "peoria","surprise","goodyear","avondale","buckeye","queen creek",
+              "sun city","paradise valley","cave creek","fountain hills","ahwatukee"],
+  // Colorado
+  "denver": ["denver","aurora","lakewood","arvada","westminster","thornton","highlands ranch",
+             "littleton","englewood","centennial","parker","castle rock","brighton",
+             "boulder","longmont","broomfield","commerce city","federal heights"],
+  // Washington
+  "seattle": ["seattle","bellevue","redmond","kirkland","renton","kent","federal way",
+              "auburn","tukwila","burien","des moines","seatac","lynnwood","edmonds",
+              "bothell","woodinville","issaquah","sammamish","mercer island"],
+  // Nevada
+  "las vegas": ["las vegas","henderson","north las vegas","boulder city","pahrump",
+                "summerlin","enterprise","spring valley","paradise","whitney"],
+  // North Carolina
+  "charlotte": ["charlotte","concord","gastonia","rock hill","huntersville","matthews",
+                "mint hill","mooresville","cornelius","davidson","kannapolis","salisbury"],
+  // Ohio
+  "columbus": ["columbus","dublin","westerville","grove city","hilliard","upper arlington",
+               "worthington","gahanna","reynoldsburg","pickerington","canal winchester"],
+  "cleveland": ["cleveland","akron","lorain","elyria","parma","strongsville","lakewood",
+                "euclid","mentor","willoughby","solon","beachwood","westlake","bay village"],
+  // Michigan
+  "detroit": ["detroit","warren","sterling heights","ann arbor","livonia","dearborn",
+              "troy","novi","westland","canton","farmington hills","auburn hills",
+              "pontiac","royal oak","southfield","birmingham","bloomfield hills"],
+  // Pennsylvania
+  "philadelphia": ["philadelphia","camden","wilmington","chester","norristown","king of prussia",
+                   "ardmore","wayne","conshohocken","lansdale","doylestown","newtown",
+                   "cherry hill","moorestown","mount laurel","marlton","voorhees"],
+  // Minnesota
+  "minneapolis": ["minneapolis","saint paul","bloomington","plymouth","maple grove","eden prairie",
+                  "edina","burnsville","apple valley","eagan","coon rapids","brooklyn park",
+                  "richfield","st. louis park","golden valley","fridley","roseville"],
+  // Massachusetts
+  "boston": ["boston","cambridge","somerville","quincy","brockton","newton","brookline",
+             "waltham","watertown","worcester","framingham","natick","norwood","canton",
+             "braintree","weymouth","randolph","malden","medford","arlington"],
+  // Missouri
+  "kansas city": ["kansas city","overland park","olathe","lee summit","independence",
+                  "blue springs","lenexa","shawnee","leawood","liberty","raymore"],
+  "st. louis": ["st. louis","saint louis","chesterfield","ballwin","florissant","hazelwood",
+                "st. charles","st. peters","o'fallon","wentzville","kirkwood","clayton"],
+  // Tennessee
+  "nashville": ["nashville","murfreesboro","franklin","brentwood","hendersonville",
+                "gallatin","smyrna","la vergne","nolensville","spring hill","columbia"],
+  // Maryland / DC
+  "washington": ["washington","washington dc","silver spring","bethesda","rockville",
+                 "gaithersburg","germantown","arlington","alexandria","falls church",
+                 "fairfax","reston","herndon","tysons","mclean","chantilly","manassas"],
+  "baltimore": ["baltimore","towson","catonsville","dundalk","essex","parkville",
+                "columbia","ellicott city","glen burnie","annapolis","bowie","laurel"],
+  // Oregon
+  "portland": ["portland","beaverton","hillsboro","gresham","lake oswego","tigard",
+               "tualatin","sherwood","happy valley","clackamas","milwaukie","vancouver"],
+};
+
+// US state name → abbreviation (for "Texas" → "TX" style searches)
+const STATE_NAMES: Record<string, string> = {
+  "alabama":"AL","alaska":"AK","arizona":"AZ","arkansas":"AR","california":"CA",
+  "colorado":"CO","connecticut":"CT","delaware":"DE","florida":"FL","georgia":"GA",
+  "hawaii":"HI","idaho":"ID","illinois":"IL","indiana":"IN","iowa":"IA","kansas":"KS",
+  "kentucky":"KY","louisiana":"LA","maine":"ME","maryland":"MD","massachusetts":"MA",
+  "michigan":"MI","minnesota":"MN","mississippi":"MS","missouri":"MO","montana":"MT",
+  "nebraska":"NE","nevada":"NV","new hampshire":"NH","new jersey":"NJ","new mexico":"NM",
+  "new york":"NY","north carolina":"NC","north dakota":"ND","ohio":"OH","oklahoma":"OK",
+  "oregon":"OR","pennsylvania":"PA","rhode island":"RI","south carolina":"SC",
+  "south dakota":"SD","tennessee":"TN","texas":"TX","utah":"UT","vermont":"VT",
+  "virginia":"VA","washington":"WA","west virginia":"WV","wisconsin":"WI","wyoming":"WY",
+};
+
+/**
+ * Expand a search query to a set of city names to match against.
+ * Returns null when no metro/state expansion applies (use normal text search).
+ */
+function expandQuery(q: string): { cities: string[] | null; stateAbbr: string | null } {
+  const lower = q.toLowerCase().trim();
+  // Direct metro match
+  if (METRO_CITIES[lower]) {
+    return { cities: METRO_CITIES[lower], stateAbbr: null };
+  }
+  // State full name → abbreviation
+  if (STATE_NAMES[lower]) {
+    return { cities: null, stateAbbr: STATE_NAMES[lower] };
+  }
+  // State abbreviation directly (e.g. "TX", "FL")
+  const upper = q.toUpperCase().trim();
+  const allAbbrs = new Set(Object.values(STATE_NAMES));
+  if (upper.length === 2 && allAbbrs.has(upper)) {
+    return { cities: null, stateAbbr: upper };
+  }
+  return { cities: null, stateAbbr: null };
+}
+
 const SELECT_CLASS =
   "px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white text-gray-700 " +
   "focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent " +
@@ -286,13 +444,32 @@ export function StudioSearch({
     let result = studios;
 
     if (query.trim()) {
-      const q = query.trim().toLowerCase();
-      result = result.filter(
-        (s) =>
+      const q   = query.trim().toLowerCase();
+      const exp = expandQuery(q);
+
+      if (exp.stateAbbr) {
+        // State search: "Texas" or "TX" → show all studios in that state
+        const abbr = exp.stateAbbr.toUpperCase();
+        result = result.filter((s) => s.state.toUpperCase() === abbr);
+      } else if (exp.cities) {
+        // Metro expansion: "Dallas" → DFW suburb set
+        // Include studios whose city is in the metro, OR whose name/address contains the query
+        const metroSet = new Set(exp.cities);
+        result = result.filter((s) =>
+          metroSet.has(s.city.toLowerCase()) ||
           s.title.toLowerCase().includes(q) ||
-          s.city.toLowerCase().includes(q) ||
           (s.address || "").toLowerCase().includes(q)
-      );
+        );
+      } else {
+        // Default text search: name, city (partial), address
+        result = result.filter(
+          (s) =>
+            s.title.toLowerCase().includes(q) ||
+            s.city.toLowerCase().includes(q) ||
+            s.state.toLowerCase().includes(q) ||
+            (s.address || "").toLowerCase().includes(q)
+        );
+      }
     }
 
     if (city)      result = result.filter((s) => s.city === city);

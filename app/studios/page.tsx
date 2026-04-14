@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { getStudiosPage, getStudiosByStyle } from "@/lib/wordpress";
+import { getAllStudios, getStudiosPage, getStudiosByStyle } from "@/lib/wordpress";
 import { DANCE_STYLES, STYLE_LABELS, DanceStyle } from "@/types/studio";
 import { StudioSearch } from "./StudioSearch";
 
@@ -34,23 +34,32 @@ function StudioSearchFallback() {
 export default async function StudiosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; style?: string }>;
+  searchParams: Promise<{ page?: string; style?: string; q?: string }>;
 }) {
-  const params     = await searchParams;
-  const pageNum    = Math.max(1, Number(params.page ?? "1"));
-  const styleParam = (params.style ?? "") as DanceStyle | "";
+  const params      = await searchParams;
+  const pageNum     = Math.max(1, Number(params.page ?? "1"));
+  const styleParam  = (params.style ?? "") as DanceStyle | "";
+  const queryParam  = (params.q ?? "").trim();
 
-  // When a style filter is in the URL, fetch ALL studios for that style server-side.
-  // This ensures the filter searches the full 4,000+ studio directory, not just the
-  // 48 studios on the current page.
+  // When a style OR free-text query is in the URL, fetch ALL studios server-side.
+  // Without this, StudioSearch only has 48 studios to filter against and city
+  // searches like "Dallas" return zero results.
   const isStyleFiltered = styleParam !== "" && DANCE_STYLES.includes(styleParam as DanceStyle);
+  const isQueryFiltered = queryParam !== "";
 
   let studios, total, totalPages;
   if (isStyleFiltered) {
     const all = await getStudiosByStyle(styleParam);
     studios    = all;
     total      = all.length;
-    totalPages = 1; // client-side pagination handles paging within the filtered set
+    totalPages = 1;
+  } else if (isQueryFiltered) {
+    // Load the full directory so the client-side text/city/metro search
+    // has the complete dataset to work with.
+    const all = await getAllStudios();
+    studios    = all;
+    total      = all.length;
+    totalPages = 1;
   } else {
     ({ studios, total, totalPages } = await getStudiosPage(pageNum, 48));
   }
@@ -87,7 +96,11 @@ export default async function StudiosPage({
             className="font-display text-white font-bold mb-4"
             style={{ fontSize: "clamp(2rem, 5vw, 3rem)" }}
           >
-            {isStyleFiltered ? `${styleLabel} Dance Studios` : "Private Dance Studios"}
+            {isStyleFiltered
+              ? `${styleLabel} Dance Studios`
+              : isQueryFiltered
+              ? `Studios near "${queryParam}"`
+              : "Private Dance Studios"}
           </h1>
           <p className="text-white/60 text-lg max-w-2xl">
             {total > 0
