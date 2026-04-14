@@ -437,7 +437,7 @@
   <div class="overall-bar">
     <h2>Ballroom Dance Directory — Project Pipeline</h2>
     <div class="big-progress-bar"><div class="big-progress-fill" style="width:99%"></div></div>
-    <div class="you-are-here">▲ ~99% Complete — You are here &nbsp;·&nbsp; Updated Apr 13, 2026</div>
+    <div class="you-are-here">▲ ~99% Complete — You are here &nbsp;·&nbsp; Updated Apr 14, 2026</div>
     <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:16px;">
       <div class="progress-bar-wrap">
         <div class="progress-label"><span style="color:#4ade80">Phase 1</span><span>100%</span></div>
@@ -778,80 +778,76 @@
         <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Competition Stage 2 — Claim Flow</strong> — Full organizer claim wizard: 3-step claim flow (/competitions/claim), magic link OTP via Supabase Auth, callback handler (/competitions/claim/callback), Supabase <code>competition_claims</code> + <code>competition_overrides</code> tables (migration 005 run in prod), POST /api/competition-claim + GET /api/competition-claim/status API routes, organizer dashboard (/competitions/dashboard) with status cards + Stage 3 edit placeholder, Resend emails (admin + organizer, blue branding), "✓ Verified Organizer" badge on competition detail pages, "Claim this listing" CTA on all 29 competition detail pages. Commits 81eb28b. ✅ Apr 14</span>
       </div>
 
-      <div style="margin:16px 0 8px; font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px;">⬇ Next Tasks — Priority Order (Updated Apr 13)</div>
+      <div style="margin:16px 0 8px; font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px;">⬇ Next Tasks — Priority Order (Updated Apr 14)</div>
 
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0f00; border:1px solid #f59e0b; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
-        <span style="background:#d97706; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</span>
-        <div>
-          <span style="font-size:13px; color:#fef3c7; line-height:1.5; font-weight:700;">🧪 Stripe Webhook End-to-End Test <span style="font-weight:400; font-size:11px; color:#fcd34d;">[YOU]</span></span>
-          <span style="display:block; font-size:12px; color:#fcd34d; line-height:1.6; margin-top:6px;">dashboard.stripe.com/webhooks → verify endpoint for ballroomdancedirectory.com/api/stripe/webhook → send test event <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">checkout.session.completed</code> using a claimed studio + test card <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">4242 4242 4242 4242</code> → confirm Supabase claims.tier flips to "paid" → Featured badge + StudioProfileEditor + PhotoManager appear on dashboard → PromoBar + SocialLinks + ReviewsSection show on studio page. Full path must work before outreach.</span>
-        </div>
-      </div>
-
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0800; border:1px solid #f97316; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
-        <span style="background:#ea580c; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</span>
-        <div>
-          <span style="font-size:13px; color:#fed7aa; line-height:1.5; font-weight:700;">📊 Google Search Console Data Review — OVERDUE <span style="font-weight:400; font-size:11px; color:#fb923c;">[YOU]</span></span>
-          <span style="display:block; font-size:12px; color:#fdba74; line-height:1.6; margin-top:6px;">Sitemap submitted Apr 1 — data window is fully open (Apr 13+). Pull the Performance report in GSC: which studio/city pages are getting impressions? Which queries are driving clicks? Look for any near-page-1 terms (positions 6–15) to prioritize for content + outreach. This is the first real signal on where to focus investment.</span>
-        </div>
-      </div>
-
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1f12; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
-        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</span>
-        <div>
-          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">🚀 Connect Apollo.io + Begin Studio Outreach <span style="font-weight:400; font-size:11px; color:#86efac;">[YOU]</span></span>
-          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Set up Apollo.io account → search for studio owner contacts in the LA market (sort by review count + rating, target independent studios first). Load the 3-email Day 0/4/8 sequence from <strong>Studio_Outreach_Campaign.docx</strong> into Apollo's sequencer for automated follow-ups. Log responses in <strong>Studio_Outreach_Tracker.xlsx</strong>. <strong>Goal: first paid subscriber.</strong></span>
-          <span style="display:block; font-size:11px; color:#4ade80; margin-top:8px; font-weight:700;">📋 Featured studios now have a compelling suite to sell: custom description, social links, Google Reviews, promo banner, and photo gallery. This is the strongest value prop yet.</span>
-        </div>
-      </div>
-
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #3b82f6; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
-        <span style="background:#1d4ed8; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">4</span>
-        <div>
-          <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">🔗 Connect GoHighLevel CRM <span style="font-weight:400; font-size:11px; color:#93c5fd;">[YOU + DEV]</span></span>
-          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">Set up a 2-stage pipeline in GoHighLevel: <strong>Claimed → Featured</strong>. Wire Supabase claim webhook to auto-create a contact when a studio is claimed. Wire Stripe paid webhook to move the contact to the Featured stage. Use this to track all studio owner interactions — follow-ups, objections, churn risk — in one place.</span>
-        </div>
-      </div>
-
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #3b82f6; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
-        <span style="background:#1d4ed8; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">5</span>
-        <div>
-          <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">⚖️ Legal Baseline <span style="font-weight:400; font-size:11px; color:#93c5fd;">[YOU]</span></span>
-          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">(a) Register DMCA designated agent at copyright.gov ($6 one-time — required before marketing push). (b) Engage IP attorney for Terms + Privacy review before first paid subscriber. (c) Send franchise outreach emails to Arthur Murray, Fred Astaire, Dance With Me — drafts in <code>outreach-emails/</code>. All three are YOUR actions — no code needed.</span>
-        </div>
-      </div>
-
-      <div style="margin:16px 0 8px; font-size:11px; font-weight:700; color:#a78bfa; text-transform:uppercase; letter-spacing:1px;">🏆 Competition Feature — Stages 3–4 (Dev Queue)</div>
-
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#065f46; border:1px solid #4ade80; border-radius:10px; padding:14px 16px; margin-bottom:4px; opacity:0.6;">
+      <!-- ── Competition Stages completed block ─── -->
+      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:4px;">
         <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
         <div>
           <span style="font-size:13px; color:#d1fae5; line-height:1.5; font-weight:700; text-decoration:line-through;">Competition Stage 2 — Claim Flow ✅ Apr 14</span>
           <span style="display:block; font-size:12px; color:#a7f3d0; line-height:1.6; margin-top:6px; text-decoration:line-through;">3-step wizard, magic link OTP, Supabase competition_claims table (migration 005), callback page, organizer dashboard, API routes, Verified Organizer badge on detail pages, Resend emails. All 29 competitions claimable.</span>
         </div>
       </div>
-
       <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:4px;">
         <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
         <div>
-          <span style="font-size:13px; color:#d1fae5; line-height:1.5; font-weight:700; text-decoration:line-through;">Competition Stage 3 — Organizer Edit Dashboard ✅ Apr 13</span>
-          <span style="display:block; font-size:12px; color:#a7f3d0; line-height:1.6; margin-top:6px; text-decoration:line-through;">Full edit form on /competitions/dashboard for approved organizers. Dates, venue, description, website, registration URL + deadline. POST /api/competition-override validates Bearer token, upserts to competition_overrides, calls revalidatePath() so changes go live immediately. Detail page fetches claim + overrides in parallel via Promise.all.</span>
+          <span style="font-size:13px; color:#d1fae5; line-height:1.5; font-weight:700; text-decoration:line-through;">Competition Stage 3 — Organizer Edit Dashboard ✅ Apr 14</span>
+          <span style="display:block; font-size:12px; color:#a7f3d0; line-height:1.6; margin-top:6px; text-decoration:line-through;">Full edit form on /competitions/dashboard: dates, venue, description, website, registration URL + deadline. POST /api/competition-override validates Bearer token, upserts to competition_overrides, calls revalidatePath() so changes go live in seconds. Detail page merges overrides over seed data via Promise.all parallel fetch.</span>
         </div>
       </div>
-
-      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:4px;">
+      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:12px;">
         <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
         <div>
-          <span style="font-size:13px; color:#d1fae5; line-height:1.5; font-weight:700; text-decoration:line-through;">Competition Stage 4 — Featured Upgrade + City Widget ✅ Apr 13</span>
-          <span style="display:block; font-size:12px; color:#a7f3d0; line-height:1.6; margin-top:6px; text-decoration:line-through;">$199/yr Stripe checkout (/competitions/upgrade + /success). POST /api/stripe/competition-checkout. Webhook extended for competition_slug → competition_claims.tier = "featured". Dashboard upgrade CTA live (was Coming Soon). "Upcoming Competitions Near You" widget on all city landing pages (city → state → national fallback). Verified badge + Featured confirmation panel.</span>
+          <span style="font-size:13px; color:#d1fae5; line-height:1.5; font-weight:700; text-decoration:line-through;">Competition Stage 4 — Featured Upgrade + City Widget ✅ Apr 14</span>
+          <span style="display:block; font-size:12px; color:#a7f3d0; line-height:1.6; margin-top:6px; text-decoration:line-through;">$199/yr Stripe checkout (/competitions/upgrade + /success). POST /api/stripe/competition-checkout (Bearer auth, approved claim check, annual subscription). Webhook extended: competition_slug metadata → competition_claims.tier = "featured"; cancellation reverts to "free". Dashboard upgrade CTA live. "Upcoming Competitions Near You" widget on all city landing pages (city → state → national fallback, hidden when empty). Featured confirmation panel on dashboard.</span>
         </div>
       </div>
 
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d0a1f; border:2px solid #a78bfa; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
-        <span style="background:#7c3aed; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">▶</span>
+      <div style="border-top:1px solid #1e3a5f; margin: 4px 0 16px;"></div>
+      <div style="font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">🎯 Next 5 Priorities — Apr 14, 2026</div>
+
+      <!-- #1 -->
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0f00; border:1px solid #f59e0b; border-radius:10px; padding:14px 16px; margin-bottom:8px;">
+        <span style="background:#d97706; color:#fff; font-weight:800; font-size:12px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</span>
         <div>
-          <span style="font-size:13px; color:#ede9fe; line-height:1.5; font-weight:700;">Stripe Webhook E2E Test — Competition Featured <span style="background:#7c3aed; color:#fff; font-size:10px; font-weight:700; padding:1px 8px; border-radius:10px; margin-left:6px;">NEXT</span></span>
-          <span style="display:block; font-size:12px; color:#c4b5fd; line-height:1.6; margin-top:6px;">Create STRIPE_COMP_PRICE_ID in Stripe dashboard ($199/yr annual product). Add env var to Vercel. Run test checkout with card 4242 4242 4242 4242 — verify competition_claims.tier flips to "featured" in Supabase and ⭐ Featured badge appears on the competition detail page live.</span>
+          <span style="font-size:13px; color:#fef3c7; line-height:1.5; font-weight:700;">🧪 Stripe E2E Test — Studios &amp; Competition Featured <span style="font-weight:400; font-size:11px; color:#fcd34d;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#fcd34d; line-height:1.6; margin-top:6px;"><strong>Step 1 — Studios (existing):</strong> stripe.com/dashboard → Webhooks → verify <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">ballroomdancedirectory.com/api/stripe/webhook</code> is live → test checkout with card <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">4242 4242 4242 4242</code> on a claimed studio → confirm Supabase <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">claims.tier = "paid"</code> → Featured badge + PhotoManager + ProfileEditor appear on dashboard → PromoBar + Reviews + SocialLinks show on studio detail page.<br><strong>Step 2 — Competition (new):</strong> Stripe dashboard → Products → create $199/yr annual product → copy the Price ID → Vercel dashboard → add env var <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">STRIPE_COMP_PRICE_ID=price_xxx</code> → redeploy → run test checkout at <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">/competitions/upgrade</code> → confirm <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">competition_claims.tier = "featured"</code> → ⭐ badge appears on competition detail page. <strong>Must pass before outreach.</strong></span>
+        </div>
+      </div>
+
+      <!-- #2 -->
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0800; border:1px solid #f97316; border-radius:10px; padding:14px 16px; margin-bottom:8px;">
+        <span style="background:#ea580c; color:#fff; font-weight:800; font-size:12px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</span>
+        <div>
+          <span style="font-size:13px; color:#fed7aa; line-height:1.5; font-weight:700;">📊 Google Search Console — First Real Data Review <span style="font-weight:400; font-size:11px; color:#fb923c;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#fdba74; line-height:1.6; margin-top:6px;">Sitemap submitted Apr 1, full GSC data window now open (14 days). Go to <strong>search.google.com/search-console</strong> → ballroomdancedirectory.com → Performance. Check: (a) total impressions + clicks trend week-over-week, (b) queries driving clicks — any studio, city, or style keywords breaking through?, (c) positions 6–20 — these are your fastest ranking wins with a small content push, (d) Coverage → any new Excluded or Error pages. Log findings in a notes doc — this shapes where to focus outreach + content investment next.</span>
+        </div>
+      </div>
+
+      <!-- #3 -->
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1f12; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:8px;">
+        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:12px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">🚀 Apollo.io — Begin Studio Outreach (First Paid Subscriber) <span style="font-weight:400; font-size:11px; color:#86efac;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Stripe test must pass first (task #1). Then: apollo.io → search dance studios in Los Angeles → filter by 4+ stars, 50+ reviews, independent (not Arthur Murray/Fred Astaire chain) → export contacts → load 3-email Day 0/4/8 sequence from <strong>Studio_Outreach_Campaign.docx</strong> into Apollo sequencer → log each batch in <strong>Studio_Outreach_Tracker.xlsx</strong>. Target 15 contacts/week. The value prop is now complete: Featured badge, photo gallery, custom description, Google Reviews, promo banner, lead capture form. Goal: first $49/mo subscriber.</span>
+        </div>
+      </div>
+
+      <!-- #4 -->
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #3b82f6; border-radius:10px; padding:14px 16px; margin-bottom:8px;">
+        <span style="background:#1d4ed8; color:#fff; font-weight:800; font-size:12px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">4</span>
+        <div>
+          <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">⚖️ Legal Baseline <span style="font-weight:400; font-size:11px; color:#93c5fd;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">(a) <strong>DMCA agent registration</strong> — copyright.gov/dmca-directory, $6 one-time fee, required before any serious marketing push. (b) <strong>Attorney review</strong> — Terms of Service + Privacy Policy reviewed by an IP attorney before first paid subscriber signs up. (c) <strong>Franchise outreach</strong> — send the 3 franchise intro emails (Arthur Murray, Fred Astaire, Dance With Me) — drafts already written in <code>outreach-emails/</code>. All three are YOUR actions, no code needed.</span>
+        </div>
+      </div>
+
+      <!-- #5 -->
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #8b5cf6; border-radius:10px; padding:14px 16px; margin-bottom:8px;">
+        <span style="background:#6d28d9; color:#fff; font-weight:800; font-size:12px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">5</span>
+        <div>
+          <span style="font-size:13px; color:#ede9fe; line-height:1.5; font-weight:700;">🔗 GoHighLevel CRM Pipeline <span style="font-weight:400; font-size:11px; color:#c4b5fd;">[YOU + DEV]</span></span>
+          <span style="display:block; font-size:12px; color:#c4b5fd; line-height:1.6; margin-top:6px;">Set up a 3-stage pipeline in GoHighLevel: <strong>Claimed → Outreach Active → Featured (Paid)</strong>. Wire the Supabase claim webhook to auto-create a GHL contact when a studio is claimed. Wire the Stripe paid webhook to advance the contact to the Featured stage. This gives you one CRM view across all studio owner interactions — follow-ups, objections, churn risk — instead of managing it manually in spreadsheets. Dev effort is ~4 hrs for the webhook bridges; GHL pipeline setup is YOU.</span>
         </div>
       </div>
     </div>
