@@ -20,6 +20,9 @@ const WP_API_URL      = process.env.WP_API_URL || "http://5.78.144.42/wp-json";
 const WP_APP_USER     = process.env.WP_APP_USER!;
 const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD!;
 
+// GHL Workflow #2 — fires when a Stripe payment confirms a Featured studio upgrade
+const GHL_STRIPE_WEBHOOK = "https://services.leadconnectorhq.com/hooks/gKAwJUdSQ6QMlAc0QXWb/webhook-trigger/bffde7d8-2595-416c-a347-8726edf35fcf";
+
 function wpAuthHeader() {
   return "Basic " + Buffer.from(`${WP_APP_USER}:${WP_APP_PASSWORD}`).toString("base64");
 }
@@ -101,6 +104,24 @@ export async function POST(req: NextRequest) {
 
       if (error) console.error("[webhook] claims update error:", error);
       if (studioSlug) await updateWpTier(studioSlug, "paid");
+
+      // Fire GHL Workflow #2 — moves contact to Featured (Paid) stage (non-fatal)
+      try {
+        const ownerEmail = session.customer_email
+          ?? (session.customer_details as { email?: string } | null)?.email
+          ?? "";
+        await fetch(GHL_STRIPE_WEBHOOK, {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            claim_id: claimId,
+            email:    ownerEmail,
+            tier:     "paid",
+          }),
+        });
+      } catch (ghlErr) {
+        console.warn("[webhook] GHL webhook error:", ghlErr);
+      }
 
       console.log(`[webhook] ✅ Studio Featured activated — claim ${claimId}, studio ${studioSlug}`);
     }

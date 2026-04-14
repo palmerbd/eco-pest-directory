@@ -19,6 +19,9 @@ const SITE_URL      = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomd
 const ADMIN_EMAIL   = "bpalmer@abilenewebsitedesign.com";
 const FROM_EMAIL    = "leads@ballroomdancedirectory.com";
 
+// GHL Workflow #1 — fires when a studio claim is submitted
+const GHL_CLAIM_WEBHOOK = "https://services.leadconnectorhq.com/hooks/gKAwJUdSQ6QMlAc0QXWb/webhook-trigger/77d77491-b7cf-463a-b228-c8876aaebb83";
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Base64 encode credentials for WP Application Password auth
@@ -86,7 +89,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // ── Fire GHL Workflow #1 (non-fatal) ──────────────────────────────────────
+    // Places the contact into the Studio Owner Pipeline → "Claimed" stage.
+    const studioUrl = `${SITE_URL}/studios/${studio_slug}`;
+    try {
+      const nameParts  = owner_name.trim().split(/\s+/);
+      const first_name = nameParts[0] || "";
+      const last_name  = nameParts.slice(1).join(" ") || "";
+
+      await fetch(GHL_CLAIM_WEBHOOK, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email:        owner_email,
+          first_name,
+          last_name,
+          studio_slug,
+          studio_name:  studio_title,
+          claim_id:     claim.id,
+          listing_url:  studioUrl,
+          tier:         "claimed",
+        }),
+      });
+    } catch (ghlErr) {
+      console.warn("[claim] GHL webhook error:", ghlErr);
+    }
+
     // ── Update WP studio_tier via REST API ─────────────────────────────────
+    // Only attempt if WP Application Password is configured
     if (WP_APP_PASSWORD) {
       try {
         const wpRes = await fetch(`${WP_API_URL}/wp/v2/dance_studio/${studio_id}`, {
@@ -102,19 +132,21 @@ export async function POST(req: NextRequest) {
         if (!wpRes.ok) {
           const wpBody = await wpRes.text();
           console.warn(`WP tier update failed (${wpRes.status}): ${wpBody}`);
+          // Non-fatal — claim is recorded in Supabase; WP can be updated manually
         }
       } catch (wpErr) {
         console.warn("WP tier update threw:", wpErr);
+        // Non-fatal
       }
-    }
 
-      // Bust the ISR cache so the studio page rebuilds immediately and
-      // the amber “claim this listing” bar disappears on next request.
+      // Bust the ISR cache for this studio's detail page so the amber
+      // "claim this listing" bar disappears immediately on the next request.
       try { revalidatePath(`/studios/${studio_slug}`); } catch { /* non-fatal */ }
+    }
 
     // ── Send emails via Resend (non-fatal on failure) ──────────────────────
     try {
-      const studioUrl = `${SITE_URL}/studios/${studio_slug}`;
+      // studioUrl already defined above (used for GHL webhook)
 
       // 1. Admin notification
       await resend.emails.send({
@@ -138,7 +170,8 @@ export async function POST(req: NextRequest) {
                   <td style="padding:8px 0"><a href="${studioUrl}" style="color:#b8922a">${studioUrl}</a></td></tr>
             </table>
             <p style="color:#6b7280;font-size:13px">
-              Status: <strong>verified</strong>. Review in your Supabase dashboard.
+              The claim status is currently <strong>verified</strong> (email confirmed).
+              Review in your Supabase dashboard and approve or reject as appropriate.
             </p>
           </div>
         `,
@@ -169,13 +202,22 @@ export async function POST(req: NextRequest) {
               </ul>
             </div>
             <p style="color:#374151">
-              View your listing: <a href="${studioUrl}" style="color:#b8922a">${studioUrl}</a>
+              You can view your studio listing here:<br>
+              <a href="${studioUrl}" style="color:#b8922a">${studioUrl}</a>
+            </p>
+            <p style="color:#374151">
+              Questions? Just reply to this email and we'll get back to you.
             </p>
             <p style="color:#374151;margin-top:24px">Best regards,<br>The Ballroom Dance Directory Team</p>
+            <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
+            <p style="color:#9ca3af;font-size:12px;text-align:center">
+              Ballroom Dance Directory · <a href="${SITE_URL}" style="color:#9ca3af">${SITE_URL}</a>
+            </p>
           </div>
         `,
       });
     } catch (emailErr) {
+      // Non-fatal — claim is already recorded; log but don't fail the request
       console.warn("Resend email error:", emailErr);
     }
 
