@@ -34,18 +34,19 @@ function StudioSearchFallback() {
 export default async function StudiosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; style?: string; q?: string }>;
+  searchParams: Promise<{ page?: string; style?: string; q?: string; state?: string }>;
 }) {
-  const params      = await searchParams;
-  const pageNum     = Math.max(1, Number(params.page ?? "1"));
-  const styleParam  = (params.style ?? "") as DanceStyle | "";
-  const queryParam  = (params.q ?? "").trim();
+  const params       = await searchParams;
+  const pageNum      = Math.max(1, Number(params.page ?? "1"));
+  const styleParam   = (params.style ?? "") as DanceStyle | "";
+  const queryParam   = (params.q     ?? "").trim();
+  const stateParam   = (params.state ?? "").trim();
 
-  // When a style OR free-text query is in the URL, fetch ALL studios server-side.
-  // Without this, StudioSearch only has 48 studios to filter against and city
-  // searches like "Dallas" return zero results.
+  // When a style, free-text query, OR state filter is in the URL, fetch ALL studios
+  // server-side so client-side filtering has the full dataset to work with.
   const isStyleFiltered = styleParam !== "" && DANCE_STYLES.includes(styleParam as DanceStyle);
   const isQueryFiltered = queryParam !== "";
+  const isStateFiltered = stateParam !== "";
 
   let studios, total, totalPages;
   if (isStyleFiltered) {
@@ -53,9 +54,8 @@ export default async function StudiosPage({
     studios    = all;
     total      = all.length;
     totalPages = 1;
-  } else if (isQueryFiltered) {
-    // Load the full directory so the client-side text/city/metro search
-    // has the complete dataset to work with.
+  } else if (isQueryFiltered || isStateFiltered) {
+    // Load the full directory so city/metro/state searches have the complete dataset.
     const all = await getAllStudios();
     studios    = all;
     total      = all.length;
@@ -98,8 +98,12 @@ export default async function StudiosPage({
           >
             {isStyleFiltered
               ? `${styleLabel} Dance Studios`
+              : isQueryFiltered && isStateFiltered
+              ? `Studios near "${queryParam}", ${stateParam.toUpperCase()}`
               : isQueryFiltered
               ? `Studios near "${queryParam}"`
+              : isStateFiltered
+              ? `Dance Studios in ${stateParam.toUpperCase()}`
               : "Private Dance Studios"}
           </h1>
           <p className="text-white/60 text-lg max-w-2xl">

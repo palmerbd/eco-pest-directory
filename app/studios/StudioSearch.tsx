@@ -390,15 +390,16 @@ export function StudioSearch({
   const pathname     = usePathname();
 
   // ── Read initial state from URL params ────────────────────────────────────
-  const [query,     setQuery]     = useState(() => searchParams.get("q")      ?? "");
-  const [city,      setCity]      = useState(() => searchParams.get("city")   ?? "");
-  const [style,     setStyle]     = useState(() => searchParams.get("style")  ?? "");
-  const [chain,     setChain]     = useState(() => searchParams.get("chain")  ?? "");
-  const [minRating, setMinRating] = useState(() => Number(searchParams.get("rating") ?? "0"));
-  const [sortBy,    setSortBy]    = useState(() => searchParams.get("sort")   ?? "rating");
-  const [page,      setPage]      = useState(() => Math.max(1, Number(searchParams.get("page") ?? "1")));
+  const [query,       setQuery]       = useState(() => searchParams.get("q")      ?? "");
+  const [city,        setCity]        = useState(() => searchParams.get("city")   ?? "");
+  const [stateSearch, setStateSearch] = useState(() => searchParams.get("state")  ?? "");
+  const [style,       setStyle]       = useState(() => searchParams.get("style")  ?? "");
+  const [chain,       setChain]       = useState(() => searchParams.get("chain")  ?? "");
+  const [minRating,   setMinRating]   = useState(() => Number(searchParams.get("rating") ?? "0"));
+  const [sortBy,      setSortBy]      = useState(() => searchParams.get("sort")   ?? "rating");
+  const [page,        setPage]        = useState(() => Math.max(1, Number(searchParams.get("page") ?? "1")));
 
-  const hasFilters = !!(query || city || style || chain || minRating);
+  const hasFilters = !!(query || city || stateSearch || style || chain || minRating);
 
   // ── Derive city list directly from live data ──────────────────────────────
   const cities = useMemo(() => {
@@ -426,16 +427,17 @@ export function StudioSearch({
   );
 
   // ── Filter change handlers ────────────────────────────────────────────────
-  function handleQuery(v: string)  { setQuery(v);     setPage(1); updateURL({ q: v,      page: 1 }); }
-  function handleCity(v: string)   { setCity(v);      setPage(1); updateURL({ city: v,   page: 1 }); }
-  function handleStyle(v: string)  { setStyle(v);     setPage(1); updateURL({ style: v,  page: 1 }); }
-  function handleChain(v: string)  { setChain(v);     setPage(1); updateURL({ chain: v,  page: 1 }); }
-  function handleRating(v: number) { setMinRating(v); setPage(1); updateURL({ rating: v, page: 1 }); }
-  function handleSort(v: string)   { setSortBy(v);    setPage(1); updateURL({ sort: v,   page: 1 }); }
-  function handlePage(v: number)   { setPage(v);               updateURL({ page: v }); }
+  function handleQuery(v: string)       { setQuery(v);       setPage(1); updateURL({ q: v,      page: 1 }); }
+  function handleCity(v: string)        { setCity(v);        setPage(1); updateURL({ city: v,   page: 1 }); }
+  function handleStateSearch(v: string) { setStateSearch(v); setPage(1); updateURL({ state: v,  page: 1 }); }
+  function handleStyle(v: string)       { setStyle(v);       setPage(1); updateURL({ style: v,  page: 1 }); }
+  function handleChain(v: string)       { setChain(v);       setPage(1); updateURL({ chain: v,  page: 1 }); }
+  function handleRating(v: number)      { setMinRating(v);   setPage(1); updateURL({ rating: v, page: 1 }); }
+  function handleSort(v: string)        { setSortBy(v);      setPage(1); updateURL({ sort: v,   page: 1 }); }
+  function handlePage(v: number)        { setPage(v);                    updateURL({ page: v }); }
 
   function clearFilters() {
-    setQuery(""); setCity(""); setStyle(""); setChain(""); setMinRating(0); setPage(1);
+    setQuery(""); setCity(""); setStateSearch(""); setStyle(""); setChain(""); setMinRating(0); setPage(1);
     router.replace(pathname, { scroll: false });
   }
 
@@ -472,7 +474,22 @@ export function StudioSearch({
       }
     }
 
-    if (city)      result = result.filter((s) => s.city === city);
+    if (city)  result = result.filter((s) => s.city === city);
+
+    // State filter: accepts abbreviation ("TX"), full name ("Texas"), or partial match
+    if (stateSearch.trim()) {
+      const stExp = expandQuery(stateSearch.trim());
+      if (stExp.stateAbbr) {
+        // Matched a full state name or abbreviation — exact abbr match
+        const abbr = stExp.stateAbbr.toUpperCase();
+        result = result.filter((s) => s.state.toUpperCase() === abbr);
+      } else {
+        // Free-text: partial match on state field (e.g. "New York" → "NY", "new" → all "New *" states)
+        const sq = stateSearch.trim().toLowerCase();
+        result = result.filter((s) => s.state.toLowerCase().includes(sq));
+      }
+    }
+
     if (style)     result = result.filter((s) => s.danceStyles.includes(style as DanceStyle));
     if (chain)     result = result.filter((s) => s.studioChain === (chain as StudioChain));
     if (minRating) result = result.filter((s) => s.rating !== undefined && s.rating >= minRating);
@@ -489,7 +506,7 @@ export function StudioSearch({
     const rest = result.filter((s) => s.tier !== "paid").sort(sortFn);
 
     return [...paid, ...rest];
-  }, [studios, query, city, style, chain, minRating, sortBy]);
+  }, [studios, query, city, stateSearch, style, chain, minRating, sortBy]);
 
   // ── Pagination ────────────────────────────────────────────────────────────
   // When filters are active: client-side pagination over filtered subset.
@@ -553,6 +570,28 @@ export function StudioSearch({
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
+
+            {/* State — free-text, accepts abbreviation or full name */}
+            <div className="relative">
+              <input
+                type="text"
+                value={stateSearch}
+                onChange={(e) => handleStateSearch(e.target.value)}
+                placeholder="State (e.g. TX)"
+                className="px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white text-gray-700
+                           focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent
+                           hover:border-gray-300 transition-colors w-36 pr-7"
+              />
+              {stateSearch && (
+                <button
+                  onClick={() => handleStateSearch("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+                  aria-label="Clear state"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
 
             {/* Dance style */}
             <select value={style} onChange={(e) => handleStyle(e.target.value)} className={SELECT_CLASS}>
@@ -635,6 +674,13 @@ export function StudioSearch({
                                text-yellow-800 text-xs font-medium rounded-full">
                 {city}
                 <button onClick={() => handleCity("")} className="ml-0.5 hover:text-yellow-600">✕</button>
+              </span>
+            )}
+            {stateSearch && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-50 border border-yellow-200
+                               text-yellow-800 text-xs font-medium rounded-full">
+                State: {stateSearch.toUpperCase()}
+                <button onClick={() => handleStateSearch("")} className="ml-0.5 hover:text-yellow-600">✕</button>
               </span>
             )}
             {style && (
