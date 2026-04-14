@@ -461,11 +461,25 @@ export default function CompetitionDashboardPage() {
                 </li>
               ))}
             </ul>
-            <button disabled
-              className="px-6 py-2.5 rounded-xl font-bold text-sm bg-white/20 text-white
-                         cursor-not-allowed opacity-60">
-              Upgrade Coming Soon (Stage 4)
-            </button>
+            <Link
+              href="/competitions/upgrade"
+              className="inline-block px-6 py-2.5 rounded-xl font-bold text-sm transition-all hover:brightness-110"
+              style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)", color: "#111" }}
+            >
+              Upgrade to Featured — $199/yr →
+            </Link>
+          </div>
+        )}
+
+        {/* Featured confirmation */}
+        {claim!.tier === "featured" && (
+          <div className="rounded-2xl p-6 text-center"
+            style={{ background: "linear-gradient(135deg,#78350f 0%,#92400e 100%)" }}>
+            <div className="text-3xl mb-2">⭐</div>
+            <h2 className="font-bold text-yellow-200 text-base mb-1">Your listing is Featured</h2>
+            <p className="text-yellow-300/70 text-sm">
+              Priority placement is active. Your event appears in city widgets and topped search results.
+            </p>
           </div>
         )}
 

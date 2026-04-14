@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { getStudiosByCity, citySlugToName, getAllStudios } from "@/lib/wordpress";
 import { StudioCard, CHAIN_CONFIG, STYLE_LABELS, DanceStyle } from "@/types/studio";
 import { getCityConfig } from "@/lib/neighborhoods";
+import { COMPETITIONS, sortedByDate } from "@/lib/competitions-data";
+import { MONTHS } from "@/types/competition";
 
 export const revalidate = 3600;
 
@@ -271,6 +273,35 @@ export default async function CityPage({
     .sort((a, b) => (b[1] as number) - (a[1] as number))
     .slice(0, 6) as [DanceStyle, number][];
 
+  // ── Nearby competitions widget ────────────────────────────────────────────────
+  // First try exact citySlug match, then fall back to same state (stateAbbr from
+  // any competition in that region) so smaller cities still get relevant events.
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = sortedByDate(
+    COMPETITIONS.filter((c) => c.dateStart && c.dateStart >= today)
+  );
+  const nearbyComps = (
+    // Prefer same city
+    upcoming.filter((c) => c.citySlug === city).length >= 1
+      ? upcoming.filter((c) => c.citySlug === city)
+      // Fall back: state match (derive from WP studios data — first studio's state)
+      : (() => {
+          const stateAbbr = studios[0]?.state
+            ? (() => {
+                // studios store full state name; competitions store stateAbbr
+                // match via stateAbbr from competitions that share same state name
+                const match = COMPETITIONS.find(
+                  (c) => c.state.toLowerCase() === (studios[0]?.state ?? "").toLowerCase()
+                );
+                return match?.stateAbbr ?? null;
+              })()
+            : null;
+          return stateAbbr
+            ? upcoming.filter((c) => c.stateAbbr === stateAbbr)
+            : upcoming; // last resort: show the next 3 nationally
+        })()
+  ).slice(0, 3);
+
   // ── FAQ Schema ────────────────────────────────────────────────────────────────
   // Dynamically built from real studio data — generates rich answer boxes in Google.
 
@@ -527,6 +558,65 @@ export default async function CityPage({
                     </Link>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Upcoming Competitions Near You */}
+            {nearbyComps.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-display font-bold text-gray-900 text-base">
+                    🏆 Upcoming Competitions
+                  </h3>
+                  <Link
+                    href="/competitions"
+                    className="text-xs font-semibold transition-colors"
+                    style={{ color: "#b8922a" }}
+                  >
+                    View all →
+                  </Link>
+                </div>
+                <div className="space-y-3">
+                  {nearbyComps.map((comp) => {
+                    const dateLabel = comp.dateStart
+                      ? new Date(comp.dateStart + "T12:00:00").toLocaleDateString("en-US", {
+                          month: "short", day: "numeric", year: "numeric",
+                        })
+                      : `Typically ${MONTHS[(comp.typicalMonth ?? 1) - 1]}`;
+                    return (
+                      <Link
+                        key={comp.slug}
+                        href={`/competitions/${comp.slug}`}
+                        className="block p-3 rounded-xl border border-gray-100 hover:border-yellow-200
+                                   hover:bg-yellow-50 transition-colors"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 leading-snug truncate">
+                              {comp.name}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-0.5 truncate">
+                              {comp.venue} · {comp.city}, {comp.stateAbbr}
+                            </p>
+                          </div>
+                          {comp.tier === "featured" && (
+                            <span className="shrink-0 text-yellow-500 text-xs font-bold">⭐</span>
+                          )}
+                        </div>
+                        <p className="text-xs font-medium mt-1.5" style={{ color: "#b8922a" }}>
+                          📅 {dateLabel}
+                        </p>
+                      </Link>
+                    );
+                  })}
+                </div>
+                <Link
+                  href="/competitions"
+                  className="mt-4 block text-center text-xs font-semibold py-2 rounded-lg border border-gray-200
+                             text-gray-500 hover:bg-gray-50 transition-colors"
+                >
+                  Browse all competitions →
+                </Link>
               </div>
             )}
 
