@@ -78,15 +78,32 @@ const STYLE_IMAGE: Record<string, string> = {
   multi:    "/images/competition.png",
 };
 
+// ── Org → canonical website ───────────────────────────────────────────────────
+
+const ORG_WEBSITE: Record<string, string> = {
+  "NDCA":        "https://www.ndca.org",
+  "USA Dance":   "https://www.usadance.org",
+  "WDSF":        "https://www.worlddancesport.org",
+  "Independent": "",
+};
+
+const SITE_URL = "https://www.ballroomdancedirectory.com";
+
 // ── Schema.org Event JSON-LD ──────────────────────────────────────────────────
 
 function EventSchema({ comp }: { comp: Competition }) {
+  const heroPath = (comp.styles[0] && STYLE_IMAGE[comp.styles[0]]) || "/images/competition.png";
+  const orgUrl   = ORG_WEBSITE[comp.organization] || comp.website || "";
+  const pageUrl  = `${SITE_URL}/competitions/${comp.slug}`;
+
   const schema = {
     "@context": "https://schema.org",
-    "@type": "DanceEvent",
+    "@type":    "DanceEvent",
     name:        comp.name,
     description: comp.description,
-    url:         comp.website || `https://www.ballroomdancedirectory.com/competitions/${comp.slug}`,
+    url:         comp.website || pageUrl,
+    // ── image (required by Google for rich results) ─────────────────────────
+    image: `${SITE_URL}${heroPath}`,
     location: {
       "@type": "Place",
       name:    comp.venue,
@@ -103,11 +120,28 @@ function EventSchema({ comp }: { comp: Competition }) {
     }),
     eventStatus:         "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    // ── performer (required by Google) ──────────────────────────────────────
+    performer: {
+      "@type": "PerformingGroup",
+      name:    "Competitive Ballroom Dancers",
+    },
+    // ── organizer with url ──────────────────────────────────────────────────
     organizer: {
       "@type": "Organization",
       name:    COMP_ORG_LABELS[comp.organization],
+      ...(orgUrl && { url: orgUrl }),
+    },
+    // ── offers (registration / entry fee) ───────────────────────────────────
+    offers: {
+      "@type":       "Offer",
+      url:           comp.registrationUrl || comp.website || pageUrl,
+      priceCurrency: "USD",
+      ...(comp.entryFeeMin != null && { price: comp.entryFeeMin }),
+      availability:  "https://schema.org/InStock",
+      ...(comp.registrationDeadline && { validThrough: comp.registrationDeadline }),
     },
   };
+
   return (
     <script
       type="application/ld+json"

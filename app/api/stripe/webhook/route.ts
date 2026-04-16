@@ -23,6 +23,10 @@ const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD!;
 // GHL Workflow #2 — fires when a Stripe payment confirms a Featured studio upgrade
 const GHL_STRIPE_WEBHOOK = "https://services.leadconnectorhq.com/hooks/gKAwJUdSQ6QMlAc0QXWb/webhook-trigger/bffde7d8-2595-416c-a347-8726edf35fcf";
 
+// GHL Workflow #3 — fires when a studio subscription is cancelled (cancellation save drip)
+// TODO: Replace with actual Workflow #3 inbound webhook URL once created in GHL
+const GHL_CANCEL_WEBHOOK = "";
+
 function wpAuthHeader() {
   return "Basic " + Buffer.from(`${WP_APP_USER}:${WP_APP_PASSWORD}`).toString("base64");
 }
@@ -155,7 +159,7 @@ export async function POST(req: NextRequest) {
     else {
       const { data: claim } = await supabaseAdmin
         .from("claims")
-        .select("id, studio_slug")
+        .select("id, studio_slug, owner_email")
         .eq("stripe_subscription_id", sub.id)
         .maybeSingle();
 
@@ -167,6 +171,24 @@ export async function POST(req: NextRequest) {
 
         const slug = studioSlug || claim.studio_slug;
         if (slug) await updateWpTier(slug, "claimed");
+
+        // Fire GHL Workflow #3 — moves contact to cancellation save drip (non-fatal)
+        if (GHL_CANCEL_WEBHOOK && claim.owner_email) {
+          try {
+            await fetch(GHL_CANCEL_WEBHOOK, {
+              method:  "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email:        claim.owner_email,
+                studio_slug:  slug,
+                claim_id:     claim.id,
+                tier:         "cancelled",
+              }),
+            });
+          } catch (ghlErr) {
+            console.warn("[webhook] GHL cancel webhook error:", ghlErr);
+          }
+        }
 
         console.log(`[webhook] ⏹ Studio Featured cancelled — claim ${claim.id}, studio ${slug}`);
       }

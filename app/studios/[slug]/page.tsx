@@ -145,11 +145,35 @@ export default async function StudioPage({
   if (!studio) notFound();
 
   // Fetch related studios in the same city (excluding current)
-  const relatedStudios = studio.city
+  const cityStudios = studio.city
     ? (await getStudiosByCity(
         studio.city.toLowerCase().replace(/\s+/g, "-")
-      )).filter((s) => s.slug !== studio.slug).slice(0, 3)
+      )).filter((s) => s.slug !== studio.slug)
     : [];
+
+  // Style-matched related: same city, shares at least one dance style — prioritise paid
+  const primaryStyle = studio.danceStyles[0] ?? null;
+  const styleRelated = primaryStyle
+    ? cityStudios
+        .filter((s) => s.danceStyles.includes(primaryStyle))
+        .sort((a, b) => {
+          if (a.tier === "paid" && b.tier !== "paid") return -1;
+          if (b.tier === "paid" && a.tier !== "paid") return 1;
+          return (b.rating ?? 0) - (a.rating ?? 0);
+        })
+        .slice(0, 3)
+    : [];
+
+  // General city-related: top-rated studios in same city not already in styleRelated
+  const styleRelatedSlugs = new Set(styleRelated.map((s) => s.slug));
+  const relatedStudios = cityStudios
+    .filter((s) => !styleRelatedSlugs.has(s.slug))
+    .sort((a, b) => {
+      if (a.tier === "paid" && b.tier !== "paid") return -1;
+      if (b.tier === "paid" && a.tier !== "paid") return 1;
+      return (b.rating ?? 0) - (a.rating ?? 0);
+    })
+    .slice(0, 3);
 
   // Fetch live GBP rating for paid-tier studios (non-fatal)
   let gbpRating:      number | null = null;
@@ -842,7 +866,64 @@ export default async function StudioPage({
         </div>
       </div>
 
-      {/* Related Studios */}
+      {/* Style-Matched Related Studios */}
+      {styleRelated.length > 0 && primaryStyle && (
+        <section className="bg-white border-t border-gray-100 py-12 px-6">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="font-display font-bold text-gray-900 text-2xl mb-2">
+              Other {STYLE_LABELS[primaryStyle as DanceStyle]} Studios in {studio.city}
+            </h2>
+            <p className="text-gray-500 text-sm mb-6">
+              More {STYLE_LABELS[primaryStyle as DanceStyle].toLowerCase()} instruction nearby
+              &nbsp;·&nbsp;
+              <Link
+                href={`/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}/${primaryStyle.replace(/_/g, "-")}`}
+                className="text-amber-700 font-semibold hover:underline"
+              >
+                See all {STYLE_LABELS[primaryStyle as DanceStyle].toLowerCase()} studios in {studio.city} →
+              </Link>
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {styleRelated.map((s) => {
+                const sChain = CHAIN_CONFIG[s.studioChain];
+                return (
+                  <Link
+                    key={s.slug}
+                    href={`/studios/${s.slug}`}
+                    className="group bg-white rounded-2xl border border-gray-200 p-5 shadow-sm
+                               hover:shadow-md hover:border-yellow-300 transition-all block"
+                  >
+                    <span
+                      className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold mb-3"
+                      style={{ color: sChain.color, background: sChain.bg }}
+                    >
+                      {sChain.label}
+                    </span>
+                    <h3 className="font-display font-bold text-gray-900 text-base mb-1 group-hover:text-amber-800 transition-colors">
+                      {s.title}
+                    </h3>
+                    {s.tagline ? (
+                      <p className="text-gray-500 text-sm italic mb-2 line-clamp-2">{s.tagline}</p>
+                    ) : s.description ? (
+                      <p className="text-gray-500 text-sm mb-2 line-clamp-2">{s.description}</p>
+                    ) : null}
+                    <div className="flex items-center justify-between mt-3">
+                      {s.privateLessonRate && (
+                        <span className="text-sm font-semibold" style={{ color: "#b8922a" }}>
+                          {s.privateLessonRate}
+                        </span>
+                      )}
+                      <span className="text-xs text-gray-400 ml-auto">View studio &rarr;</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Related Studios — general city */}
       {relatedStudios.length > 0 && (
         <section className="bg-gray-50 border-t border-gray-100 py-12 px-6">
           <div className="max-w-5xl mx-auto">

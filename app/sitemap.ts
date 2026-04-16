@@ -2,20 +2,15 @@ import { MetadataRoute } from "next";
 import { getAllStudios, getBlogSlugs } from "@/lib/wordpress";
 import { COMPETITIONS } from "@/lib/competitions-data";
 import { COMP_REGION_LABELS, COMP_STYLE_LABELS } from "@/types/competition";
+import { DANCE_STYLES } from "@/types/studio";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.privatedancedirectory.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
 
 const CITIES = [
-  "los-angeles",
-  "chicago",
-  "dallas",
-  "miami",
-  "houston",
-  "new-york",
-  "austin",
-  "atlanta",
-  "seattle",
-  "denver",
+  "los-angeles", "new-york-city", "chicago", "houston", "dallas",
+  "miami", "phoenix", "atlanta", "seattle", "denver",
+  "las-vegas", "boston", "san-diego", "austin", "tampa",
+  "nashville", "orlando", "portland", "san-antonio", "minneapolis",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -34,6 +29,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "weekly",
     priority: 0.7,
   }));
+
+  // City × Style intersection pages — high-value SEO targets
+  const cityStyleEntries: MetadataRoute.Sitemap = CITIES.flatMap((city) =>
+    DANCE_STYLES.map((style) => ({
+      url: `${BASE_URL}/studios/city/${city}/${style.replace(/_/g, "-")}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.65,
+    }))
+  );
 
   const blogEntries: MetadataRoute.Sitemap = blogSlugs.map((slug) => ({
     url: `${BASE_URL}/blog/${slug}`,
@@ -94,6 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticEntries,
     ...cityEntries,
+    ...cityStyleEntries,
     ...studioEntries,
     ...blogEntries,
     ...competitionEntries,

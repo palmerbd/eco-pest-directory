@@ -1,18 +1,19 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStudiosByCity, citySlugToName, getAllStudios } from "@/lib/wordpress";
-import { StudioCard, CHAIN_CONFIG, STYLE_LABELS, DanceStyle } from "@/types/studio";
+import {
+  getStudiosByCity, citySlugToName, getAllStudios,
+  getMetroSlug, getMetroSuburbs,
+} from "@/lib/wordpress";
+import { StudioCard, CHAIN_CONFIG, STYLE_LABELS, DanceStyle, DANCE_STYLES } from "@/types/studio";
 import { getCityConfig } from "@/lib/neighborhoods";
-import { COMPETITIONS, sortedByDate } from "@/lib/competitions-data";
-import { MONTHS } from "@/types/competition";
 
 export const revalidate = 3600;
 
 // ── Static params ─────────────────────────────────────────────────────────────
 
+// Pre-build only the major metro city hubs; all others render on-demand via ISR.
 export async function generateStaticParams() {
-  // Pre-build only major metros; all others render on-demand via ISR.
   const majorCities = [
     "new-york","los-angeles","chicago","houston","dallas","miami",
     "phoenix","san-antonio","san-diego","atlanta","austin","denver",
@@ -31,7 +32,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { city } = await params;
   const cityName = citySlugToName(city);
-  const studios = await getStudiosByCity(city);
+  const studios  = await getStudiosByCity(city);
   if (!studios.length) return { title: "City Not Found" };
 
   return {
@@ -60,17 +61,24 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-function StudioListCard({ studio }: { studio: StudioCard }) {
+function StudioListCard({ studio, featured = false }: { studio: StudioCard; featured?: boolean }) {
   const chain  = CHAIN_CONFIG[studio.studioChain];
   const styles = studio.danceStyles.slice(0, 4);
 
   return (
     <Link
       href={`/studios/${studio.slug}`}
-      className="group block bg-white rounded-2xl border border-gray-200 hover:border-yellow-400
-                 hover:shadow-xl transition-all duration-200 overflow-hidden"
+      className={`group block bg-white rounded-2xl border transition-all duration-200 overflow-hidden
+        ${featured
+          ? "border-yellow-300 shadow-lg hover:shadow-xl hover:border-yellow-400"
+          : "border-gray-200 hover:border-yellow-400 hover:shadow-xl"
+        }`}
     >
-      <div className="h-1.5" style={{ background: "linear-gradient(90deg, #b8922a, #e8c560)" }} />
+      {/* Gold accent bar — thicker for featured */}
+      <div
+        className={featured ? "h-2" : "h-1.5"}
+        style={{ background: "linear-gradient(90deg, #b8922a, #e8c560)" }}
+      />
       <div className="p-6">
         <div className="flex items-center justify-between mb-3">
           <span
@@ -79,7 +87,12 @@ function StudioListCard({ studio }: { studio: StudioCard }) {
           >
             {chain.label}
           </span>
-          {studio.tier === "paid" && (
+          {featured && (
+            <span className="text-xs font-bold text-yellow-700 bg-yellow-50 px-2.5 py-0.5 rounded-full border border-yellow-300">
+              ⭐ Sponsored
+            </span>
+          )}
+          {!featured && studio.tier === "paid" && (
             <span className="text-xs font-bold text-yellow-700 bg-yellow-50 px-2 py-0.5 rounded-full border border-yellow-200">
               Featured
             </span>
@@ -97,7 +110,7 @@ function StudioListCard({ studio }: { studio: StudioCard }) {
           <p className="text-sm text-gray-500 mb-3 line-clamp-2">{studio.description}</p>
         ) : null}
 
-        {studio.tier !== "free" && studio.rating && (
+        {studio.rating && (
           <div className="flex items-center gap-2 mb-3">
             <Stars rating={studio.rating} />
             {studio.reviewCount && (
@@ -222,7 +235,6 @@ const CITY_CONTENT: Record<string, { intro: string; tip: string }> = {
     intro: "Orlando's tourism industry draws professional dancers from around the world, and many of them teach private lessons between gigs at Walt Disney World, Universal, and the city's show venues. You're likely to find instructors here with performance résumés unmatched in any other mid-size city.",
     tip: "Many Orlando studios offer accelerated programs for visitors — 3-day or week-long intensives are common. If you're in town short-term, ask about crash-course options.",
   },
-  // Suburb cities
   "frisco": {
     intro: "Frisco's rapid growth has brought first-rate private dance studios to this Dallas suburb. With a young, affluent population and strong school arts programs, Frisco has become a serious training ground for competitive ballroom — particularly youth dancers working toward national titles.",
     tip: "Frisco studios often offer family packages and youth lesson programs. If you have children interested in competitive dance, start the conversation early — waitlists form for top junior instructors.",
@@ -241,6 +253,20 @@ const CITY_CONTENT: Record<string, { intro: string; tip: string }> = {
   },
 };
 
+// ── Style descriptions for sidebar ───────────────────────────────────────────
+
+const STYLE_HREFS: Partial<Record<DanceStyle, string>> = {
+  ballroom:     "/ballroom-dance-lessons",
+  latin:        "/latin-dance-lessons",
+  tango:        "/tango-dance-lessons",
+  wedding_dance:"/wedding-dance-lessons",
+  swing:        "/swing-dance-lessons",
+  competition:  "/competition-dance-lessons",
+  salsa:        "/studios?style=salsa",
+  waltz:        "/studios?style=waltz",
+  foxtrot:      "/studios?style=foxtrot",
+};
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function CityPage({
@@ -250,126 +276,45 @@ export default async function CityPage({
 }) {
   const { city } = await params;
   const cityName = citySlugToName(city);
-  const studios = await getStudiosByCity(city);
+  const studios  = await getStudiosByCity(city);
 
   if (!studios.length) notFound();
 
+  // Split featured (paid/claimed) from standard for display priority
+  const featuredStudios = studios
+    .filter((s) => s.tier === "paid")
+    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+  const standardStudios = studios
+    .filter((s) => s.tier !== "paid")
+    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+
   const cityContent = CITY_CONTENT[city];
-  const avgRating = studios
+  const avgRating   = studios
     .filter((s) => s.rating)
-    .reduce((sum, s) => sum + (s.rating || 0), 0) / studios.filter((s) => s.rating).length;
+    .reduce((sum, s) => sum + (s.rating || 0), 0) / (studios.filter((s) => s.rating).length || 1);
 
-  // Sponsored (paid-tier) studios for featured cards
-  const sponsored = studios.filter((s) => s.tier === "paid").slice(0, 3);
-
-  // Style breakdown: count studios per style
-  const styleCounts: Partial<Record<DanceStyle, number>> = {};
+  // Build a style count from local studios
+  const styleCount: Partial<Record<DanceStyle, number>> = {};
   for (const s of studios) {
     for (const style of s.danceStyles) {
-      styleCounts[style] = (styleCounts[style] ?? 0) + 1;
+      styleCount[style as DanceStyle] = (styleCount[style as DanceStyle] ?? 0) + 1;
     }
   }
-  const styleBreakdown = Object.entries(styleCounts)
-    .sort((a, b) => (b[1] as number) - (a[1] as number))
-    .slice(0, 6) as [DanceStyle, number][];
+  const popularStyles = DANCE_STYLES
+    .filter((s) => (styleCount[s] ?? 0) > 0)
+    .sort((a, b) => (styleCount[b] ?? 0) - (styleCount[a] ?? 0))
+    .slice(0, 6);
 
-  // ── Nearby competitions widget ────────────────────────────────────────────────
-  // First try exact citySlug match, then fall back to same state (stateAbbr from
-  // any competition in that region) so smaller cities still get relevant events.
-  const today = new Date().toISOString().slice(0, 10);
-  const upcoming = sortedByDate(
-    COMPETITIONS.filter((c) => c.dateStart && c.dateStart >= today)
-  );
-  const nearbyComps = (
-    // Prefer same city
-    upcoming.filter((c) => c.citySlug === city).length >= 1
-      ? upcoming.filter((c) => c.citySlug === city)
-      // Fall back: state match (derive from WP studios data — first studio's state)
-      : (() => {
-          const stateAbbr = studios[0]?.state
-            ? (() => {
-                // studios store full state name; competitions store stateAbbr
-                // match via stateAbbr from competitions that share same state name
-                const match = COMPETITIONS.find(
-                  (c) => c.state.toLowerCase() === (studios[0]?.state ?? "").toLowerCase()
-                );
-                return match?.stateAbbr ?? null;
-              })()
-            : null;
-          return stateAbbr
-            ? upcoming.filter((c) => c.stateAbbr === stateAbbr)
-            : upcoming; // last resort: show the next 3 nationally
-        })()
-  ).slice(0, 3);
+  // Suburb context
+  const metroSlug   = getMetroSlug(city);
+  const metroSuburbs = city ? getMetroSuburbs(city) : [];
 
-  // ── FAQ Schema ────────────────────────────────────────────────────────────────
-  // Dynamically built from real studio data — generates rich answer boxes in Google.
-
-  // Top styles for this city
-  const topStyles = styleBreakdown
-    .slice(0, 4)
-    .map(([style]) => STYLE_LABELS[style])
-    .join(", ");
-
-  // Price range — use real data if available, otherwise standard industry range
-  const studiosWithPricing = studios.filter((s) => s.privateLessonRate);
-  const pricingAnswer = studiosWithPricing.length > 0
-    ? `Private dance lesson prices in ${cityName} typically range from $75 to $200 per hour depending on the studio and instructor level. Many studios offer discounted intro lesson packages for new students. You can view pricing details on each studio's listing page on Ballroom Dance Directory.`
-    : `Private dance lesson prices in ${cityName} typically range from $75 to $200 per hour for a 45–60 minute session. Intro lessons and package deals are commonly available at lower rates. Check individual studio pages for current pricing.`;
-
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": `How many ballroom dance studios are in ${cityName}?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `There are ${studios.length} ballroom and private dance ${studios.length === 1 ? "studio" : "studios"} listed in ${cityName} on Ballroom Dance Directory. Studios range from independent instructors to nationally recognized chains like Fred Astaire and Arthur Murray.`,
-        },
-      },
-      {
-        "@type": "Question",
-        "name": `What dance styles are available in ${cityName}?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `${cityName} dance studios offer a wide range of styles including ${topStyles || "ballroom, Latin, tango, swing, and wedding dance"}. Many studios offer instruction across multiple styles with the same instructor, making it easy to explore different dances.`,
-        },
-      },
-      {
-        "@type": "Question",
-        "name": `How much do private dance lessons cost in ${cityName}?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": pricingAnswer,
-        },
-      },
-      {
-        "@type": "Question",
-        "name": `Do dance studios in ${cityName} offer beginner lessons?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `Yes. The majority of dance studios in ${cityName} cater to complete beginners and offer introductory lesson packages specifically designed for those with no prior dance experience. Many offer a discounted first lesson so you can try before committing. Use the Ballroom Dance Directory listings to find studios that explicitly offer beginner instruction.`,
-        },
-      },
-      {
-        "@type": "Question",
-        "name": `What is the best ballroom dance studio in ${cityName}?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `The best dance studio in ${cityName} depends on your goals, schedule, and preferred style. Ballroom Dance Directory lists ${studios.length} ${cityName} studios with contact info, dance styles offered, and pricing. Featured studios have been verified by their owners and include photos, hours, and detailed descriptions to help you make the right choice.`,
-        },
-      },
-    ],
-  };
-
-  // Schema.org for city page
+  // Schema.org
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.ballroomdancedirectory.com" },
+      { "@type": "ListItem", "position": 1, "name": "Home",    "item": "https://www.ballroomdancedirectory.com" },
       { "@type": "ListItem", "position": 2, "name": "Studios", "item": "https://www.ballroomdancedirectory.com/studios" },
       { "@type": "ListItem", "position": 3, "name": `Dance Studios in ${cityName}`, "item": `https://www.ballroomdancedirectory.com/studios/city/${city}` },
     ],
@@ -385,120 +330,148 @@ export default async function CityPage({
       "@type": "ListItem",
       "position": i + 1,
       "name": s.title,
-      "url": `/studios/${s.slug}`,
+      "url": `https://www.ballroomdancedirectory.com/studios/${s.slug}`,
     })),
   };
 
+  const state = studios[0]?.state || "";
+
   return (
     <main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      {/* Hero */}
+      {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <section
-        className="py-16 px-6"
-        style={{ background: "linear-gradient(135deg, #0c1428 0%, #1a2d5a 100%)" }}
+        className="relative py-20 px-6 overflow-hidden"
+        style={{ background: "linear-gradient(135deg, #0c1428 0%, #1a2d5a 60%, #2d1f0e 100%)" }}
       >
-        <div className="max-w-5xl mx-auto">
+        {/* Decorative gold overlay pattern */}
+        <div
+          className="absolute inset-0 opacity-5 pointer-events-none"
+          style={{ backgroundImage: "repeating-linear-gradient(45deg, #e8c560 0, #e8c560 1px, transparent 0, transparent 50%)", backgroundSize: "20px 20px" }}
+        />
+
+        <div className="relative max-w-5xl mx-auto">
           {/* Breadcrumb */}
           <nav className="text-sm mb-6">
             <Link href="/" className="text-white/50 hover:text-white transition-colors">Home</Link>
             <span className="text-white/30 mx-2">/</span>
             <Link href="/studios" className="text-white/50 hover:text-white transition-colors">Studios</Link>
             <span className="text-white/30 mx-2">/</span>
+            <Link href="/cities" className="text-white/50 hover:text-white transition-colors">Cities</Link>
+            <span className="text-white/30 mx-2">/</span>
             <span className="text-white/80">{cityName}</span>
           </nav>
 
-          <h1 className="font-display text-white font-bold mb-3"
-            style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)" }}>
-            Ballroom Dance Studios in {cityName}
+          <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#e8c560" }}>
+            {state ? `${state} · ` : ""}Dance Studio Hub
+          </p>
+          <h1 className="font-display text-white font-bold mb-4"
+            style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", lineHeight: 1.1 }}>
+            Private Dance Lessons<br />
+            <span style={{ color: "#e8c560" }}>in {cityName}</span>
           </h1>
-          <p className="text-white/60 text-lg mb-6">
-            {studios.length} top-rated {studios.length === 1 ? "studio" : "studios"} offering private lessons
-            {avgRating > 0 && ` · Avg. rating ${avgRating.toFixed(1)}★`}
+
+          <p className="text-white/60 text-lg mb-8 max-w-2xl">
+            {studios.length} top-rated {studios.length === 1 ? "studio" : "studios"} offering ballroom, Latin,
+            tango, and more{avgRating > 0 ? ` · Avg. ${avgRating.toFixed(1)}★ rated` : ""}.
           </p>
 
-          {/* Stats pills */}
+          {/* Hero stats pills */}
           <div className="flex flex-wrap gap-3">
             <span className="px-4 py-2 rounded-full text-sm font-semibold bg-white/10 text-white/80">
               🎵 {studios.length} Studios
             </span>
             <span className="px-4 py-2 rounded-full text-sm font-semibold bg-white/10 text-white/80">
-              📍 {cityName}, {studios[0]?.state || ""}
+              📍 {cityName}{state ? `, ${state}` : ""}
             </span>
-            <span className="px-4 py-2 rounded-full text-sm font-semibold bg-white/10 text-white/80">
-              ⭐ Avg. {avgRating > 0 ? avgRating.toFixed(1) : "—"} Rating
-            </span>
+            {featuredStudios.length > 0 && (
+              <span className="px-4 py-2 rounded-full text-sm font-semibold" style={{ background: "rgba(184,146,42,0.3)", color: "#e8c560" }}>
+                ⭐ {featuredStudios.length} Featured
+              </span>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Body */}
+      {/* ── Featured / Sponsored Studios ──────────────────────────────────── */}
+      {featuredStudios.length > 0 && (
+        <section className="py-10 px-6 bg-white border-b border-gray-100">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <p className="text-xs font-bold tracking-[0.15em] uppercase mb-1" style={{ color: "#b8922a" }}>
+                  Sponsored Listings
+                </p>
+                <h2 className="font-display font-bold text-gray-900 text-xl">
+                  Featured Studios in {cityName}
+                </h2>
+              </div>
+              <Link
+                href="/claim"
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg
+                           border border-yellow-300 text-yellow-800 bg-yellow-50 hover:bg-yellow-100 transition-colors"
+              >
+                Advertise here →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {featuredStudios.map((studio) => (
+                <StudioListCard key={studio.id} studio={studio} featured />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Main body: studio grid + sidebar ─────────────────────────────── */}
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* Studio grid */}
+          {/* ── Studio grid ─────────────────────────────────────────────── */}
           <div className="lg:col-span-2">
-
-            {/* Sponsored featured studios */}
-            {sponsored.length > 0 && (
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xs font-bold uppercase tracking-widest text-yellow-700 bg-yellow-50 border border-yellow-200 px-2.5 py-1 rounded-full">
-                    ★ Featured Studios
+            {standardStudios.length > 0 ? (
+              <>
+                <h2 className="font-display font-bold text-gray-900 text-xl mb-6">
+                  All Studios in {cityName}
+                  <span className="ml-2 text-sm font-normal text-gray-400">
+                    ({standardStudios.length})
                   </span>
-                </div>
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {sponsored.map((studio) => (
-                    <Link key={studio.id} href={`/studios/${studio.slug}`}
-                      className="group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200"
-                      style={{ border: "2px solid #e8c560" }}>
-                      <div className="px-5 py-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <span className="text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-yellow-700"
-                            style={{ background: "linear-gradient(135deg,#fef9e7,#fdf0c0)" }}>
-                            Sponsored
-                          </span>
-                        </div>
-                        <h3 className="font-display font-bold text-gray-900 text-base mb-1 group-hover:text-yellow-700 transition-colors">
-                          {studio.title}
-                        </h3>
-                        <p className="text-sm text-gray-500 mb-3 line-clamp-2">{studio.description}</p>
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="text-yellow-500 text-base">★</span>
-                          <span className="font-semibold text-gray-800">{studio.rating?.toFixed(1)}</span>
-                          {studio.reviewCount && <span className="text-gray-400">({studio.reviewCount} reviews)</span>}
-                        </div>
-                      </div>
+                  {standardStudios.map((studio) => (
+                    <StudioListCard key={studio.id} studio={studio} />
+                  ))}
+                </div>
+              </>
+            ) : featuredStudios.length > 0 ? (
+              <p className="text-gray-500 text-sm">All studios in {cityName} are shown above.</p>
+            ) : null}
+
+            {/* Metro suburbs note */}
+            {metroSuburbs.length > 0 && (
+              <div className="mt-10 p-5 rounded-xl border border-gray-100 bg-gray-50">
+                <p className="text-sm font-semibold text-gray-700 mb-3">
+                  Also in the {cityName} metro area:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {metroSuburbs.map((suburb) => (
+                    <Link
+                      key={suburb}
+                      href={`/studios/city/${suburb.toLowerCase().replace(/\s+/g, "-")}`}
+                      className="px-3 py-1.5 bg-white rounded-lg border border-gray-200 text-sm text-gray-700
+                                 hover:border-yellow-400 hover:text-yellow-800 transition-colors font-medium"
+                    >
+                      {suburb}
                     </Link>
                   ))}
                 </div>
               </div>
             )}
-
-            {/* All studios heading */}
-            <h2 className="font-display font-bold text-gray-900 text-lg mb-4">
-              All Studios in {cityName}
-              <span className="ml-2 text-sm font-normal text-gray-400">({studios.length})</span>
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {studios.map((studio) => (
-                <StudioListCard key={studio.id} studio={studio} />
-              ))}
-            </div>
           </div>
 
-          {/* Sidebar */}
+          {/* ── Sidebar ──────────────────────────────────────────────────── */}
           <div className="space-y-6">
 
             {/* City intro */}
@@ -516,6 +489,69 @@ export default async function CityPage({
                 </div>
               </div>
             )}
+
+            {/* Browse by style in this city */}
+            {popularStyles.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                <h3 className="font-display font-bold text-gray-900 text-base mb-1">
+                  Browse by Style
+                </h3>
+                <p className="text-xs text-gray-400 mb-4">
+                  Available in {cityName}
+                </p>
+                <div className="space-y-0.5">
+                  {popularStyles.map((style) => (
+                    <Link
+                      key={style}
+                      href={`/studios/city/${city}/${style.replace(/_/g, "-")}`}
+                      className="flex items-center justify-between py-2 px-3 rounded-lg text-sm
+                                 text-gray-700 hover:bg-yellow-50 hover:text-yellow-800 transition-colors group"
+                    >
+                      <span className="font-medium">{STYLE_LABELS[style]}</span>
+                      <span className="text-xs text-gray-400 group-hover:text-yellow-600">
+                        {styleCount[style]} studio{(styleCount[style] ?? 0) !== 1 ? "s" : ""}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Advertise Here CTA */}
+            <div
+              className="rounded-2xl p-6 shadow-sm"
+              style={{ background: "linear-gradient(135deg, #0c1428, #1a2d5a)" }}
+            >
+              <p className="text-xs font-bold tracking-[0.15em] uppercase mb-2" style={{ color: "#e8c560" }}>
+                Studio Owners
+              </p>
+              <h3 className="font-display font-bold text-white text-lg mb-2">
+                Get Featured in {cityName}
+              </h3>
+              <p className="text-white/60 text-sm leading-relaxed mb-5">
+                Reach students actively searching for dance lessons in {cityName}.
+                Sponsored listings appear first, above all standard listings.
+              </p>
+              <div className="space-y-2 mb-5">
+                {[
+                  { label: "Featured listing", price: "$149/mo" },
+                  { label: "Premium + gallery",  price: "$299/mo" },
+                ].map((tier) => (
+                  <div key={tier.label} className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/10">
+                    <span className="text-white/80 text-sm">{tier.label}</span>
+                    <span className="font-bold text-sm" style={{ color: "#e8c560" }}>{tier.price}</span>
+                  </div>
+                ))}
+              </div>
+              <Link
+                href="/claim"
+                className="block text-center w-full py-3 rounded-xl font-bold text-gray-900 text-sm
+                           transition-all hover:brightness-110"
+                style={{ background: "linear-gradient(135deg, #b8922a, #e8c560)" }}
+              >
+                Claim Your Studio →
+              </Link>
+            </div>
 
             {/* Neighborhoods in this city */}
             {(() => {
@@ -543,115 +579,10 @@ export default async function CityPage({
               );
             })()}
 
-            {/* Style breakdown */}
-            {styleBreakdown.length > 0 && (
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                <h3 className="font-display font-bold text-gray-900 text-base mb-3">Browse by Style</h3>
-                <p className="text-xs text-gray-400 mb-3">Available in {cityName}</p>
-                <div className="space-y-0.5">
-                  {styleBreakdown.map(([style, count]) => (
-                    <Link key={style} href={`/studios?style=${style}&city=${cityName}`}
-                      className="flex items-center justify-between py-2 px-3 rounded-lg text-sm
-                                 text-gray-700 hover:bg-yellow-50 hover:text-yellow-800 transition-colors">
-                      <span>{STYLE_LABELS[style]}</span>
-                      <span className="text-xs text-gray-400 font-medium">{count} studios</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Upcoming Competitions Near You */}
-            {nearbyComps.length > 0 && (
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-display font-bold text-gray-900 text-base">
-                    🏆 Upcoming Competitions
-                  </h3>
-                  <Link
-                    href="/competitions"
-                    className="text-xs font-semibold transition-colors"
-                    style={{ color: "#b8922a" }}
-                  >
-                    View all →
-                  </Link>
-                </div>
-                <div className="space-y-3">
-                  {nearbyComps.map((comp) => {
-                    const dateLabel = comp.dateStart
-                      ? new Date(comp.dateStart + "T12:00:00").toLocaleDateString("en-US", {
-                          month: "short", day: "numeric", year: "numeric",
-                        })
-                      : `Typically ${MONTHS[(comp.typicalMonth ?? 1) - 1]}`;
-                    return (
-                      <Link
-                        key={comp.slug}
-                        href={`/competitions/${comp.slug}`}
-                        className="block p-3 rounded-xl border border-gray-100 hover:border-yellow-200
-                                   hover:bg-yellow-50 transition-colors"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 leading-snug truncate">
-                              {comp.name}
-                            </p>
-                            <p className="text-xs text-gray-400 mt-0.5 truncate">
-                              {comp.venue} · {comp.city}, {comp.stateAbbr}
-                            </p>
-                          </div>
-                          {comp.tier === "featured" && (
-                            <span className="shrink-0 text-yellow-500 text-xs font-bold">⭐</span>
-                          )}
-                        </div>
-                        <p className="text-xs font-medium mt-1.5" style={{ color: "#b8922a" }}>
-                          📅 {dateLabel}
-                        </p>
-                      </Link>
-                    );
-                  })}
-                </div>
-                <Link
-                  href="/competitions"
-                  className="mt-4 block text-center text-xs font-semibold py-2 rounded-lg border border-gray-200
-                             text-gray-500 hover:bg-gray-50 transition-colors"
-                >
-                  Browse all competitions →
-                </Link>
-              </div>
-            )}
-
-            {/* Advertise CTA */}
-            <div className="rounded-2xl p-6 text-white" style={{ background: "linear-gradient(135deg,#0c1428,#1a2d5a)" }}>
-              <h3 className="font-display font-bold text-lg mb-2">
-                Studio Owners
-              </h3>
-              <p className="text-white/70 text-sm mb-4">
-                Get Featured in {cityName}
-              </p>
-              <p className="text-white/60 text-xs mb-4 leading-relaxed">
-                Reach students actively searching for dance lessons in {cityName}. Sponsored listings appear first, above all standard listings.
-              </p>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center justify-between bg-white/10 rounded-lg px-3 py-2">
-                  <span className="text-sm font-semibold">Featured listing</span>
-                  <span className="text-yellow-300 font-bold text-sm">$149/mo</span>
-                </div>
-                <div className="flex items-center justify-between bg-white/10 rounded-lg px-3 py-2">
-                  <span className="text-sm font-semibold">Premium + gallery</span>
-                  <span className="text-yellow-300 font-bold text-sm">$299/mo</span>
-                </div>
-              </div>
-              <Link href="/claim"
-                className="block text-center py-2.5 rounded-xl text-sm font-bold text-gray-900 hover:brightness-110 transition-all"
-                style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}>
-                Claim Your Studio →
-              </Link>
-            </div>
-
-            {/* Browse by city */}
+            {/* Browse other major cities */}
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
               <h3 className="font-display font-bold text-gray-900 text-base mb-3">Other Top Markets</h3>
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 {[
                   { slug: "los-angeles",    name: "Los Angeles" },
                   { slug: "new-york-city",  name: "New York City" },
@@ -662,15 +593,13 @@ export default async function CityPage({
                   { slug: "atlanta",        name: "Atlanta" },
                   { slug: "seattle",        name: "Seattle" },
                   { slug: "denver",         name: "Denver" },
-                  { slug: "las-vegas",      name: "Las Vegas" },
                   { slug: "phoenix",        name: "Phoenix" },
                   { slug: "nashville",      name: "Nashville" },
                   { slug: "boston",         name: "Boston" },
                   { slug: "san-diego",      name: "San Diego" },
-                  { slug: "portland",       name: "Portland" },
                   { slug: "austin",         name: "Austin" },
                   { slug: "tampa",          name: "Tampa" },
-                ].filter((c) => c.slug !== city).map((c) => (
+                ].filter((c) => c.slug !== city).slice(0, 10).map((c) => (
                   <Link
                     key={c.slug}
                     href={`/studios/city/${c.slug}`}
@@ -682,12 +611,13 @@ export default async function CityPage({
                   </Link>
                 ))}
               </div>
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                <Link href="/cities" className="text-xs font-semibold text-amber-700 hover:text-amber-900 transition-colors">
+                  View all cities →
+                </Link>
+              </div>
             </div>
 
-            <Link href="/cities"
-              className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-              View all cities →
-            </Link>
             <Link href="/studios"
               className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
               ← All studios directory
@@ -696,7 +626,7 @@ export default async function CityPage({
         </div>
       </div>
 
-      {/* Footer */}
+      {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <footer className="py-10 px-6 bg-white border-t border-gray-100 mt-8">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
@@ -706,6 +636,8 @@ export default async function CityPage({
           <div className="flex gap-6 text-sm text-gray-400">
             <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
             <Link href="/studios" className="hover:text-gray-900 transition-colors">All Studios</Link>
+            <Link href="/cities" className="hover:text-gray-900 transition-colors">Cities</Link>
+            <Link href="/claim" className="hover:text-gray-900 transition-colors">Claim Studio</Link>
           </div>
         </div>
       </footer>

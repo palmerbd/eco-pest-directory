@@ -436,8 +436,8 @@
 
   <div class="overall-bar">
     <h2>Ballroom Dance Directory — Project Pipeline</h2>
-    <div class="big-progress-bar"><div class="big-progress-fill" style="width:99%"></div></div>
-    <div class="you-are-here">▲ ~99% Complete — You are here &nbsp;·&nbsp; Updated Apr 14, 2026</div>
+    <div class="big-progress-bar"><div class="big-progress-fill" style="width:98%"></div></div>
+    <div class="you-are-here">▲ ~98% Complete — You are here &nbsp;·&nbsp; Updated Apr 15, 2026</div>
     <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:16px;">
       <div class="progress-bar-wrap">
         <div class="progress-label"><span style="color:#4ade80">Phase 1</span><span>100%</span></div>
@@ -448,8 +448,8 @@
         <div class="progress-bar"><div class="progress-fill" style="width:99%; background:#3b82f6;"></div></div>
       </div>
       <div class="progress-bar-wrap">
-        <div class="progress-label"><span style="color:#60a5fa">Phase 3</span><span>99%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:99%; background:#3b82f6;"></div></div>
+        <div class="progress-label"><span style="color:#60a5fa">Phase 3</span><span>100%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#3b82f6;"></div></div>
       </div>
       <div class="progress-bar-wrap">
         <div class="progress-label"><span style="color:#fbbf24">Phase 4</span><span>99%</span></div>
@@ -460,8 +460,8 @@
         <div class="progress-bar"><div class="progress-fill" style="width:95%; background:#ec4899;"></div></div>
       </div>
       <div class="progress-bar-wrap">
-        <div class="progress-label"><span style="color:#a78bfa">Phase 6</span><span>15%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:15%; background:#8b5cf6;"></div></div>
+        <div class="progress-label"><span style="color:#a78bfa">Phase 6</span><span>20%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:20%; background:#8b5cf6;"></div></div>
       </div>
     </div>
   </div>
@@ -518,8 +518,8 @@
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Studio photos — <strong>owner upload system live</strong>: Supabase Storage bucket <code>studio-photos</code>, <code>studio_photos</code> table (id, claim_id, studio_slug, url, storage_path), PhotoManager component (up to 6 photos, upload + delete), GET /api/studios/[slug]/photos, POST/DELETE /api/upload/studio-photo. ISR revalidate on change. ✅ Apr 7</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Pricing fields — intro, monthly, drop-in prices mostly unpopulated</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Taglines — deterministic browser-side generator (seed from name+city hash). All 2,451 studios tagged via WP REST API. ✅ Apr 5. <code>scripts/generate-taglines.ts</code> also available for CLI use.</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Chain detection — most studios flagged as independent; no Fred Astaire / Arthur Murray auto-detected by name</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Suburb city grouping — Frisco, Plano show separately instead of under "Dallas"</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Chain detection — <code>scripts/update-chains.mjs</code> detects Fred Astaire / Arthur Murray / Dance With Me by name match + patches WP ACF. App also runs <code>detectChain()</code> at runtime so no stale data. ✅ Apr 15</span></div>
+      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Suburb city grouping — Frisco, Plano show separately instead of under "Dallas". Needs METRO_ALIASES map in lib/wordpress.ts so city filter covers full DFW, PHX, SEA, CHI metros.</span></div>
     </div>
   </div>
 
@@ -527,8 +527,8 @@
   <div class="phase phase-3">
     <div class="phase-header" onclick="togglePhase(this)">
       <span class="phase-title">Phase 3 — Frontend (Next.js)</span>
-      <span class="phase-badge">🔄 MOSTLY DONE</span>
-      <span class="phase-progress">~98%</span>
+      <span class="phase-badge">✅ COMPLETE</span>
+      <span class="phase-progress">100%</span>
       <button class="toggle-btn">▾</button>
     </div>
     <div class="phase-items">
@@ -551,7 +551,7 @@
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Related studios section (same city) — shows up to 3 studios in the same city at bottom of detail page. ✅ Apr 4</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Breadcrumb structured data (Schema.org BreadcrumbList) on studio + city pages — 4-level breadcrumb on detail pages, 3-level on city pages. ✅ Apr 4</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Competition section — Stage 1 complete: <code>types/competition.ts</code>, <code>lib/competitions-data.ts</code> (29 events, fully QA'd), CompetitionCard, CompetitionFilters (client-side search + URL sync), /competitions, /competitions/[slug], /competitions/region/[region], /competitions/style/[style], /competitions/claim stub. SiteNav + sitemap updated. Next.js 16 params Promise fix applied. All 29 competition URLs + city/state/venue/month data verified via web search. Commits 5edb423 + e69e3da. ✅ Apr 13</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">URL-synced filter state on /studios (filters reset on page refresh)</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">URL-synced filter state on /studios — StudioSearch.tsx already syncs all 7 filters (q, city, style, chain, rating, sort, page) via useSearchParams + router.replace(). Confirmed Apr 15.</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Server-side pagination — getStudiosPage() + StudiosPageResult added to lib/wordpress.ts. Reads X-WP-Total + X-WP-TotalPages headers. 48 per page. ✅ Apr 5</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Suburb + extra city content — CITY_CONTENT expanded to 24 markets: added Austin, San Antonio, Tampa, Orlando, Frisco, Plano, Scottsdale, Bellevue + 16 more. "Browse Other Cities" sidebar expanded to 17 links. ✅ Apr 4</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Mobile nav menu — SiteNav.tsx shared component with hamburger drawer, sticky header, active-link detection. Added to layout.tsx — live on all pages. ✅ Apr 4</span></div>
@@ -655,23 +655,26 @@
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Arkansas — Little Rock, Rogers, Fayetteville, Fort Smith, Jonesboro. +131 studios. Was 6.</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done"><strong>947 studios added · 977 collected · 0 failures · Directory: 4,374 · 45 states + DC.</strong> Proxy fixed: switched to Text Search API (nearbysearch type= filter was silently broken). API key now hardcoded server-side in hello.php.</span></div>
       <div class="section-head">AI Content Automation</div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Daily script: scan for studios with no description → generate with Claude Haiku</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Neighborhood-level landing pages — <code>app/studios/city/[city]/[neighborhood]/page.tsx</code> + <code>lib/neighborhoods.ts</code> fully built. Static params generated from CITY_CONFIGS. ✅ Apr 15</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Description generator — <code>scripts/generate-descriptions.ts</code> built. Claude Haiku, same pattern as taglines. Scans WP for blank <code>studio_description</code>, generates 60–90 word SEO descriptions with city + style context, rate-limited 800ms. DRY_RUN / OVERWRITE / LIMIT flags. ✅ Apr 16</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Auto-generate FAQ sections for studio detail pages</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Neighborhood-level landing pages (e.g. /studios/city/los-angeles/hollywood)</span></div>
       <div class="section-head">Additional Niche Directories</div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Yoga Studios Directory (same WP + Next.js stack, ~2 weeks to replicate)</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Martial Arts / BJJ Directory</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Music Lessons Directory</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Pilates Studios Directory</span></div>
       <div class="section-head">SEO Automation</div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Automated internal linking between related studios (same city, same style)</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Auto-generated "Top 10" style posts per city × style combination</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Google News sitemap for blog/content posts</span></div>
+      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Metro city grouping — METRO_ALIASES map in lib/wordpress.ts so "Dallas" filter returns Frisco + Plano + Allen, "Phoenix" returns Scottsdale + Tempe + Mesa, etc. Fixes suburb fragmentation across all metro search results.</span></div>
+      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">City × Style landing pages — dynamic <code>/studios/city/[city]/[style]</code> route (e.g. "Ballroom Dance Studios in Dallas TX"). 24 cities × 11 styles = 264 high-intent SEO pages, all data already in WP.</span></div>
+      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Automated internal linking between related studios (same city, same style) — on detail pages, "Other [style] studios in [city]" section cross-links by style within same city (current related section only links by city)</span></div>
+      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Auto-generated "Top 10" style posts per city × style combination (requires blog/post system in WP — not yet set up)</span></div>
+      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Google News sitemap for blog/content posts (only worthwhile once blog content exists)</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Ahrefs / SEMrush keyword rank tracking setup</span></div>
       <div class="section-head">Automated Franchise Scraper (WP Plugin)</div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Server-side WP plugin: uses Google Places REST API directly (no browser needed)</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Runs monthly via WP-Cron — auto-adds new franchise locations</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">GoHighLevel CRM pipeline for studio owner lead management</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">GHL Phase 2.4 — Stripe cancellation webhook → GHL: <code>GHL_CANCEL_WEBHOOK</code> constant + owner_email added to Supabase query in webhook/route.ts. Fires when subscription cancelled. Activates once Workflow #3 URL is pasted in. ✅ Apr 15</span></div>
+      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">GHL Phase 2.1–2.3 — Add 4-email drip to Workflow #1, BDD-Featured tag to Workflow #2, build Workflow #3 cancellation save sequence. Setup guide: <code>docs/ghl-workflow-setup-guide.md</code>. Manual GHL UI work [YOU].</span></div>
     </div>
   </div>
 
@@ -761,93 +764,156 @@
       </div>
 
       <!-- NEXT TASKS -->
-      <div style="display:flex; align-items:flex-start; gap:12px;">
-        <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
-        <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>State Filter — Bidirectional Normalization</strong> — Added <code>normalizeState()</code> + <code>stateMatches()</code> helpers to StudioSearch.tsx. Normalizes both the user's input AND WP's stored value to a canonical 2-letter abbreviation before comparing — handles "Texas", "TX", "tx", full names, mixed case, any format. 16/16 unit test cases pass. Commit 9bceb62. ✅ Apr 14</span>
-      </div>
-      <div style="display:flex; align-items:flex-start; gap:12px;">
-        <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
-        <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Hero Search Layout — CSS Module Fix</strong> — Desktop (1024px+): City / State / Style in one row + full-width button below. State column is half the width of city (2fr / 1fr / 1.5fr). Tailwind v4 was silently ignoring arbitrary grid-template-columns values; fixed with <code>hero-search.module.css</code> which Next.js processes independently. Mobile/tablet 2×2 grid unchanged. Commits bc6c81d → 1c5cafe. ✅ Apr 14</span>
-      </div>
-      <div style="display:flex; align-items:flex-start; gap:12px;">
-        <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
-        <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Vercel Usage Weekly Monitor</strong> — Scheduled task created in Cowork (every Monday 9 AM CT). Checks Fluid Active CPU usage vs. 4-hour free tier limit. Reports GREEN/YELLOW/ORANGE/RED status + days remaining in billing month. Notifies in Cowork on completion. ✅ Apr 14</span>
-      </div>
-      <div style="display:flex; align-items:flex-start; gap:12px;">
-        <span style="background:#065f46; color:#d1fae5; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
-        <span style="font-size:13px; color:#6b7280; line-height:1.5; text-decoration:line-through;"><strong>Competition Stage 2 — Claim Flow</strong> — Full organizer claim wizard: 3-step claim flow (/competitions/claim), magic link OTP via Supabase Auth, callback handler (/competitions/claim/callback), Supabase <code>competition_claims</code> + <code>competition_overrides</code> tables (migration 005 run in prod), POST /api/competition-claim + GET /api/competition-claim/status API routes, organizer dashboard (/competitions/dashboard) with status cards + Stage 3 edit placeholder, Resend emails (admin + organizer, blue branding), "✓ Verified Organizer" badge on competition detail pages, "Claim this listing" CTA on all 29 competition detail pages. Commits 81eb28b. ✅ Apr 14</span>
-      </div>
+      <div style="margin:16px 0 8px; font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px;">⬇ Next Tasks — Priority Order (Updated Apr 16)</div>
 
-      <div style="margin:16px 0 8px; font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px;">⬇ Next Tasks — Priority Order (Updated Apr 14)</div>
-
-      <!-- ── Competition Stages completed block ─── -->
-      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:4px;">
-        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0f00; border:1px solid #f59e0b; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#d97706; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</span>
         <div>
-          <span style="font-size:13px; color:#d1fae5; line-height:1.5; font-weight:700; text-decoration:line-through;">Competition Stage 2 — Claim Flow ✅ Apr 14</span>
-          <span style="display:block; font-size:12px; color:#a7f3d0; line-height:1.6; margin-top:6px; text-decoration:line-through;">3-step wizard, magic link OTP, Supabase competition_claims table (migration 005), callback page, organizer dashboard, API routes, Verified Organizer badge on detail pages, Resend emails. All 29 competitions claimable.</span>
-        </div>
-      </div>
-      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:4px;">
-        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
-        <div>
-          <span style="font-size:13px; color:#d1fae5; line-height:1.5; font-weight:700; text-decoration:line-through;">Competition Stage 3 — Organizer Edit Dashboard ✅ Apr 14</span>
-          <span style="display:block; font-size:12px; color:#a7f3d0; line-height:1.6; margin-top:6px; text-decoration:line-through;">Full edit form on /competitions/dashboard: dates, venue, description, website, registration URL + deadline. POST /api/competition-override validates Bearer token, upserts to competition_overrides, calls revalidatePath() so changes go live in seconds. Detail page merges overrides over seed data via Promise.all parallel fetch.</span>
-        </div>
-      </div>
-      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:12px;">
-        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
-        <div>
-          <span style="font-size:13px; color:#d1fae5; line-height:1.5; font-weight:700; text-decoration:line-through;">Competition Stage 4 — Featured Upgrade + City Widget ✅ Apr 14</span>
-          <span style="display:block; font-size:12px; color:#a7f3d0; line-height:1.6; margin-top:6px; text-decoration:line-through;">$199/yr Stripe checkout (/competitions/upgrade + /success). POST /api/stripe/competition-checkout (Bearer auth, approved claim check, annual subscription). Webhook extended: competition_slug metadata → competition_claims.tier = "featured"; cancellation reverts to "free". Dashboard upgrade CTA live. "Upcoming Competitions Near You" widget on all city landing pages (city → state → national fallback, hidden when empty). Featured confirmation panel on dashboard.</span>
+          <span style="font-size:13px; color:#fef3c7; line-height:1.5; font-weight:700;">🧪 Stripe Webhook End-to-End Test <span style="font-weight:400; font-size:11px; color:#fcd34d;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#fcd34d; line-height:1.6; margin-top:6px;">dashboard.stripe.com/webhooks → verify endpoint for ballroomdancedirectory.com/api/stripe/webhook → send test event <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">checkout.session.completed</code> using a claimed studio + test card <code style="background:#2d1d00; padding:1px 5px; border-radius:3px;">4242 4242 4242 4242</code> → confirm Supabase claims.tier flips to "paid" → Featured badge + StudioProfileEditor + PhotoManager appear on dashboard → PromoBar + SocialLinks + ReviewsSection show on studio page. Full path must work before outreach.</span>
         </div>
       </div>
 
-      <div style="border-top:1px solid #1e3a5f; margin: 4px 0 16px;"></div>
-      <div style="font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">🎯 Next 5 Priorities — Apr 14, 2026</div>
-
-      <!-- #1 -->
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0f00; border:1px solid #f59e0b; border-radius:10px; padding:14px 16px; margin-bottom:8px;">
-        <span style="background:#d97706; color:#fff; font-weight:800; font-size:12px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</span>
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0800; border:1px solid #f97316; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#ea580c; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</span>
         <div>
-          <span style="font-size:13px; color:#fef3c7; line-height:1.5; font-weight:700;">🧪 Stripe E2E Test — Studios &amp; Competition Featured <span style="font-weight:400; font-size:11px; color:#fcd34d;">[YOU]</span></span>
-          <span style="display:block; font-size:12px; color:#fcd34d; line-height:1.6; margin-top:6px;"><strong>Step 1 — Studios (existing):</strong> stripe.com/dashboard → Webhooks → verify <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">ballroomdancedirectory.com/api/stripe/webhook</code> is live → test checkout with card <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">4242 4242 4242 4242</code> on a claimed studio → confirm Supabase <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">claims.tier = "paid"</code> → Featured badge + PhotoManager + ProfileEditor appear on dashboard → PromoBar + Reviews + SocialLinks show on studio detail page.<br><strong>Step 2 — Competition (new):</strong> Stripe dashboard → Products → create $199/yr annual product → copy the Price ID → Vercel dashboard → add env var <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">STRIPE_COMP_PRICE_ID=price_xxx</code> → redeploy → run test checkout at <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">/competitions/upgrade</code> → confirm <code style="background:#2d1d00;padding:1px 4px;border-radius:3px;">competition_claims.tier = "featured"</code> → ⭐ badge appears on competition detail page. <strong>Must pass before outreach.</strong></span>
+          <span style="font-size:13px; color:#fed7aa; line-height:1.5; font-weight:700;">📊 Google Search Console Data Review — OVERDUE <span style="font-weight:400; font-size:11px; color:#fb923c;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#fdba74; line-height:1.6; margin-top:6px;">Sitemap submitted Apr 1 — data window is fully open (Apr 13+). Pull the Performance report in GSC: which studio/city pages are getting impressions? Which queries are driving clicks? Look for any near-page-1 terms (positions 6–15) to prioritize for content + outreach. This is the first real signal on where to focus investment.</span>
         </div>
       </div>
 
-      <!-- #2 -->
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#1a0800; border:1px solid #f97316; border-radius:10px; padding:14px 16px; margin-bottom:8px;">
-        <span style="background:#ea580c; color:#fff; font-weight:800; font-size:12px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</span>
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1f12; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</span>
         <div>
-          <span style="font-size:13px; color:#fed7aa; line-height:1.5; font-weight:700;">📊 Google Search Console — First Real Data Review <span style="font-weight:400; font-size:11px; color:#fb923c;">[YOU]</span></span>
-          <span style="display:block; font-size:12px; color:#fdba74; line-height:1.6; margin-top:6px;">Sitemap submitted Apr 1, full GSC data window now open (14 days). Go to <strong>search.google.com/search-console</strong> → ballroomdancedirectory.com → Performance. Check: (a) total impressions + clicks trend week-over-week, (b) queries driving clicks — any studio, city, or style keywords breaking through?, (c) positions 6–20 — these are your fastest ranking wins with a small content push, (d) Coverage → any new Excluded or Error pages. Log findings in a notes doc — this shapes where to focus outreach + content investment next.</span>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">🚀 Connect Apollo.io + Begin Studio Outreach <span style="font-weight:400; font-size:11px; color:#86efac;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Set up Apollo.io account → search for studio owner contacts in the LA market (sort by review count + rating, target independent studios first). Load the 3-email Day 0/4/8 sequence from <strong>Studio_Outreach_Campaign.docx</strong> into Apollo's sequencer for automated follow-ups. Log responses in <strong>Studio_Outreach_Tracker.xlsx</strong>. <strong>Goal: first paid subscriber.</strong></span>
+          <span style="display:block; font-size:11px; color:#4ade80; margin-top:8px; font-weight:700;">📋 Featured studios now have a compelling suite to sell: custom description, social links, Google Reviews, promo banner, and photo gallery. This is the strongest value prop yet.</span>
         </div>
       </div>
 
-      <!-- #3 -->
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1f12; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:8px;">
-        <span style="background:#16a34a; color:#fff; font-weight:800; font-size:12px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</span>
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #3b82f6; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#1d4ed8; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">4</span>
         <div>
-          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">🚀 Apollo.io — Begin Studio Outreach (First Paid Subscriber) <span style="font-weight:400; font-size:11px; color:#86efac;">[YOU]</span></span>
-          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Stripe test must pass first (task #1). Then: apollo.io → search dance studios in Los Angeles → filter by 4+ stars, 50+ reviews, independent (not Arthur Murray/Fred Astaire chain) → export contacts → load 3-email Day 0/4/8 sequence from <strong>Studio_Outreach_Campaign.docx</strong> into Apollo sequencer → log each batch in <strong>Studio_Outreach_Tracker.xlsx</strong>. Target 15 contacts/week. The value prop is now complete: Featured badge, photo gallery, custom description, Google Reviews, promo banner, lead capture form. Goal: first $49/mo subscriber.</span>
+          <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">🔗 GHL CRM Drip Sequences <span style="font-weight:400; font-size:11px; color:#93c5fd;">[YOU]</span></span>
+          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">Webhooks are wired. Three manual GHL UI tasks remain: (A) Add 4-email drip to Workflow #1 — guide in <code>docs/ghl-workflow-setup-guide.md</code>. (B) Add BDD-Featured tag + onboarding email to Workflow #2. (C) Build Workflow #3 cancellation save sequence — then paste its inbound webhook URL into <code>GHL_CANCEL_WEBHOOK</code> in <code>app/api/stripe/webhook/route.ts</code>.</span>
         </div>
       </div>
 
-      <!-- #4 -->
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #3b82f6; border-radius:10px; padding:14px 16px; margin-bottom:8px;">
-        <span style="background:#1d4ed8; color:#fff; font-weight:800; font-size:12px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">4</span>
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #3b82f6; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#1d4ed8; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">5</span>
         <div>
           <span style="font-size:13px; color:#dbeafe; line-height:1.5; font-weight:700;">⚖️ Legal Baseline <span style="font-weight:400; font-size:11px; color:#93c5fd;">[YOU]</span></span>
-          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">(a) <strong>DMCA agent registration</strong> — copyright.gov/dmca-directory, $6 one-time fee, required before any serious marketing push. (b) <strong>Attorney review</strong> — Terms of Service + Privacy Policy reviewed by an IP attorney before first paid subscriber signs up. (c) <strong>Franchise outreach</strong> — send the 3 franchise intro emails (Arthur Murray, Fred Astaire, Dance With Me) — drafts already written in <code>outreach-emails/</code>. All three are YOUR actions, no code needed.</span>
+          <span style="display:block; font-size:12px; color:#93c5fd; line-height:1.6; margin-top:6px;">(a) Register DMCA designated agent at copyright.gov ($6 one-time — required before marketing push). (b) Engage IP attorney for Terms + Privacy review before first paid subscriber. (c) Send franchise outreach emails to Arthur Murray, Fred Astaire, Dance With Me — drafts in <code>outreach-emails/</code>. All three are YOUR actions — no code needed.</span>
         </div>
       </div>
 
-      <!-- #5 -->
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d1526; border:1px solid #8b5cf6; border-radius:10px; padding:14px 16px; margin-bottom:8px;">
-        <span style="background:#6d28d9; color:#fff; font-weight:800; font-size:12px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">5</span>
+      <div style="margin:20px 0 8px; font-size:11px; font-weight:700; color:#4ade80; text-transform:uppercase; letter-spacing:1px;">🤖 Autonomous Dev Queue (No Input Needed)</div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D1</span>
         <div>
-          <span style="font-size:13px; color:#ede9fe; line-height:1.5; font-weight:700;">🔗 GoHighLevel CRM Pipeline <span style="font-weight:400; font-size:11px; color:#c4b5fd;">[YOU + DEV]</span></span>
-          <span style="display:block; font-size:12px; color:#c4b5fd; line-height:1.6; margin-top:6px;">Set up a 3-stage pipeline in GoHighLevel: <strong>Claimed → Outreach Active → Featured (Paid)</strong>. Wire the Supabase claim webhook to auto-create a GHL contact when a studio is claimed. Wire the Stripe paid webhook to advance the contact to the Featured stage. This gives you one CRM view across all studio owner interactions — follow-ups, objections, churn risk — instead of managing it manually in spreadsheets. Dev effort is ~4 hrs for the webhook bridges; GHL pipeline setup is YOU.</span>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Metro City Grouping</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add <code>METRO_ALIASES</code> map to <code>lib/wordpress.ts</code> so city filter searches include suburbs: Dallas → Frisco, Plano, Allen; Phoenix → Scottsdale, Tempe, Mesa; Seattle → Bellevue, Kirkland; Chicago → Naperville, Schaumburg. Pure code change, no data entry.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D2</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">City × Style SEO Landing Pages</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">New dynamic route <code>/studios/city/[city]/[style]</code> (e.g. "Ballroom Dance Studios in Dallas, TX"). 24 cities × 11 styles = 264 high-intent pages. All data already in WP — no scraping needed. Each page auto-populated from existing studio filter. Strong SEO targets.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D3</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Style-Based Internal Linking on Detail Pages</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Extend the existing "Related Studios" section on studio detail pages to cross-link by style within the same city (e.g. "Other Latin dance studios in Dallas"). Current section only groups by city. Deeper crawl links + better SEO relevance.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D4</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Competition Stage 2 — Full Claim Flow</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Build out from the existing <code>/competitions/claim</code> stub (on GitHub — do a <code>git pull</code> first). Supabase <code>competition_claims</code> table + RLS. Magic link OTP auth. Resend confirmation emails. Organizer dashboard at <code>/competitions/dashboard</code>. Mirrors studio claim flow exactly.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px; opacity:0.55;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">✓</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700; text-decoration:line-through;">D5 — Description Generator Script</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;"><code>scripts/generate-descriptions.ts</code> built. Claude Haiku, 60–90 word SEO descriptions, DRY_RUN/OVERWRITE/LIMIT flags. ✅ Apr 16</span>
+        </div>
+      </div>
+
+      <div style="margin:16px 0 8px; font-size:11px; font-weight:700; color:#4ade80; text-transform:uppercase; letter-spacing:1px;">🤖 Autonomous Dev Queue — Next Batch (Apr 16)</div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D6</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">FAQ Sections on Studio Detail Pages</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add 4-question FAQ accordion to <code>app/studios/[slug]/page.tsx</code> with FAQPage JSON-LD schema. Questions cover cost, styles, beginner welcome, and booking. Data driven from studio fields (price, styles, city). Targets "how much does X cost" and "is X good for beginners" voice/featured snippet queries.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D7</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Breadcrumb JSON-LD on Competition Pages</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add BreadcrumbList schema to <code>app/competitions/[slug]/page.tsx</code>, <code>app/competitions/region/[region]/page.tsx</code>, and <code>app/competitions/style/[style]/page.tsx</code>. 4-level: Home → Competitions → [Region/Style] → [Name]. Matches studio page breadcrumb pattern already built.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D8</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">OpenGraph Images for City &amp; Style Pages</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add <code>openGraph.images</code> to <code>generateMetadata()</code> in city pages (<code>/studios/city/[city]</code>) and city×style pages (<code>/studios/city/[city]/[style]</code>). Use style-mapped hero images. Currently these pages get no OG image for link previews on social/messaging. No new images needed — reuse existing <code>/images/</code> assets.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D9</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Competition Sitemap Expansion</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Extend <code>app/sitemap.ts</code> to include competition region pages (<code>/competitions/region/[region]</code>) and style pages (<code>/competitions/style/[style]</code>) — currently missing from sitemap despite pages existing. Also add <code>alternates.canonical</code> to competition detail page <code>generateMetadata()</code>.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D10</span>
+        <div>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Canonical URL Tags on All Pages</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add <code>alternates: { canonical: fullUrl }</code> to <code>generateMetadata()</code> in studio detail, city, city×style, and competition pages. Google requires explicit canonicals to prevent duplicate content issues as the sitemap grows past 1,000 URLs. One-line add per page type.</span>
+        </div>
+      </div>
+
+      <div style="margin:16px 0 8px; font-size:11px; font-weight:700; color:#a78bfa; text-transform:uppercase; letter-spacing:1px;">🏆 Competition Feature — Stages 2–4 (Dev Queue)</div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d0a1f; border:1px solid #7c3aed; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#6d28d9; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">A</span>
+        <div>
+          <span style="font-size:13px; color:#ede9fe; line-height:1.5; font-weight:700;">Competition Stage 2 — Claim Flow (~7 hrs)</span>
+          <span style="display:block; font-size:12px; color:#c4b5fd; line-height:1.6; margin-top:6px;">Supabase <code>competition_claims</code> table + RLS. Magic link OTP auth via /competitions/claim/verify. Resend confirmation emails (admin + claimant). Organizer dashboard stub at /competitions/dashboard. Same pattern as studio claim flow.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d0a1f; border:1px solid #7c3aed; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#6d28d9; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">B</span>
+        <div>
+          <span style="font-size:13px; color:#ede9fe; line-height:1.5; font-weight:700;">Competition Stage 3 — Organizer Dashboard (~7 hrs)</span>
+          <span style="display:block; font-size:12px; color:#c4b5fd; line-height:1.6; margin-top:6px;">Claimed organizers can update dates, description, website URL, and registration URL via the dashboard. Changes write back to <code>competitions-data.ts</code> override layer (or Supabase overrides table). ISR revalidation on save.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0d0a1f; border:1px solid #7c3aed; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+        <span style="background:#6d28d9; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">C</span>
+        <div>
+          <span style="font-size:13px; color:#ede9fe; line-height:1.5; font-weight:700;">Competition Stage 4 — Featured Upgrade + City Widget (~10 hrs)</span>
+          <span style="display:block; font-size:12px; color:#c4b5fd; line-height:1.6; margin-top:6px;">$199/year Stripe product for competition Featured tier. City landing pages get "Upcoming Competitions Near You" widget showing the nearest 3 competitions. Competition detail pages get a "Sponsor This Page" / city-ad slot for paid advertisers.</span>
         </div>
       </div>
     </div>
