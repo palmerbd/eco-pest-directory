@@ -859,35 +859,35 @@
         </div>
       </div>
 
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px; opacity:0.55;">
         <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D7</span>
         <div>
-          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Breadcrumb JSON-LD on Competition Pages</span>
-          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add BreadcrumbList schema to <code>app/competitions/[slug]/page.tsx</code>, <code>app/competitions/region/[region]/page.tsx</code>, and <code>app/competitions/style/[style]/page.tsx</code>. 4-level: Home → Competitions → [Region/Style] → [Name]. Matches studio page breadcrumb pattern already built.</span>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700; text-decoration:line-through;">Breadcrumb JSON-LD on Competition Pages</span>
+          <span style="display:block; font-size:11px; color:#4ade80; margin-top:4px;">✓ Done Apr 16 — BreadcrumbList on [slug], region/[region], style/[style]</span>
         </div>
       </div>
 
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px; opacity:0.55;">
         <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D8</span>
         <div>
-          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">OpenGraph Images for City &amp; Style Pages</span>
-          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add <code>openGraph.images</code> to <code>generateMetadata()</code> in city pages (<code>/studios/city/[city]</code>) and city×style pages (<code>/studios/city/[city]/[style]</code>). Use style-mapped hero images. Currently these pages get no OG image for link previews on social/messaging. No new images needed — reuse existing <code>/images/</code> assets.</span>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700; text-decoration:line-through;">OpenGraph Images for City &amp; Style Pages</span>
+          <span style="display:block; font-size:11px; color:#4ade80; margin-top:4px;">✓ Done Apr 16 — STYLE_OG_IMAGE map on city×style; ballroom.png on city hub; canonical added to both</span>
         </div>
       </div>
 
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px; opacity:0.55;">
         <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D9</span>
         <div>
-          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Competition Sitemap Expansion</span>
-          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Extend <code>app/sitemap.ts</code> to include competition region pages (<code>/competitions/region/[region]</code>) and style pages (<code>/competitions/style/[style]</code>) — currently missing from sitemap despite pages existing. Also add <code>alternates.canonical</code> to competition detail page <code>generateMetadata()</code>.</span>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700; text-decoration:line-through;">Competition Sitemap Expansion</span>
+          <span style="display:block; font-size:11px; color:#4ade80; margin-top:4px;">✓ Done — region + style entries already in sitemap (prev session); canonical tags added to all 3 competition page types Apr 16</span>
         </div>
       </div>
 
       <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
         <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D10</span>
         <div>
-          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Canonical URL Tags on All Pages</span>
-          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add <code>alternates: { canonical: fullUrl }</code> to <code>generateMetadata()</code> in studio detail, city, city×style, and competition pages. Google requires explicit canonicals to prevent duplicate content issues as the sitemap grows past 1,000 URLs. One-line add per page type.</span>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Canonical URL Tags — Studio Detail Page</span>
+          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add <code>alternates: { canonical: fullUrl }</code> to <code>generateMetadata()</code> in <code>app/studios/[slug]/page.tsx</code>. City, city×style, and all competition pages already have canonical tags. Only studio detail page remains.</span>
         </div>
       </div>
 
