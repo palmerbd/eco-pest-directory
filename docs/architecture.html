@@ -436,32 +436,32 @@
 
   <div class="overall-bar">
     <h2>Ballroom Dance Directory — Project Pipeline</h2>
-    <div class="big-progress-bar"><div class="big-progress-fill" style="width:98%"></div></div>
-    <div class="you-are-here">▲ ~98% Complete — You are here &nbsp;·&nbsp; Updated Apr 15, 2026</div>
+    <div class="big-progress-bar"><div class="big-progress-fill" style="width:99%"></div></div>
+    <div class="you-are-here">▲ ~99% Complete — You are here &nbsp;·&nbsp; Updated Apr 17, 2026</div>
     <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:16px;">
       <div class="progress-bar-wrap">
         <div class="progress-label"><span style="color:#4ade80">Phase 1</span><span>100%</span></div>
         <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#22c55e;"></div></div>
       </div>
       <div class="progress-bar-wrap">
-        <div class="progress-label"><span style="color:#60a5fa">Phase 2</span><span>99%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:99%; background:#3b82f6;"></div></div>
+        <div class="progress-label"><span style="color:#60a5fa">Phase 2</span><span>100%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#3b82f6;"></div></div>
       </div>
       <div class="progress-bar-wrap">
         <div class="progress-label"><span style="color:#60a5fa">Phase 3</span><span>100%</span></div>
         <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#3b82f6;"></div></div>
       </div>
       <div class="progress-bar-wrap">
-        <div class="progress-label"><span style="color:#fbbf24">Phase 4</span><span>99%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:99%; background:#f59e0b;"></div></div>
+        <div class="progress-label"><span style="color:#fbbf24">Phase 4</span><span>100%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#f59e0b;"></div></div>
       </div>
       <div class="progress-bar-wrap">
         <div class="progress-label"><span style="color:#f472b6">Phase 5</span><span>95%</span></div>
         <div class="progress-bar"><div class="progress-fill" style="width:95%; background:#ec4899;"></div></div>
       </div>
       <div class="progress-bar-wrap">
-        <div class="progress-label"><span style="color:#a78bfa">Phase 6</span><span>20%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:20%; background:#8b5cf6;"></div></div>
+        <div class="progress-label"><span style="color:#a78bfa">Phase 6</span><span>60%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:60%; background:#8b5cf6;"></div></div>
       </div>
     </div>
   </div>
@@ -499,8 +499,8 @@
   <div class="phase phase-2">
     <div class="phase-header" onclick="togglePhase(this)">
       <span class="phase-title">Phase 2 — Data Layer</span>
-      <span class="phase-badge">🔄 IN PROGRESS</span>
-      <span class="phase-progress">~97%</span>
+      <span class="phase-badge">✅ COMPLETE</span>
+      <span class="phase-progress">100%</span>
       <button class="toggle-btn">▾</button>
     </div>
     <div class="phase-items">
@@ -519,7 +519,7 @@
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Pricing fields — intro, monthly, drop-in prices mostly unpopulated</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Taglines — deterministic browser-side generator (seed from name+city hash). All 2,451 studios tagged via WP REST API. ✅ Apr 5. <code>scripts/generate-taglines.ts</code> also available for CLI use.</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Chain detection — <code>scripts/update-chains.mjs</code> detects Fred Astaire / Arthur Murray / Dance With Me by name match + patches WP ACF. App also runs <code>detectChain()</code> at runtime so no stale data. ✅ Apr 15</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Suburb city grouping — Frisco, Plano show separately instead of under "Dallas". Needs METRO_ALIASES map in lib/wordpress.ts so city filter covers full DFW, PHX, SEA, CHI metros.</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Suburb city grouping — METRO_ALIASES map in lib/wordpress.ts. 21 metros, 200+ suburb aliases. getMetroSlug() + getMetroSuburbs() exported. getStudiosByCity() expands hub searches to include satellite cities. ✅ Apr 16</span></div>
     </div>
   </div>
 
@@ -562,8 +562,8 @@
   <div class="phase phase-4">
     <div class="phase-header" onclick="togglePhase(this)">
       <span class="phase-title">Phase 4 — SEO Launch</span>
-      <span class="phase-badge">🔄 IN PROGRESS</span>
-      <span class="phase-progress">~98%</span>
+      <span class="phase-badge">✅ COMPLETE</span>
+      <span class="phase-progress">100%</span>
       <button class="toggle-btn">▾</button>
     </div>
     <div class="phase-items">
@@ -621,7 +621,7 @@
     <div class="phase-header" onclick="togglePhase(this)">
       <span class="phase-title">Phase 6 — Scale & Automate</span>
       <span class="phase-badge">⏳ LATER</span>
-      <span class="phase-progress">~15%</span>
+      <span class="phase-progress">~60%</span>
       <button class="toggle-btn">▾</button>
     </div>
     <div class="phase-items">
@@ -664,8 +664,8 @@
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Music Lessons Directory</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Pilates Studios Directory</span></div>
       <div class="section-head">SEO Automation</div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Metro city grouping — METRO_ALIASES map in lib/wordpress.ts so "Dallas" filter returns Frisco + Plano + Allen, "Phoenix" returns Scottsdale + Tempe + Mesa, etc. Fixes suburb fragmentation across all metro search results.</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">City × Style landing pages — dynamic <code>/studios/city/[city]/[style]</code> route (e.g. "Ballroom Dance Studios in Dallas TX"). 24 cities × 11 styles = 264 high-intent SEO pages, all data already in WP.</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Metro city grouping — METRO_ALIASES map in lib/wordpress.ts. "Dallas" returns Frisco + Plano + Allen; "Phoenix" returns Scottsdale + Tempe + Mesa, etc. 21 metros, 200+ suburb aliases. ✅ Apr 16</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">City × Style landing pages — <code>/studios/city/[city]/[style]</code> live. 20 cities × 11 styles = 220 high-intent SEO pages, all driven from WP data. OG images + canonical tags added. ✅ Apr 16</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Automated internal linking between related studios (same city, same style) — on detail pages, "Other [style] studios in [city]" section cross-links by style within same city (current related section only links by city)</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Auto-generated "Top 10" style posts per city × style combination (requires blog/post system in WP — not yet set up)</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Google News sitemap for blog/content posts (only worthwhile once blog content exists)</span></div>
