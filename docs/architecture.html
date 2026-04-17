@@ -657,7 +657,7 @@
       <div class="section-head">AI Content Automation</div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Neighborhood-level landing pages — <code>app/studios/city/[city]/[neighborhood]/page.tsx</code> + <code>lib/neighborhoods.ts</code> fully built. Static params generated from CITY_CONFIGS. ✅ Apr 15</span></div>
       <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">Description generator — <code>scripts/generate-descriptions.ts</code> built. Claude Haiku, same pattern as taglines. Scans WP for blank <code>studio_description</code>, generates 60–90 word SEO descriptions with city + style context, rate-limited 800ms. DRY_RUN / OVERWRITE / LIMIT flags. ✅ Apr 16</span></div>
-      <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Auto-generate FAQ sections for studio detail pages</span></div>
+      <div class="phase-item"><span class="check check-done">✓</span><span class="item-done">FAQ accordion on studio detail pages — &lt;details&gt;/&lt;summary&gt; UI + FAQPage JSON-LD, data-driven from studio fields (styles, location, pricing, contact). ✅ Apr 16</span></div>
       <div class="section-head">Additional Niche Directories</div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Yoga Studios Directory (same WP + Next.js stack, ~2 weeks to replicate)</span></div>
       <div class="phase-item"><span class="check check-todo">○</span><span class="item-todo">Martial Arts / BJJ Directory</span></div>
@@ -851,11 +851,11 @@
 
       <div style="margin:16px 0 8px; font-size:11px; font-weight:700; color:#4ade80; text-transform:uppercase; letter-spacing:1px;">🤖 Autonomous Dev Queue — Next Batch (Apr 16)</div>
 
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px; opacity:0.55;">
         <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D6</span>
         <div>
-          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">FAQ Sections on Studio Detail Pages</span>
-          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add 4-question FAQ accordion to <code>app/studios/[slug]/page.tsx</code> with FAQPage JSON-LD schema. Questions cover cost, styles, beginner welcome, and booking. Data driven from studio fields (price, styles, city). Targets "how much does X cost" and "is X good for beginners" voice/featured snippet queries.</span>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700; text-decoration:line-through;">FAQ Sections on Studio Detail Pages</span>
+          <span style="display:block; font-size:11px; color:#4ade80; margin-top:4px;">✓ Done Apr 16 — &lt;details&gt;/&lt;summary&gt; accordion driven by faqSchema data (styles, location, pricing, contact). FAQPage JSON-LD already existed; visible UI added to match.</span>
         </div>
       </div>
 
@@ -883,11 +883,11 @@
         </div>
       </div>
 
-      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px;">
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:14px 16px; margin-bottom:4px; opacity:0.55;">
         <span style="background:#15803d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">D10</span>
         <div>
-          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700;">Canonical URL Tags — Studio Detail Page</span>
-          <span style="display:block; font-size:12px; color:#86efac; line-height:1.6; margin-top:6px;">Add <code>alternates: { canonical: fullUrl }</code> to <code>generateMetadata()</code> in <code>app/studios/[slug]/page.tsx</code>. City, city×style, and all competition pages already have canonical tags. Only studio detail page remains.</span>
+          <span style="font-size:13px; color:#f0fdf4; line-height:1.5; font-weight:700; text-decoration:line-through;">Canonical URL Tags — Studio Detail Page</span>
+          <span style="display:block; font-size:11px; color:#4ade80; margin-top:4px;">✓ Done Apr 16 — alternates.canonical added to studio detail generateMetadata(). All major page types now have canonical coverage.</span>
         </div>
       </div>
 
