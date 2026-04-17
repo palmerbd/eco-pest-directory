@@ -34,6 +34,7 @@ export async function generateMetadata({
   if (!studio) return { title: "Studio Not Found" };
 
   const location = [studio.city, studio.state].filter(Boolean).join(", ");
+  const canonicalUrl = `https://www.ballroomdancedirectory.com/studios/${slug}`;
   return {
     title: `${studio.title}${location ? " \u2014 " + location : ""} | Ballroom Dance Directory`,
     description:
@@ -41,6 +42,7 @@ export async function generateMetadata({
       `Private dance lessons at ${studio.title}${location ? ` in ${location}` : ""}. ${
         studio.danceStyles.map((s) => STYLE_LABELS[s as DanceStyle]).join(", ")
       } instruction available.`,
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title: studio.title,
       description: studio.tagline || studio.description,
@@ -690,6 +692,42 @@ export default async function StudioPage({
                       <MapIcon /> Get Directions
                     </a>
                   )}
+                </div>
+              </section>
+            )}
+
+            {/* FAQ Accordion — mirrors FAQPage JSON-LD for visible rich content */}
+            {faqSchema.mainEntity.length > 0 && (
+              <section>
+                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">
+                  Frequently Asked Questions
+                </h2>
+                <div className="rounded-xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+                  {faqSchema.mainEntity.map((item, i) => (
+                    <details
+                      key={i}
+                      className="group bg-white"
+                    >
+                      <summary
+                        className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer
+                                   list-none select-none hover:bg-amber-50 transition-colors"
+                      >
+                        <span className="font-semibold text-gray-800 text-sm leading-snug">
+                          {item.name}
+                        </span>
+                        <span
+                          className="shrink-0 text-amber-600 text-lg font-bold transition-transform
+                                     group-open:rotate-45"
+                          aria-hidden="true"
+                        >
+                          +
+                        </span>
+                      </summary>
+                      <div className="px-5 pb-4 pt-1 text-sm text-gray-600 leading-relaxed bg-amber-50/40">
+                        {item.acceptedAnswer.text}
+                      </div>
+                    </details>
+                  ))}
                 </div>
               </section>
             )}
