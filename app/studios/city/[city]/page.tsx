@@ -38,11 +38,9 @@ export async function generateMetadata({
   return {
     title: `Ballroom Dance Studios in ${cityName} | Ballroom Dance Directory`,
     description: `Find the best private dance studios in ${cityName}. ${studios.length} top-rated ${cityName} studios offering ballroom, Latin, tango, wedding dance, and more. Book your first lesson today.`,
-    alternates: { canonical: `https://www.ballroomdancedirectory.com/studios/city/${city}` },
     openGraph: {
       title: `Private Dance Lessons in ${cityName}`,
       description: `Discover ${studios.length} elite dance studios in ${cityName} offering private instruction across all styles.`,
-      images: [{ url: "https://www.ballroomdancedirectory.com/images/ballroom.png", width: 1200, height: 630, alt: `Ballroom dance studios in ${cityName}` }],
     },
   };
 }
@@ -505,7 +503,7 @@ export default async function CityPage({
                   {popularStyles.map((style) => (
                     <Link
                       key={style}
-                      href={`/studios/city/${city}/${style.replace(/_/g, "-")}`}
+                      href={`/studios/city/${city}/style/${style.replace(/_/g, "-")}`}
                       className="flex items-center justify-between py-2 px-3 rounded-lg text-sm
                                  text-gray-700 hover:bg-yellow-50 hover:text-yellow-800 transition-colors group"
                     >
