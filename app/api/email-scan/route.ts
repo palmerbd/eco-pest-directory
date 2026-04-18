@@ -17,16 +17,34 @@ const PLACES_KEY = process.env.PLACES_API_KEY!;
 const DETAIL_FIELDS = "name,formatted_address,formatted_phone_number,website,rating,url,business_status";
 
 const CITIES: Record<string, { label: string; searchLabel: string }> = {
-  "chicago":       { label: "Chicago, IL",        searchLabel: "Chicago, IL" },
-  "los-angeles":   { label: "Los Angeles, CA",    searchLabel: "Los Angeles, CA" },
-  "new-york":      { label: "New York, NY",        searchLabel: "New York, NY" },
-  "houston":       { label: "Houston, TX",         searchLabel: "Houston, TX" },
-  "dallas":        { label: "Dallas, TX",          searchLabel: "Dallas, TX" },
-  "miami":         { label: "Miami, FL",           searchLabel: "Miami, FL" },
-  "atlanta":       { label: "Atlanta, GA",         searchLabel: "Atlanta, GA" },
-  "phoenix":       { label: "Phoenix, AZ",         searchLabel: "Phoenix, AZ" },
-  "seattle":       { label: "Seattle, WA",         searchLabel: "Seattle, WA" },
-  "denver":        { label: "Denver, CO",          searchLabel: "Denver, CO" },
+  // Tier 1 — largest markets
+  "chicago":       { label: "Chicago, IL",         searchLabel: "Chicago, IL" },
+  "los-angeles":   { label: "Los Angeles, CA",     searchLabel: "Los Angeles, CA" },
+  "new-york":      { label: "New York, NY",         searchLabel: "New York, NY" },
+  "houston":       { label: "Houston, TX",          searchLabel: "Houston, TX" },
+  "dallas":        { label: "Dallas, TX",           searchLabel: "Dallas, TX" },
+  "miami":         { label: "Miami, FL",            searchLabel: "Miami, FL" },
+  "atlanta":       { label: "Atlanta, GA",          searchLabel: "Atlanta, GA" },
+  "phoenix":       { label: "Phoenix, AZ",          searchLabel: "Phoenix, AZ" },
+  "seattle":       { label: "Seattle, WA",          searchLabel: "Seattle, WA" },
+  "denver":        { label: "Denver, CO",           searchLabel: "Denver, CO" },
+  // Tier 2 — strong dance markets
+  "las-vegas":     { label: "Las Vegas, NV",        searchLabel: "Las Vegas, NV" },
+  "boston":        { label: "Boston, MA",           searchLabel: "Boston, MA" },
+  "san-diego":     { label: "San Diego, CA",        searchLabel: "San Diego, CA" },
+  "austin":        { label: "Austin, TX",           searchLabel: "Austin, TX" },
+  "tampa":         { label: "Tampa, FL",            searchLabel: "Tampa, FL" },
+  "nashville":     { label: "Nashville, TN",        searchLabel: "Nashville, TN" },
+  "orlando":       { label: "Orlando, FL",          searchLabel: "Orlando, FL" },
+  "portland":      { label: "Portland, OR",         searchLabel: "Portland, OR" },
+  "minneapolis":   { label: "Minneapolis, MN",      searchLabel: "Minneapolis, MN" },
+  "charlotte":     { label: "Charlotte, NC",        searchLabel: "Charlotte, NC" },
+  // Tier 3 — emerging markets
+  "san-antonio":   { label: "San Antonio, TX",      searchLabel: "San Antonio, TX" },
+  "sacramento":    { label: "Sacramento, CA",       searchLabel: "Sacramento, CA" },
+  "kansas-city":   { label: "Kansas City, MO",      searchLabel: "Kansas City, MO" },
+  "columbus":      { label: "Columbus, OH",         searchLabel: "Columbus, OH" },
+  "indianapolis":  { label: "Indianapolis, IN",     searchLabel: "Indianapolis, IN" },
 };
 
 const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
