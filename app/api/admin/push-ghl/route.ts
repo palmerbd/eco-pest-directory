@@ -26,6 +26,11 @@ const GHL_TOKEN   = process.env.GHL_API_TOKEN ?? "pit-2544feeb-2cfb-411e-a7cd-06
 const LOCATION_ID = "gKAwJUdSQ6QMlAc0QXWb";
 const GHL_VERSION = "2021-07-28";
 
+// Studio Owner Pipeline (confirmed 2026-04-19)
+const PIPELINE_ID        = "LF3giKT3c7he0Few1f51";
+const STAGE_CLAIMED_ID   = "3159abd3-a1e1-4047-9b7f-f2f46146ac7d"; // "Claimed"
+const STAGE_FEATURED_ID  = "ee33ef09-6042-4916-9984-04b3e1c4231a"; // "Featured (Paid)"
+
 const GHL_HEADERS = {
   "Authorization": `Bearer ${GHL_TOKEN}`,
   "Version":       GHL_VERSION,
@@ -140,42 +145,13 @@ export async function POST(req: NextRequest) {
       throw new Error("Failed to get GHL contact ID");
     }
 
-    // ── 2. Get pipeline ───────────────────────────────────────────────────────
-    const pipelineRes = await ghl<any>(
-      "GET",
-      `/opportunities/pipelines?locationId=${LOCATION_ID}`
-    );
+    // ── 2. Create opportunity (using hardcoded pipeline + stage IDs) ──────────
+    const stageId = tier === "paid" ? STAGE_FEATURED_ID : STAGE_CLAIMED_ID;
+    const stageName = tier === "paid" ? "Featured (Paid)" : "Claimed";
 
-    const pipelines: any[] = pipelineRes?.pipelines ?? [];
-
-    // Look for our BDD pipeline first, otherwise use the first one
-    const pipeline =
-      pipelines.find((p: any) =>
-        p.name?.toLowerCase().includes("bdd") ||
-        p.name?.toLowerCase().includes("ballroom") ||
-        p.name?.toLowerCase().includes("studio")
-      ) ?? pipelines[0];
-
-    if (!pipeline) {
-      throw new Error("No GHL pipeline found. Please create a pipeline in GHL first.");
-    }
-
-    const stages: any[] = pipeline.stages ?? [];
-
-    // Pick stage based on tier:
-    //   - "paid"    → last stage (Featured / Closed Won)
-    //   - "claimed" → first stage (Claimed — Free / New Lead)
-    const targetStage = tier === "paid"
-      ? (stages.find((s: any) => s.name?.toLowerCase().includes("feature")) ?? stages[stages.length - 1])
-      : (stages.find((s: any) =>
-          s.name?.toLowerCase().includes("claimed") ||
-          s.name?.toLowerCase().includes("new")
-        ) ?? stages[0]);
-
-    // ── 3. Create opportunity ─────────────────────────────────────────────────
     const oppRes = await ghl<any>("POST", `/opportunities/`, {
-      pipelineId:      pipeline.id,
-      pipelineStageId: targetStage?.id,
+      pipelineId:      PIPELINE_ID,
+      pipelineStageId: stageId,
       locationId:      LOCATION_ID,
       contactId,
       name:  `${studio_title} — ${tier === "paid" ? "Featured" : "Claimed (Free)"}`,
@@ -193,8 +169,8 @@ export async function POST(req: NextRequest) {
       success:       true,
       contactId,
       opportunityId,
-      pipeline:      pipeline.name,
-      stage:         targetStage?.name,
+      pipeline:      "Studio Owner Pipeline",
+      stage:         stageName,
     });
 
   } catch (err: any) {
