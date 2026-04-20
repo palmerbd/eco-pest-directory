@@ -1,0 +1,9 @@
+docs/index.html
+docs/architecture.html
+docs/flow-diagrams.html
+pipeline.md
+scraping.md
+datascrape.md
+outreach-emails/arthur-murray-outreach.md
+outreach-emails/fred-astaire-outreach.md
+outreach-emails/dance-with-me-outreach.md

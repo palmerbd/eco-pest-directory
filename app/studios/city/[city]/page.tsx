@@ -7,6 +7,7 @@ import {
 } from "@/lib/wordpress";
 import { StudioCard, CHAIN_CONFIG, STYLE_LABELS, DanceStyle, DANCE_STYLES } from "@/types/studio";
 import { getCityConfig } from "@/lib/neighborhoods";
+import { getCityIntroCopy } from "@/lib/seo-copy";
 
 export const revalidate = 3600;
 
@@ -431,6 +432,11 @@ export default async function CityPage({
 
           {/* ── Studio grid ─────────────────────────────────────────────── */}
           <div className="lg:col-span-2">
+            {/* SEO intro copy */}
+            <p className="text-gray-600 text-base leading-relaxed max-w-2xl mb-8">
+              {getCityIntroCopy(city)}
+            </p>
+
             {standardStudios.length > 0 ? (
               <>
                 <h2 className="font-display font-bold text-gray-900 text-xl mb-6">

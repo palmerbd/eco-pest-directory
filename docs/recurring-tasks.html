@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ballroom Dance Directory — Recurring Tasks</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; padding: 32px 24px; }
+
+  .header { max-width: 960px; margin: 0 auto 32px; }
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #1a1625; border: 1px solid #4a3a6a; border-radius: 10px;
+    padding: 8px 16px; margin-bottom: 20px;
+  }
+  .logo-text { font-size: 13px; font-weight: 700; color: #e8c560; letter-spacing: 1px; text-transform: uppercase; }
+  h1 { font-size: 26px; font-weight: 800; color: #e8c560; margin-bottom: 6px; }
+  .subtitle { color: #718096; font-size: 14px; }
+
+  .cadence-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    max-width: 960px;
+    margin: 32px auto 36px;
+  }
+
+  .cadence-card {
+    border-radius: 10px; padding: 16px; border: 1px solid; text-align: center;
+  }
+  .cadence-emoji { font-size: 24px; margin-bottom: 8px; }
+  .cadence-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .cadence-count { font-size: 22px; font-weight: 800; }
+
+  .c-daily    { background: #0a1a0f; border-color: #22c55e; }
+  .c-daily .cadence-label { color: #4ade80; }
+  .c-daily .cadence-count { color: #4ade80; }
+
+  .c-weekly   { background: #0d1526; border-color: #3b82f6; }
+  .c-weekly .cadence-label { color: #60a5fa; }
+  .c-weekly .cadence-count { color: #60a5fa; }
+
+  .c-monthly  { background: #1a150a; border-color: #f59e0b; }
+  .c-monthly .cadence-label { color: #fbbf24; }
+  .c-monthly .cadence-count { color: #fbbf24; }
+
+  .c-quarterly { background: #160e2a; border-color: #8b5cf6; }
+  .c-quarterly .cadence-label { color: #a78bfa; }
+  .c-quarterly .cadence-count { color: #a78bfa; }
+
+  .c-ongoing  { background: #1a0a0f; border-color: #ec4899; }
+  .c-ongoing .cadence-label { color: #f472b6; }
+  .c-ongoing .cadence-count { color: #f472b6; }
+
+  /* sections */
+  .section { max-width: 960px; margin: 0 auto 28px; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 18px; border-radius: 10px; margin-bottom: 12px; border: 1px solid;
+  }
+  .section-icon { font-size: 18px; }
+  .section-title { font-size: 15px; font-weight: 700; flex: 1; }
+  .section-badge { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 20px; }
+
+  .sec-daily    { background: #0a1a0f; border-color: #22c55e; }
+  .sec-daily .section-title { color: #4ade80; }
+  .sec-daily .section-badge { background: #14532d; color: #4ade80; }
+
+  .sec-weekly   { background: #0d1526; border-color: #3b82f6; }
+  .sec-weekly .section-title { color: #60a5fa; }
+  .sec-weekly .section-badge { background: #1e3a5f; color: #60a5fa; }
+
+  .sec-monthly  { background: #1a150a; border-color: #f59e0b; }
+  .sec-monthly .section-title { color: #fbbf24; }
+  .sec-monthly .section-badge { background: #451a03; color: #fbbf24; }
+
+  .sec-quarterly { background: #160e2a; border-color: #8b5cf6; }
+  .sec-quarterly .section-title { color: #a78bfa; }
+  .sec-quarterly .section-badge { background: #2e1065; color: #a78bfa; }
+
+  .sec-ongoing  { background: #1a0a0f; border-color: #ec4899; }
+  .sec-ongoing .section-title { color: #f472b6; }
+  .sec-ongoing .section-badge { background: #500724; color: #f472b6; }
+
+  /* task items */
+  .task {
+    background: #13161f; border: 1px solid #1e2a3a; border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 6px; display: grid;
+    grid-template-columns: 1fr auto; gap: 12px; align-items: start;
+  }
+  .task:hover { background: #1a1f2e; }
+  .task-title { font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+  .task-desc { font-size: 12px; color: #718096; line-height: 1.5; }
+  .task-note { font-size: 11px; color: #4a5568; margin-top: 4px; font-style: italic; }
+  .task-meta { text-align: right; white-space: nowrap; }
+
+  .who-badge {
+    display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px;
+    border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .who-auto  { background: #0a1a0f; color: #4ade80; border: 1px solid #22c55e; }
+  .who-dev   { background: #1e3a5f; color: #60a5fa; }
+  .who-you   { background: #451a03; color: #fbbf24; }
+
+  .time-badge {
+    display: inline-block; font-size: 10px; color: #4a5568; margin-top: 4px;
+    background: #111; padding: 1px 6px; border-radius: 4px; border: 1px solid #1e2a3a;
+  }
+
+  .category-label {
+    font-size: 10px; font-weight: 700; color: #4a5568; text-transform: uppercase;
+    letter-spacing: 1px; margin: 16px 0 6px 2px;
+  }
+
+  .checklist-box {
+    background: #0d1117; border: 1px solid #1e2a3a; border-radius: 8px;
+    padding: 14px 16px; margin-top: 8px;
+  }
+  .cl-title { font-size: 11px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .cl-item { font-size: 12px; color: #718096; padding: 3px 0; display: flex; gap: 8px; }
+  .cl-item::before { content: '□'; color: #374151; flex-shrink: 0; }
+
+  .updated { font-size: 11px; color: #4a5568; max-width: 960px; margin: 0 auto; padding-top: 16px; border-top: 1px solid #1e2a3a; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-badge">
+    <span>⬡</span>
+    <span class="logo-text">Ballroom Dance Directory</span>
+  </div>
+  <h1>Recurring Tasks</h1>
+  <p class="subtitle">Ongoing work to continuously improve SEO, data quality, revenue, and user experience.</p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEO STRATEGY — DATA-DRIVEN FROM GSC
+═══════════════════════════════════════ -->
+<div class="section" style="max-width:960px; margin: 0 auto 36px;">
+  <div style="background:#0c1a2e; border:2px solid #e8c560; border-radius:12px; padding:24px 28px;">
+
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+      <span style="font-size:22px;">📊</span>
+      <div>
+        <div style="font-size:17px; font-weight:800; color:#e8c560;">SEO Strategy — Data-Driven from Google Search Console</div>
+        <div style="font-size:12px; color:#4a5568; margin-top:3px;">First GSC data pull: Apr 1–Apr 6, 2026 · 509 impressions · 2 clicks · 106 pages indexed</div>
+      </div>
+    </div>
+
+    <!-- Key Findings -->
+    <div style="margin-bottom:20px;">
+      <div style="font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">📈 Key Findings</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div style="background:#0d1117; border:1px solid #1e3a5f; border-radius:8px; padding:12px 14px;">
+          <div style="font-size:12px; font-weight:700; color:#60a5fa; margin-bottom:6px;">✅ What's Working</div>
+          <div style="font-size:11px; color:#718096; line-height:1.7;">
+            • Impressions growing fast: 4 → 26 → 50 → 89 → 115 → 225 in 6 days<br>
+            • 103 studio detail pages already indexed<br>
+            • 19 pages in positions 5–15 with meaningful impressions — near page 1<br>
+            • "bachata classes near me" at pos 1 — generic keyword signal<br>
+            • Arthur Murray branded queries showing pos 1–2.5 (6 impressions each)<br>
+            • Mobile/desktop split nearly even (52%/48%) — good platform reach
+          </div>
+        </div>
+        <div style="background:#0d1117; border:1px solid #3b1111; border-radius:8px; padding:12px 14px;">
+          <div style="font-size:12px; font-weight:700; color:#f87171; margin-bottom:6px;">⚠️ Gaps to Fix</div>
+          <div style="font-size:11px; color:#718096; line-height:1.7;">
+            • Zero city hub page impressions — /studios/city/[city] not yet indexed or ranking<br>
+            • 0% CTR across 508 impressions — title tags not compelling enough to click<br>
+            • No style landing page impressions showing yet<br>
+            • "dance lessons [city]" and "ballroom dance lessons [city]" queries absent — our core keywords<br>
+            • International bot traffic (Brazil 14 imp, India 3) diluting data
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Texas Hot Market Callout -->
+    <div style="background:#1a150a; border:1px solid #f59e0b; border-radius:8px; padding:12px 14px; margin-bottom:20px;">
+      <div style="font-size:11px; font-weight:700; color:#fbbf24; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">🤠 Texas Is Our First Real Market</div>
+      <div style="font-size:12px; color:#fcd34d; line-height:1.6;">The data shows a strong Texas cluster dominating early impressions: Fort Worth (47 imp, pos 10.7), Pflugerville (41 imp, pos 11.9), Frisco (24 imp, pos 9.9), Keller (15 imp), The Woodlands (14 imp), Plano (9 imp), Austin (11 imp). Texas city hub pages should be the first content investment priority. This is also where to focus initial studio outreach.</div>
+    </div>
+
+    <!-- The 3 Strategic Priorities -->
+    <div style="font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">🎯 Strategic Priorities (In Order)</div>
+
+    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:20px;">
+      <div style="display:flex; gap:12px; background:#0d1117; border:1px solid #1e2a3a; border-radius:8px; padding:12px 14px;">
+        <div style="background:#be185d; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</div>
+        <div>
+          <div style="font-size:13px; font-weight:700; color:#fce7f3;">Fix CTR — Title Tags &amp; Meta Descriptions on Near-Page-1 Pages</div>
+          <div style="font-size:12px; color:#718096; margin-top:4px; line-height:1.5;">19 studio pages sit in positions 5–15 with 5–47 impressions each and get ZERO clicks. The title tags are generic (just the studio name). Changing to "[Studio] — Private Dance Lessons in [City]" + compelling meta descriptions will convert impressions to clicks immediately. Highest ROI action right now.</div>
+          <div style="font-size:11px; color:#9ca3af; margin-top:6px; font-style:italic;">Target pages: dance-with-me-fort-worth (47 imp), dance-arts-pflugerville (41 imp), fred-astaire-frisco (24 imp), king-roberts-keller (15 imp), arthur-murray-woodlands (14 imp), dance-with-stacey-smyrna (11 imp, pos 6.5 — closest to page 1), plus 13 more</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; background:#0d1117; border:1px solid #1e2a3a; border-radius:8px; padding:12px 14px;">
+        <div style="background:#1d4ed8; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</div>
+        <div>
+          <div style="font-size:13px; font-weight:700; color:#dbeafe;">Get City Hub Pages Indexed &amp; Ranking</div>
+          <div style="font-size:12px; color:#718096; margin-top:4px; line-height:1.5;">Zero city hub impressions after 7 days means Google hasn't found or ranked /studios/city/[city] pages yet. These are the highest-value SEO pages on the site — they target "ballroom dance lessons [city]" which are buyer-intent searches. Fix: (1) Submit city pages via GSC URL Inspection. (2) Add internal links from every studio detail page → its city hub. (3) Strengthen city page h1/title to include the full keyword. (4) Add FAQ schema per city.</div>
+          <div style="font-size:11px; color:#9ca3af; margin-top:6px; font-style:italic;">Priority cities: Fort Worth, Frisco, Pflugerville, Keller, The Woodlands, Austin, Plano (Texas cluster first — matches our impression data)</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; background:#0d1117; border:1px solid #1e2a3a; border-radius:8px; padding:12px 14px;">
+        <div style="background:#16a34a; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</div>
+        <div>
+          <div style="font-size:13px; font-weight:700; color:#f0fdf4;">Build Internal Link Architecture — Studio Pages → City Hubs</div>
+          <div style="font-size:12px; color:#718096; margin-top:4px; line-height:1.5;">Studio detail pages are getting indexed quickly (103 in 7 days) but city hub pages are invisible. Adding "Browse all studios in [City]" links from every studio detail page to its city hub page funnels Google's crawl authority directly into the city pages. This is the fastest way to get city hub pages ranking without building backlinks.</div>
+          <div style="font-size:11px; color:#9ca3af; margin-top:6px; font-style:italic;">Dev task: add city hub link in studio sidebar/footer — one code change, applies to all 4,374 studio pages automatically</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tactical Playbook -->
+    <div style="font-size:11px; font-weight:700; color:#e8c560; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">🔧 Tactical Playbook</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <div style="background:#0d1117; border:1px solid #1e2a3a; border-radius:8px; padding:10px 12px;">
+        <div style="font-size:11px; font-weight:700; color:#fbbf24; margin-bottom:5px;">This Week</div>
+        <div style="font-size:11px; color:#718096; line-height:1.7;">
+          □ Fix title tags for 19 near-page-1 studio pages<br>
+          □ Write meta descriptions for top 25 impression pages<br>
+          □ Submit city hub pages via GSC URL Inspection tool<br>
+          □ Add "Browse all [City] studios" link on studio detail pages<br>
+          □ Verify city pages are in sitemap.xml
+        </div>
+      </div>
+      <div style="background:#0d1117; border:1px solid #1e2a3a; border-radius:8px; padding:10px 12px;">
+        <div style="font-size:11px; font-weight:700; color:#60a5fa; margin-bottom:5px;">This Month</div>
+        <div style="font-size:11px; color:#718096; line-height:1.7;">
+          □ Expand Texas city hub content (Fort Worth, Frisco, Keller, The Woodlands, Pflugerville)<br>
+          □ Add FAQ schema to all city hub pages<br>
+          □ Build "Top Studios in [City]" curated lists for top 10 markets<br>
+          □ Internal link audit — ensure all city hubs linked from studio pages<br>
+          □ Track city hub page indexing weekly in GSC Coverage tab
+        </div>
+      </div>
+      <div style="background:#0d1117; border:1px solid #1e2a3a; border-radius:8px; padding:10px 12px;">
+        <div style="font-size:11px; font-weight:700; color:#a78bfa; margin-bottom:5px;">Ongoing (Weekly)</div>
+        <div style="font-size:11px; color:#718096; line-height:1.7;">
+          □ GSC impressions trend — are city pages appearing?<br>
+          □ Identify new pages entering positions 5–15<br>
+          □ Pull Queries tab — watch for "[city] dance lessons" queries emerging<br>
+          □ CTR monitoring — flag any page with &gt;20 impressions and 0 clicks
+        </div>
+      </div>
+      <div style="background:#0d1117; border:1px solid #1e2a3a; border-radius:8px; padding:10px 12px;">
+        <div style="font-size:11px; font-weight:700; color:#4ade80; margin-bottom:5px;">Key Metrics to Watch</div>
+        <div style="font-size:11px; color:#718096; line-height:1.7;">
+          □ City hub pages first impression date<br>
+          □ Weekly impression growth rate (target: 2× weekly)<br>
+          □ First "ballroom dance lessons [city]" query appearing<br>
+          □ CTR on near-page-1 pages after title tag fix<br>
+          □ Total indexed pages (currently 106 of 4,374+)
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e2a3a; font-size:11px; color:#4a5568;">
+      Data source: Google Search Console export · Apr 1–6, 2026 · Next full review: Apr 15, 2026
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEO GROWTH INITIATIVES — Added Apr 8, 2026
+═══════════════════════════════════════ -->
+<div class="section" style="max-width:960px; margin: 0 auto 36px;">
+  <div style="background:#0c1a2e; border:2px solid #7c3aed; border-radius:12px; padding:24px 28px;">
+
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+      <span style="font-size:22px;">🚀</span>
+      <div>
+        <div style="font-size:17px; font-weight:800; color:#c4b5fd;">SEO Growth Initiatives — Beyond Technical Fixes</div>
+        <div style="font-size:12px; color:#4a5568; margin-top:3px;">Content authority, backlinks, and distribution. Added Apr 8, 2026.</div>
+      </div>
+    </div>
+
+    <!-- Initiative 1: Blog -->
+    <div style="display:flex; gap:12px; background:#0d1117; border:1px solid #2d1f5e; border-radius:8px; padding:14px 16px; margin-bottom:8px;">
+      <div style="background:#6d28d9; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</div>
+      <div>
+        <div style="font-size:13px; font-weight:700; color:#ede9fe; margin-bottom:4px;">📝 Informational Blog — "How Much Do Dance Lessons Cost in [City]?"</div>
+        <div style="font-size:12px; color:#718096; line-height:1.6;">The fastest path to page-1 rankings is owning informational queries that transactional listing pages can't win. Queries like <em>"how much do ballroom dance lessons cost in Dallas"</em>, <em>"best type of ballroom dance to learn for beginners"</em>, and <em>"private vs group dance lessons — which is better?"</em> are low-competition, high-intent, and funnel people directly into the directory. Each post internally links to 10–20 studio pages, spreading crawl authority. Target: one post per major market (Dallas, LA, NYC, Houston, Chicago).</div>
+        <div style="font-size:11px; color:#a78bfa; margin-top:8px; font-weight:700;">Cadence: 2 posts/month · Owner: DEV (build /blog route) + YOU (topic approval) · Est. 90 days to first ranking</div>
+        <div style="font-size:11px; color:#718096; margin-top:4px;">Suggested titles: "How Much Do Ballroom Dance Lessons Cost in Dallas (2026 Guide)" · "Ballroom vs Latin Dancing: Which Should You Learn First?" · "Private vs Group Dance Classes: Which is Right for You?"</div>
+      </div>
+    </div>
+
+    <!-- Initiative 2: FAQ Schema -->
+    <div style="display:flex; gap:12px; background:#0d1117; border:1px solid #2d1f5e; border-radius:8px; padding:14px 16px; margin-bottom:8px;">
+      <div style="background:#6d28d9; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</div>
+      <div>
+        <div style="font-size:13px; font-weight:700; color:#ede9fe; margin-bottom:4px;">🧩 FAQ Schema on City Hub Pages — Rich Snippets / Answer Boxes</div>
+        <div style="font-size:12px; color:#718096; line-height:1.6;">City hub pages already have all the data needed for FAQ schema: studio count, average rating, most popular styles, price ranges. Adding <code style="background:#1e1040; padding:1px 5px; border-radius:3px;">FAQPage</code> structured data — <em>"How many dance studios are in Dallas?"</em>, <em>"What dance styles are available in Dallas?"</em>, <em>"How much do private lessons cost in Dallas?"</em> — can earn Google expandable answer boxes in search results without writing new content. This appears on page 1 even before the page itself ranks, dramatically increasing click-through surface area.</div>
+        <div style="font-size:11px; color:#a78bfa; margin-top:8px; font-weight:700;">Cadence: One-time dev task (3–4 hrs) · Applies to all city hub pages automatically · ROI: potentially within 2–3 weeks of deploy</div>
+      </div>
+    </div>
+
+    <!-- Initiative 3: Backlink Badge -->
+    <div style="display:flex; gap:12px; background:#0d1117; border:1px solid #2d1f5e; border-radius:8px; padding:14px 16px; margin-bottom:8px;">
+      <div style="background:#6d28d9; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</div>
+      <div>
+        <div style="font-size:13px; font-weight:700; color:#ede9fe; margin-bottom:4px;">🔗 Backlink Flywheel — "Listed on Ballroom Dance Directory" Studio Badge</div>
+        <div style="font-size:12px; color:#718096; line-height:1.6;">Every claimed studio is a potential backlink from a real business website. After a studio claims their listing, offer them an embeddable <strong>"Listed on Ballroom Dance Directory"</strong> badge — a small image + link they can put on their own website footer or About page. Also pitch proactively in outreach emails: "We built you a free page at ballroomdancedirectory.com/studios/your-studio — here's a badge to link back." Even 2% of 4,374 studios = 87 backlinks from real business domains. This compounds as outreach scales.</div>
+        <div style="font-size:11px; color:#a78bfa; margin-top:8px; font-weight:700;">Cadence: One-time badge design + embed snippet · Add to claim confirmation email · Add to Email 1 of outreach campaign</div>
+        <div style="font-size:11px; color:#718096; margin-top:4px;">Also submit BDD to dance-adjacent directories: NDCA, USADF, state dance association websites, local chamber of commerce directories (free citations = domain authority + NAP consistency).</div>
+      </div>
+    </div>
+
+    <!-- Initiative 4: Competition Calendar -->
+    <div style="display:flex; gap:12px; background:#0d1117; border:1px solid #2d1f5e; border-radius:8px; padding:14px 16px; margin-bottom:8px;">
+      <div style="background:#6d28d9; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">4</div>
+      <div>
+        <div style="font-size:13px; font-weight:700; color:#ede9fe; margin-bottom:4px;">🏆 Dance Competition Calendar — Unique Content Asset Nobody Else Has</div>
+        <div style="font-size:12px; color:#718096; line-height:1.6;"><em>"Upcoming ballroom dance competitions in Texas 2026"</em> — nobody owns this search. A <code style="background:#1e1040; padding:1px 5px; border-radius:3px;">/competitions/</code> section with curated NDCA/USDC event listings earns organic links naturally: event organizers link to wherever their event is listed, dance teachers share calendars with students, dance forums link to useful resources. Time-sensitive content also gets Google freshness signals. Most importantly, it positions BDD as a <em>community hub</em>, not just a listing site — the difference between a site people visit once and one they bookmark and return to.</div>
+        <div style="font-size:11px; color:#a78bfa; margin-top:8px; font-weight:700;">Cadence: Initial build (import NDCA/USDC data) + monthly update · Sources: ndca.com, usadancechapters.org, compete.dance · Add "Find studios near this competition" CTA on each event page</div>
+      </div>
+    </div>
+
+    <!-- Initiative 5: Press / Guest Posts -->
+    <div style="display:flex; gap:12px; background:#0d1117; border:1px solid #2d1f5e; border-radius:8px; padding:14px 16px; margin-bottom:0;">
+      <div style="background:#6d28d9; color:#fff; font-weight:800; font-size:11px; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">5</div>
+      <div>
+        <div style="font-size:13px; font-weight:700; color:#ede9fe; margin-bottom:4px;">📰 Press Outreach + Guest Posts — One DA 50+ Link Beats 100 Low-Quality Links</div>
+        <div style="font-size:12px; color:#718096; line-height:1.6;">A single link from a DA 50+ site accelerates domain authority faster than any on-page fix. Angle: <strong>"We mapped every ballroom dance studio in America — here's what the data shows."</strong> Local newspapers love data-driven local stories. Dance publications love directory resources. Pitch the Dallas Morning News lifestyle desk, Texas Monthly, DanceTeacher Magazine, or DancePlug. The data story is compelling: 4,374 studios, state-by-state breakdowns, price range analysis, style popularity maps. Also look for guest post opportunities on fitness/lifestyle blogs ("Find a Dance Studio Near You") linking back to BDD.</div>
+        <div style="font-size:11px; color:#a78bfa; margin-top:8px; font-weight:700;">Cadence: 2–3 pitches/month · Owner: YOU (send pitch) + DEV (write data article) · One successful placement = significant domain authority jump</div>
+        <div style="font-size:11px; color:#718096; margin-top:4px;">Target publications: DanceTeacher Magazine · DancePlug · Texas Monthly · local city lifestyle blogs · fitness/wellness roundup sites</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; padding-top:12px; border-top:1px solid #2d1f5e; font-size:11px; color:#4a5568;">
+      Priority order: FAQ Schema (quick dev win, high leverage) → Blog posts (compound over 90 days) → Badge backlinks (built into outreach) → Competition calendar (community asset) → Press outreach (biggest single payoff, highest effort)
+    </div>
+  </div>
+</div>
+
+<!-- Cadence summary -->
+<div class="cadence-grid">
+  <div class="cadence-card c-daily">
+    <div class="cadence-emoji">☀️</div>
+    <div class="cadence-label">Daily</div>
+    <div class="cadence-count">4</div>
+  </div>
+  <div class="cadence-card c-weekly">
+    <div class="cadence-emoji">📅</div>
+    <div class="cadence-label">Weekly</div>
+    <div class="cadence-count">7</div>
+  </div>
+  <div class="cadence-card c-monthly">
+    <div class="cadence-emoji">📆</div>
+    <div class="cadence-label">Monthly</div>
+    <div class="cadence-count">8</div>
+  </div>
+  <div class="cadence-card c-quarterly">
+    <div class="cadence-emoji">🗓️</div>
+    <div class="cadence-label">Quarterly</div>
+    <div class="cadence-count">5</div>
+  </div>
+  <div class="cadence-card c-ongoing">
+    <div class="cadence-emoji">🔁</div>
+    <div class="cadence-label">Ongoing</div>
+    <div class="cadence-count">6</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DAILY
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-daily">
+    <span class="section-icon">☀️</span>
+    <span class="section-title">Daily Tasks</span>
+    <span class="section-badge">4 tasks</span>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Monitor claim notifications</div>
+      <div class="task-desc">Check email for new studio claim submissions. Resend sends an admin notification for every new claim. Respond to any claim disputes or studio owner questions within 24 hours.</div>
+      <div class="task-note">Check bpalmer@abilenewebsitedesign.com for Resend claim alerts</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~5 min</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Check Vercel deployment status</div>
+      <div class="task-desc">Verify the latest production deployment is healthy. If any ISR revalidation or build failures occurred overnight, address them before studio owners start their day.</div>
+      <div class="task-note">vercel.com → ballroom-dance-directory → Deployments. Green = good.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~2 min</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Auto: Generate descriptions for studios missing them</div>
+      <div class="task-desc">Once built: a daily cron job scans WordPress for studios with empty descriptions, generates them via Claude Haiku API, and saves them back via WP REST API. Runs automatically with no manual action required.</div>
+      <div class="task-note">Status: planned (not yet built). Will run as Vercel Cron at 2am EST.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-auto">Auto</span><br>
+      <span class="time-badge">~0 min</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Check for lead capture form submissions</div>
+      <div class="task-desc">Lead capture emails from studio detail pages forward to the studio owner's inbox via Resend. Spot-check that leads are flowing correctly to featured studios. Watch for any Resend delivery failures.</div>
+      <div class="task-note">Log into Resend dashboard to check delivery stats. resend.com → Emails</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~3 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     WEEKLY
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-weekly">
+    <span class="section-icon">📅</span>
+    <span class="section-title">Weekly Tasks</span>
+    <span class="section-badge">7 tasks</span>
+  </div>
+
+  <div class="category-label">SEO</div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Google Search Console review</div>
+      <div class="task-desc">Review the past 7 days of impressions, clicks, and position data. Priority focus: are city hub pages appearing yet? Are the 19 near-page-1 studio pages improving after title tag fixes? Watch for first "ballroom dance lessons [city]" query impressions.</div>
+      <div class="checklist-box">
+        <div class="cl-title">Weekly GSC Checklist (updated Apr 8, 2026)</div>
+        <div class="cl-item">Chart tab: total impressions vs. last week — are we doubling?</div>
+        <div class="cl-item">Pages tab: do any /studios/city/[city] pages appear yet? (zero as of Apr 6)</div>
+        <div class="cl-item">Pages tab: check the 19 near-page-1 pages — are positions improving after title fix?</div>
+        <div class="cl-item">Queries tab: any "ballroom dance lessons [city]" or "dance studios [city]" queries appearing?</div>
+        <div class="cl-item">Queries tab: any page with &gt;20 impressions still at 0 clicks? Flag for meta description rewrite.</div>
+        <div class="cl-item">Coverage tab: are city hub pages indexed? Check Excluded → "Crawled – currently not indexed"</div>
+        <div class="cl-item">Core Web Vitals: any new "Poor" URLs flagged?</div>
+      </div>
+      <div class="task-note">Current baseline (Apr 6): 509 total impressions · 2 clicks · 0 city hub impressions · 19 pages near page 1</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~20 min</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Studio outreach follow-up cadence</div>
+      <div class="task-desc">Work through the outreach tracker. Send Email 2 to studios that didn't respond to Email 1 (7 days later). Send Email 3 to non-responders (14 days after Email 1). Log all responses, claims, and upgrades in Studio_Outreach_Tracker.xlsx.</div>
+      <div class="task-note">File: docs/Studio_Outreach_Tracker.xlsx</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~30 min</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">QA spot-check: 5 random studio pages</div>
+      <div class="task-desc">Manually open 5 random studio detail pages from the directory. Verify: page loads correctly, address and phone number are accurate, Unsplash image loaded, Google Map renders, claim bar shows/hides correctly, lead form is present for Featured studios.</div>
+      <div class="task-note">Pick studios from different states. Mix of claimed and unclaimed.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~15 min</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">QA: test the claim flow and upgrade flow end-to-end</div>
+      <div class="task-desc">Once a week, run through the full user journey: find a studio → click Claim → submit email → check magic link → arrive at dashboard → verify upgrade CTA is visible → confirm Stripe checkout loads. Catch any regressions before studio owners do.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">~10 min</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Bing Webmaster Tools review</div>
+      <div class="task-desc">Check Bing Webmaster Tools for indexing progress, crawl errors, and Bing-specific keyword data. Bing accounts for ~6% of US search traffic and is primary for older demographics — relevant for the dance lesson market.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~10 min</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Add Hunter.io contacts to outreach batch</div>
+      <div class="task-desc">Research and add 10–20 new independent studio contacts per week using Hunter.io. Maintain a rolling pipeline of prospects so the outreach funnel stays full. Focus on markets where the directory already has strong coverage.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~20 min</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Check Supabase for active claims and tier status</div>
+      <div class="task-desc">Review the claims table in Supabase. Verify new claims processed correctly (tier set to "featured" after Stripe payment). Check for any claims stuck in "pending" state. Confirm no duplicate claims for same studio.</div>
+      <div class="task-note">Supabase dashboard → Table Editor → claims table</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">~10 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MONTHLY
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-monthly">
+    <span class="section-icon">📆</span>
+    <span class="section-title">Monthly Tasks</span>
+    <span class="section-badge">8 tasks</span>
+  </div>
+
+  <div class="category-label">Data Freshness</div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Run a scraping refresh pass for top 5 markets</div>
+      <div class="task-desc">Re-scrape LA, NYC, Chicago, Houston, and Dallas to catch new studio openings and closures. Cross-reference against current WordPress posts. Add new studios found; flag or remove closed ones (check if phone disconnected or website down).</div>
+      <div class="task-note">Scraper: scraping-scripts/tier1-markets-scraper.js. Cross-check WP post count before/after.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">~2 hrs</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Validate top 50 studio listings for accuracy</div>
+      <div class="task-desc">Manually verify the top 50 most-visited studio pages (by GSC clicks). Confirm phone numbers are still active, websites still live, addresses correct, and descriptions still accurate. Update any stale data in WordPress.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~1 hr</span>
+    </div>
+  </div>
+
+  <div class="category-label">SEO Improvements</div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Identify and improve 5 pages in position 5–15</div>
+      <div class="task-desc">Pull the GSC Performance report filtered to positions 5–15. These pages are close to page 1 and worth targeted improvements. Improve title tags, add FAQ schema, strengthen internal links, or add more city-specific content to push them into the top 5.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">~3 hrs</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Add or update city landing page content for 3 markets</div>
+      <div class="task-desc">Expand CITY_CONTENT in the codebase with richer neighborhood descriptions, updated studio count copy, and stronger FAQ answers for 3 cities per month. Prioritize cities showing GSC impressions without clicks (indicating ranking but losing CTR).</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">~2 hrs</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Review and update meta titles + descriptions for underperforming pages</div>
+      <div class="task-desc">Identify pages with high impressions but low CTR in GSC (CTR under 2% at position under 15). Update their meta title and description to be more compelling. Test changes and track CTR improvement over the following month.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">~1 hr</span>
+    </div>
+  </div>
+
+  <div class="category-label">Revenue</div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Stripe revenue reconciliation</div>
+      <div class="task-desc">Review Stripe Dashboard for the month: total MRR, new subscribers, churn, failed payments. Cross-reference against Supabase claims marked as "featured" tier. Resolve any subscription/tier mismatches.</div>
+      <div class="task-note">Stripe Dashboard → Revenue → Monthly report</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~20 min</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Expand outreach to a new market</div>
+      <div class="task-desc">Each month, open a new city for active outreach. Add it to Studio_Outreach_Tracker.xlsx, use Hunter.io to find 20–30 contacts, and begin the 3-email sequence. Cycle through top 20 US metro areas over the first year.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~1 hr</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Architecture.html pipeline update</div>
+      <div class="task-desc">Update the architecture.html pipeline document to reflect completed tasks, new items discovered, and current progress percentage. Keep it as the single source of truth for the project state.</div>
+      <div class="task-note">"Pull up the pipeline" = open docs/architecture.html and update it</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">~30 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     QUARTERLY
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-quarterly">
+    <span class="section-icon">🗓️</span>
+    <span class="section-title">Quarterly Tasks</span>
+    <span class="section-badge">5 tasks</span>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Full directory scraping refresh — all 45 states</div>
+      <div class="task-desc">Run a complete re-scrape across all covered states to catch new studio openings and business closures over the quarter. Aim to add net +500 studios per quarter. Remove any listings with dead websites or disconnected phones.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">~1 day</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Pricing strategy review — adjust Featured tier price</div>
+      <div class="task-desc">Review conversion rate on the upgrade page and MRR growth. At 5+ paid subscribers, consider testing a price increase to $69 or $99/mo. At low conversion, consider adding a lower "Basic" tier or a free trial.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~1 hr</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Competitive analysis — check competing directories</div>
+      <div class="task-desc">Search "ballroom dance lessons [city]" for top 5 cities. Who is ranking above us? What do their listings look like? Are they monetizing? Adjust our SEO strategy and feature roadmap based on what's working for competitors.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~2 hrs</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Performance audit — Core Web Vitals and page speed</div>
+      <div class="task-desc">Run Lighthouse audits on the homepage, /studios, and 5 studio detail pages. Address any LCP, CLS, or FID regressions. Google uses CWV as a ranking signal — keeping scores green directly impacts search rankings.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">~2 hrs</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Evaluate next niche directory launch</div>
+      <div class="task-desc">Assess readiness to replicate the BDD stack for the next directory (Yoga, Martial Arts, Music Lessons, or Pilates). Requirements: BDD at $500+/mo MRR, pipeline documented, and scraping scripts ready to adapt. Each replication takes ~2 weeks.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">~1 hr</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ONGOING / AS-NEEDED
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-ongoing">
+    <span class="section-icon">🔁</span>
+    <span class="section-title">Ongoing / As-Needed</span>
+    <span class="section-badge">6 tasks</span>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Handle studio owner support requests</div>
+      <div class="task-desc">Studio owners may email with questions about their listing, claim status, photo uploads, or billing. Respond within 1 business day. Common issues: claim email not received (check Resend logs), photos not showing (ISR delay — tell them to wait 30 min), billing questions (direct to Stripe customer portal).</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">As needed</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Fix broken studio listings reported by users</div>
+      <div class="task-desc">If a studio owner or visitor reports incorrect data (wrong phone, moved address, closed business), update the WordPress post via the admin panel. For closed studios, set a "permanently_closed" flag rather than deleting — keep the page for SEO value.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">As needed</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Monitor Hetzner VPS health</div>
+      <div class="task-desc">The WordPress backend runs on a Hetzner CX22 at 5.78.144.42. Watch for: high disk usage (MySQL + WP uploads growing over time), memory pressure, Nginx errors. Log in via SSH root@5.78.144.42 and run df -h and free -h to check.</div>
+      <div class="task-note">Trigger: any WP admin or API slowness. Also check after large scraping runs.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">As needed</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Handle DMCA / takedown requests</div>
+      <div class="task-desc">If a studio sends a DMCA notice claiming their data shouldn't be listed, respond promptly: acknowledge the notice, remove or correct the listing within 24 hours, and document the takedown. Having the DMCA agent registered at copyright.gov provides Safe Harbor protection.</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">As needed</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Update GitHub PAT before expiration</div>
+      <div class="task-desc">The "Cowork Deploy" GitHub Personal Access Token (palmerbd, repo scope) has no expiration set. If GitHub prompts for renewal or pushes start failing with 401 errors, regenerate the token at github.com → Settings → Developer Settings → PATs, and update the stored credential.</div>
+      <div class="task-note">Credential stored in Cowork session. If push fails: regenerate PAT → run: git remote set-url origin https://[new-token]@github.com/palmerbd/ballroom-dance-directory.git</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-dev">Dev</span><br>
+      <span class="time-badge">As needed</span>
+    </div>
+  </div>
+
+  <div class="task">
+    <div>
+      <div class="task-title">Renew domain at Namecheap before expiration</div>
+      <div class="task-desc">ballroomdancedirectory.com must be renewed annually (~$15/yr). Set up auto-renew in Namecheap to avoid accidental expiration. An expired domain means the site goes down entirely.</div>
+      <div class="task-note">Namecheap → Domain List → ballroomdancedirectory.com → enable Auto-Renew</div>
+    </div>
+    <div class="task-meta">
+      <span class="who-badge who-you">You</span><br>
+      <span class="time-badge">Annual</span>
+    </div>
+  </div>
+</div>
+
+<div class="updated">Last updated: April 8, 2026 · SEO strategy section added from first GSC data pull (Apr 1–6) · Ballroom Dance Directory operations playbook</div>
+
+</body>
+</html>

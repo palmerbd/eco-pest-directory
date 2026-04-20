@@ -138,6 +138,64 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Featured Studio Spotlights — internal links for SEO + discovery */}
+      <section className="py-20 px-6" style={{ background: "#f9f6f0" }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs font-bold tracking-[0.15em] uppercase mb-3" style={{ color: "#b8922a" }}>
+              Studio Spotlights
+            </p>
+            <h2 className="font-display text-gray-900 font-bold"
+              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}>
+              Highly Rated Independent Dance Studios
+            </h2>
+            <p className="text-gray-500 mt-3 max-w-2xl mx-auto">
+              A sample of top-rated, independently owned studios from across the directory.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                slug: "frequency-dance-boulder",
+                title: "Frequency Dance",
+                city:  "Boulder, Colorado",
+                rating: "4.6\u2605 (54 reviews)",
+                blurb: "Private ballroom, Latin, tango, waltz, and foxtrot instruction for adults along Colorado's Front Range.",
+              },
+              {
+                slug: "accolades-movement-project-bellevue",
+                title: "Accolades Movement Project",
+                city:  "Bellevue, Washington",
+                rating: "5.0\u2605",
+                blurb: "Personalized private dance lessons across the Seattle Eastside \u2014 Bellevue, Redmond, Kirkland, and Sammamish.",
+              },
+              {
+                slug: "absolute-danz-ballroom-and-latin-menasha",
+                title: "Absolute Danz Ballroom and Latin",
+                city:  "Menasha, Wisconsin",
+                rating: "5.0\u2605 (18 reviews)",
+                blurb: "Private ballroom and Latin instruction serving Menasha, Appleton, Neenah, and the greater Fox Valley.",
+              },
+            ].map((s) => (
+              <Link key={s.slug} href={`/studios/${s.slug}`}
+                className="group p-7 bg-white rounded-xl border border-gray-200
+                           hover:border-yellow-400 hover:shadow-lg transition-all duration-200 block">
+                <p className="text-xs font-bold tracking-wide uppercase text-gray-400 mb-2">{s.city}</p>
+                <h3 className="font-display font-bold text-gray-900 text-xl mb-2
+                               group-hover:text-yellow-700 transition-colors">
+                  {s.title}
+                </h3>
+                <p className="text-sm font-semibold mb-3" style={{ color: "#b8922a" }}>{s.rating}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{s.blurb}</p>
+                <p className="mt-4 text-xs font-bold tracking-wide uppercase" style={{ color: "#b8922a" }}>
+                  View Studio &rarr;
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Why Private Lessons */}
       <section className="py-20 px-6" style={{ background: "#0c1428" }}>
         <div className="max-w-4xl mx-auto text-center">

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task 1 & 2 — Flow Diagrams</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; }
+
+.tabs { display: flex; gap: 2px; background: #1a1f2e; padding: 12px 24px 0; border-bottom: 1px solid #2d3748; }
+.tab { padding: 11px 28px; cursor: pointer; border-radius: 8px 8px 0 0; font-size: 14px; font-weight: 700; color: #718096; transition: all .2s; border: 1px solid transparent; border-bottom: none; }
+.tab:hover { color: #e2e8f0; background: #2d3748; }
+.tab.active { background: #0f1117; color: #e8c560; border-color: #2d3748; }
+.panel { display: none; padding: 36px 28px; max-width: 1100px; margin: 0 auto; }
+.panel.active { display: block; }
+
+/* ── SHARED ── */
+.page-title { font-size: 24px; font-weight: 800; color: #e8c560; margin-bottom: 6px; }
+.page-sub   { font-size: 14px; color: #718096; margin-bottom: 36px; }
+
+.section-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  color: #4a5568; margin: 32px 0 14px; padding-bottom: 6px; border-bottom: 1px solid #1e2a3a;
+}
+
+/* ── STEP FLOW ── */
+.flow-wrap { display: flex; flex-direction: column; gap: 0; }
+
+.step {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 0 16px;
+  position: relative;
+}
+
+/* vertical connector line */
+.step:not(:last-child) .step-line::after {
+  content: '';
+  position: absolute;
+  left: 23px;
+  top: 48px;
+  width: 2px;
+  bottom: 0;
+  background: linear-gradient(to bottom, var(--line-color, #374151), transparent);
+  z-index: 0;
+}
+
+.step-num-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.step-line { flex: 1; width: 2px; margin-top: 4px; min-height: 32px; }
+
+.step-num {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 800; flex-shrink: 0; z-index: 1;
+  position: relative;
+}
+
+.step-body {
+  padding-bottom: 28px;
+}
+
+.step-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;
+}
+.step-title { font-size: 16px; font-weight: 700; }
+.step-actor {
+  font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.step-desc { font-size: 13px; color: #a0aec0; line-height: 1.65; margin-bottom: 10px; }
+
+.step-detail {
+  background: #0d111c; border: 1px solid #1e2a3a; border-radius: 8px;
+  padding: 12px 14px; margin-top: 6px;
+}
+.step-detail-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12px; color: #718096; padding: 3px 0; line-height: 1.5;
+}
+.step-detail-row .di { flex-shrink: 0; }
+.step-detail-row strong { color: #a0aec0; }
+
+.code-pill {
+  display: inline-block; background: #161b27; border: 1px solid #2d3748;
+  font-family: 'SFMono-Regular', Consolas, monospace; font-size: 11px;
+  color: #7dd3fc; padding: 1px 7px; border-radius: 4px; margin: 1px 2px;
+}
+
+/* Step color themes */
+.theme-user   { --c: #60a5fa; --bg: #1e3a5f; --line-color: #3b82f6; }
+.theme-vercel { --c: #a78bfa; --bg: #2e1065; --line-color: #8b5cf6; }
+.theme-stripe { --c: #818cf8; --bg: #1e1b4b; --line-color: #6366f1; }
+.theme-db     { --c: #4ade80; --bg: #14532d; --line-color: #22c55e; }
+.theme-wp     { --c: #f87171; --bg: #3b1111; --line-color: #ef4444; }
+.theme-email  { --c: #fb923c; --bg: #431407; --line-color: #f97316; }
+.theme-done   { --c: #e8c560; --bg: #451a03; --line-color: #d97706; }
+
+.step-num      { background: var(--bg); color: var(--c); border: 2px solid var(--c); }
+.step-actor    { background: var(--bg); color: var(--c); }
+.step-line     { background: linear-gradient(to bottom, var(--c, #374151), transparent); opacity: 0.4; }
+
+/* ── ACTOR LEGEND ── */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  background: #0d111c; border: 1px solid #1e2a3a; border-radius: 10px;
+  padding: 16px; margin-bottom: 32px;
+}
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #a0aec0; }
+.legend-dot  { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── HANDOFF ARROWS ── */
+.handoff {
+  display: flex; align-items: stretch; gap: 0;
+  margin: 8px 0 4px; overflow-x: auto; padding-bottom: 4px;
+}
+.handoff-node {
+  display: flex; flex-direction: column; align-items: center; min-width: 100px;
+}
+.handoff-box {
+  padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  text-align: center; white-space: nowrap;
+}
+.handoff-label { font-size: 10px; color: #4a5568; margin-top: 4px; text-align: center; max-width: 90px; }
+.handoff-arrow {
+  display: flex; align-items: center; padding: 0 4px; color: #374151; font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* ── SUMMARY BOX ── */
+.summary-box {
+  background: #0d1526; border: 1px solid #1e3a5f; border-radius: 12px;
+  padding: 20px 22px; margin-top: 32px;
+}
+.summary-box h3 { font-size: 14px; font-weight: 700; color: #60a5fa; margin-bottom: 12px; }
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1e2a3a; font-size: 13px; }
+.summary-row:last-child { border-bottom: none; }
+.summary-row .label { color: #718096; }
+.summary-row .value { color: #e2e8f0; font-weight: 600; }
+.tag-free   { background: #14532d; color: #4ade80; font-size: 11px; padding: 1px 8px; border-radius: 10px; }
+.tag-paid   { background: #451a03; color: #fbbf24; font-size: 11px; padding: 1px 8px; border-radius: 10px; }
+.tag-new    { background: #2e1065; color: #a78bfa; font-size: 11px; padding: 1px 8px; border-radius: 10px; }
+.tag-exists { background: #1e2937; color: #6b7280; font-size: 11px; padding: 1px 8px; border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('stripe')">💳 Task 1 — Stripe Paid Tier</div>
+  <div class="tab" onclick="switchTab('resend')">✉️ Task 2 — Resend Email</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     STRIPE PANEL
+══════════════════════════════════════════════════════════ -->
+<div id="panel-stripe" class="panel active">
+
+  <div class="page-title">Task 1 — Stripe Paid Tier + /upgrade Flow</div>
+  <div class="page-sub">How a studio owner goes from "claimed" to "paying $49/month featured customer" — every handoff, every system involved</div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div> Studio Owner (browser)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div> Vercel / Next.js (our website)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#818cf8"></div> Stripe (payment processor)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div> Supabase (our auth + claims DB)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div> WordPress on Hetzner (studio data)</div>
+  </div>
+
+  <div class="section-label">Part A — The Upgrade Journey (what the studio owner sees)</div>
+
+  <div class="flow-wrap">
+
+    <div class="step theme-user">
+      <div class="step-num-wrap">
+        <div class="step-num">1</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Studio Owner logs into /dashboard</div>
+          <div class="step-actor">Studio Owner</div>
+          <div class="step-actor" style="background:#2e1065;color:#a78bfa">Vercel</div>
+        </div>
+        <div class="step-desc">They claimed their listing earlier (already done ✅). Now they're signed in via Supabase magic link. The dashboard shows their studio name, claim status, and a teaser for the Featured upgrade. This page already exists — we just need to wire the upgrade button.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">📄</span><span>Page: <span class="code-pill">/dashboard</span> — already built and live</span></div>
+          <div class="step-detail-row"><span class="di">🔑</span><span>Auth: Supabase session cookie confirms identity</span></div>
+          <div class="step-detail-row"><span class="di">👁️</span><span>They see: studio name, status badge, <strong>"Upgrade to Featured — $49/mo"</strong> button (teaser)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step theme-user">
+      <div class="step-num-wrap">
+        <div class="step-num">2</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">They click "Upgrade to Featured"</div>
+          <div class="step-actor">Studio Owner</div>
+          <div class="step-actor" style="background:#2e1065;color:#a78bfa">Vercel</div>
+        </div>
+        <div class="step-desc">They land on the new <span class="code-pill">/upgrade</span> page — a clean sales page explaining exactly what they get: lead capture form, featured badge, priority placement, enhanced profile. One big "Subscribe Now" button at the bottom.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">🆕</span><span><strong>New page to build:</strong> <span class="code-pill">/upgrade</span> — shows benefits, price, CTA button</span></div>
+          <div class="step-detail-row"><span class="di">✅</span><span>Benefits they see: lead form on profile, "Featured" badge, priority in search, logo/banner/video</span></div>
+          <div class="step-detail-row"><span class="di">🔒</span><span>Page is gated — must be logged in with a verified claim to reach it</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step theme-stripe">
+      <div class="step-num-wrap">
+        <div class="step-num">3</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Stripe Checkout opens</div>
+          <div class="step-actor">Studio Owner</div>
+          <div class="step-actor" style="background:#1e1b4b;color:#818cf8">Stripe</div>
+        </div>
+        <div class="step-desc">When they click "Subscribe Now," our server calls Stripe's API to create a Checkout Session. The owner is redirected to <strong>Stripe's hosted checkout page</strong> — we never touch their credit card. Stripe handles all the payment security, card validation, and receipts.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">🆕</span><span><strong>New API route:</strong> <span class="code-pill">/api/stripe/create-checkout</span> — creates a Stripe Checkout Session server-side</span></div>
+          <div class="step-detail-row"><span class="di">💳</span><span>Stripe handles: card entry, 3D Secure, receipts, failed payments — none of that touches our code</span></div>
+          <div class="step-detail-row"><span class="di">💰</span><span>Product set up in Stripe dashboard: <strong>"Featured Listing"</strong> subscription at $49/month</span></div>
+          <div class="step-detail-row"><span class="di">🔁</span><span>success_url → <span class="code-pill">/dashboard?upgraded=true</span> &nbsp;|&nbsp; cancel_url → <span class="code-pill">/upgrade</span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step theme-stripe">
+      <div class="step-num-wrap">
+        <div class="step-num">4</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Owner enters card details on Stripe's page</div>
+          <div class="step-actor">Studio Owner</div>
+          <div class="step-actor" style="background:#1e1b4b;color:#818cf8">Stripe</div>
+        </div>
+        <div class="step-desc">The owner is on stripe.com — completely off our site. They enter their card, click pay. Stripe processes the charge and returns a result. If successful, they are redirected back to <span class="code-pill">/dashboard?upgraded=true</span> on our site.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">🛡️</span><span>We never see the card number — Stripe is PCI-compliant, we're not on the hook for card security</span></div>
+          <div class="step-detail-row"><span class="di">⚠️</span><span>Important: the redirect back does NOT confirm payment — we verify via webhook (Step 5), not the redirect</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Part B — The Backend Handoff (what happens in the background)</div>
+
+  <div class="flow-wrap">
+
+    <div class="step theme-stripe">
+      <div class="step-num-wrap">
+        <div class="step-num">5</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Stripe fires a webhook to our server</div>
+          <div class="step-actor" style="background:#1e1b4b;color:#818cf8">Stripe</div>
+          <div class="step-actor" style="background:#2e1065;color:#a78bfa">Vercel</div>
+        </div>
+        <div class="step-desc">The moment Stripe confirms the payment, it sends an HTTP POST to our site at <span class="code-pill">/api/stripe/webhook</span>. This is the <strong>authoritative confirmation</strong> — this is where we trust that money changed hands and we take action. The webhook includes a secret signature we verify to ensure it's really from Stripe, not a fake.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">🆕</span><span><strong>New API route to build:</strong> <span class="code-pill">/api/stripe/webhook</span></span></div>
+          <div class="step-detail-row"><span class="di">🔐</span><span>First thing it does: verify the <strong>Stripe webhook signature</strong> — rejects anything unsigned</span></div>
+          <div class="step-detail-row"><span class="di">📦</span><span>Event types we handle: <span class="code-pill">checkout.session.completed</span> (new sub), <span class="code-pill">customer.subscription.deleted</span> (cancellation), <span class="code-pill">invoice.payment_failed</span> (card declined)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step theme-db">
+      <div class="step-num-wrap">
+        <div class="step-num">6</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Webhook updates Supabase</div>
+          <div class="step-actor" style="background:#2e1065;color:#a78bfa">Vercel</div>
+          <div class="step-actor" style="background:#14532d;color:#4ade80">Supabase</div>
+        </div>
+        <div class="step-desc">The webhook handler updates the <span class="code-pill">claims</span> table in Supabase to mark the studio as paid. It stores the Stripe customer ID and subscription ID so we can look them up for cancellations or billing issues later.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">🗄️</span><span>Updates: <span class="code-pill">claims</span> row where studio matches → sets <span class="code-pill">status = 'paid'</span>, stores <span class="code-pill">stripe_customer_id</span>, <span class="code-pill">stripe_subscription_id</span></span></div>
+          <div class="step-detail-row"><span class="di">🔄</span><span>On cancellation: sets status back to <span class="code-pill">'verified'</span> (they keep the claim, just lose paid features)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step theme-wp">
+      <div class="step-num-wrap">
+        <div class="step-num">7</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Webhook updates WordPress</div>
+          <div class="step-actor" style="background:#2e1065;color:#a78bfa">Vercel</div>
+          <div class="step-actor" style="background:#3b1111;color:#f87171">WordPress</div>
+        </div>
+        <div class="step-desc">The same webhook handler also calls the WordPress REST API to update the studio's <span class="code-pill">studio_tier</span> field from <span class="code-pill">"claimed"</span> to <span class="code-pill">"paid"</span>. This is what controls what displays on the studio detail page — the lead form, featured badge, and priority sort all read from this field.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">🔌</span><span>Uses WP Application Password (already stored in Vercel env vars)</span></div>
+          <div class="step-detail-row"><span class="di">📝</span><span>PATCH <span class="code-pill">wp-json/wp/v2/dance_studio/{id}</span> → sets <span class="code-pill">studio_tier: "paid"</span></span></div>
+          <div class="step-detail-row"><span class="di">⚡</span><span>Also fires ISR revalidate on that studio's page so the changes go live immediately</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step theme-vercel">
+      <div class="step-num-wrap">
+        <div class="step-num">8</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">The studio detail page upgrades live</div>
+          <div class="step-actor" style="background:#2e1065;color:#a78bfa">Vercel</div>
+        </div>
+        <div class="step-desc">Because the WP field changed and ISR fired, the studio's public page rebuilds within seconds. It now shows the <strong>Featured badge</strong>, the <strong>lead capture form</strong>, and the studio floats to the top of search results for their city/style. All automatic — no manual publish needed.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">⭐</span><span>"Featured" gold badge appears on their listing card in search results</span></div>
+          <div class="step-detail-row"><span class="di">📋</span><span>Lead capture form appears on their studio detail page (name, email, message → sent to owner via Resend)</span></div>
+          <div class="step-detail-row"><span class="di">🔝</span><span>Search results sort: paid studios appear before free/claimed studios</span></div>
+          <div class="step-detail-row"><span class="di">🖼️</span><span>Enhanced profile fields unlock: logo upload, banner image, promo video embed</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step theme-done">
+      <div class="step-num-wrap">
+        <div class="step-num">✓</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Monthly auto-billing handles itself</div>
+          <div class="step-actor" style="background:#1e1b4b;color:#818cf8">Stripe</div>
+        </div>
+        <div class="step-desc">Stripe automatically charges the owner's card every 30 days with no action needed from you. If a card fails, Stripe retries 3 times then sends a cancellation webhook which downgrades the studio automatically. You see all of this in the Stripe dashboard.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">🔁</span><span>Stripe handles renewals, retries, receipts, and cancellations</span></div>
+          <div class="step-detail-row"><span class="di">📊</span><span>You see MRR, churn, and subscriber list in Stripe dashboard — no code needed</span></div>
+          <div class="step-detail-row"><span class="di">❌</span><span>On cancellation: webhook fires → Supabase + WP both updated → featured features removed automatically</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="summary-box">
+    <h3>📦 What Gets Built for Task 1</h3>
+    <div class="summary-row"><span class="label">New page: /upgrade</span><span class="value"><span class="tag-new">BUILD</span> Sales page + subscribe button</span></div>
+    <div class="summary-row"><span class="label">New API: /api/stripe/create-checkout</span><span class="value"><span class="tag-new">BUILD</span> Creates Stripe Checkout Session</span></div>
+    <div class="summary-row"><span class="label">New API: /api/stripe/webhook</span><span class="value"><span class="tag-new">BUILD</span> Receives + verifies Stripe events</span></div>
+    <div class="summary-row"><span class="label">Update: /dashboard</span><span class="value"><span class="tag-new">UPDATE</span> Wire "Upgrade" button + show paid state</span></div>
+    <div class="summary-row"><span class="label">Update: /studios/[slug]</span><span class="value"><span class="tag-new">UPDATE</span> Show lead capture form if studio_tier = paid</span></div>
+    <div class="summary-row"><span class="label">Update: /studios (search)</span><span class="value"><span class="tag-new">UPDATE</span> Sort paid studios to top</span></div>
+    <div class="summary-row"><span class="label">Update: Supabase claims table</span><span class="value"><span class="tag-new">MIGRATE</span> Add stripe_customer_id + stripe_subscription_id columns</span></div>
+    <div class="summary-row"><span class="label">Stripe Dashboard setup</span><span class="value"><span class="tag-exists">YOU DO</span> Create product + price + webhook endpoint</span></div>
+    <div class="summary-row"><span class="label">Cost to you</span><span class="value"><span class="tag-free">FREE</span> until first charge — then 2.9% + 30¢ per transaction</span></div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     RESEND PANEL
+══════════════════════════════════════════════════════════ -->
+<div id="panel-resend" class="panel">
+
+  <div class="page-title">Task 2 — Resend Transactional Email</div>
+  <div class="page-sub">Three distinct email flows that get built — each triggered by a different event, sent to a different recipient</div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div> Studio Owner</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e2e8f0"></div> Visitor (potential student)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div> Vercel / Next.js</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div> Supabase</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div> Resend (email delivery)</div>
+  </div>
+
+  <!-- EMAIL FLOW 1 -->
+  <div class="section-label">Email Flow 1 — Claim Confirmation (already partially exists, needs Resend wired in)</div>
+
+  <div class="flow-wrap">
+
+    <div class="step theme-user">
+      <div class="step-num-wrap">
+        <div class="step-num">1</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Studio owner completes the claim wizard</div>
+          <div class="step-actor">Studio Owner</div>
+        </div>
+        <div class="step-desc">They go through <span class="code-pill">/claim</span>, find their studio, enter their name and phone, and click "Send Verification Email." Currently, Supabase sends a magic link. After that magic link is clicked and the claim is recorded — nothing else happens. No confirmation. No "what happens next." This flow adds that.</div>
+      </div>
+    </div>
+
+    <div class="step theme-vercel">
+      <div class="step-num-wrap">
+        <div class="step-num">2</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">/api/claim inserts the record and fires Resend</div>
+          <div class="step-actor" style="background:#2e1065;color:#a78bfa">Vercel</div>
+          <div class="step-actor" style="background:#431407;color:#fb923c">Resend</div>
+        </div>
+        <div class="step-desc">The existing <span class="code-pill">/api/claim</span> route already inserts the claim into Supabase. We add one new call at the end: Resend's API. It sends a "Your claim is under review" email to the studio owner. Professional, branded, confirms everything they submitted.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">📧</span><span><strong>To:</strong> studio owner's email &nbsp;|&nbsp; <strong>From:</strong> info@ballroomdancedirectory.com</span></div>
+          <div class="step-detail-row"><span class="di">📝</span><span><strong>Subject:</strong> "Your claim for [Studio Name] is under review"</span></div>
+          <div class="step-detail-row"><span class="di">📋</span><span><strong>Body:</strong> Studio name they claimed, their submitted contact info, what happens next (review → approval), link back to /dashboard</span></div>
+          <div class="step-detail-row"><span class="di">🆕</span><span>Change to existing route: add <span class="code-pill">resend.emails.send()</span> call at end of <span class="code-pill">/api/claim/route.ts</span></span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EMAIL FLOW 2 -->
+  <div class="section-label">Email Flow 2 — Lead Forwarding (the revenue-critical one — requires paid tier first)</div>
+
+  <div class="flow-wrap">
+
+    <div class="step theme-user">
+      <div class="step-num-wrap">
+        <div class="step-num">1</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">A visitor fills out the contact form on a paid studio's page</div>
+          <div class="step-actor">Visitor</div>
+        </div>
+        <div class="step-desc">A potential student is looking at a studio detail page for a Featured (paid) studio. They see a contact form — "Interested in lessons? Send them a message." They fill in their name, email, and a quick message and hit Send. This is the core value proposition for studio owners paying $49/month.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">🆕</span><span><strong>New component:</strong> <span class="code-pill">LeadForm.tsx</span> — only renders when <span class="code-pill">studio_tier === 'paid'</span></span></div>
+          <div class="step-detail-row"><span class="di">📋</span><span>Form fields: visitor name, visitor email, message (optional), studio slug (hidden)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step theme-vercel">
+      <div class="step-num-wrap">
+        <div class="step-num">2</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">New /api/lead route receives the form</div>
+          <div class="step-actor" style="background:#2e1065;color:#a78bfa">Vercel</div>
+          <div class="step-actor" style="background:#14532d;color:#4ade80">Supabase</div>
+        </div>
+        <div class="step-desc">The form posts to a new API route. It looks up the studio owner's email (from the claims table in Supabase), validates the submission, and then calls Resend to forward the lead to the owner.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">🆕</span><span><strong>New API route:</strong> <span class="code-pill">/api/lead/route.ts</span></span></div>
+          <div class="step-detail-row"><span class="di">🔍</span><span>Looks up <span class="code-pill">claims</span> table in Supabase by studio slug → gets owner_email</span></div>
+          <div class="step-detail-row"><span class="di">🛡️</span><span>Validates: studio must be paid tier, form fields not empty, basic spam check</span></div>
+          <div class="step-detail-row"><span class="di">🗄️</span><span>Stores lead in a new <span class="code-pill">leads</span> table (so owners can see history in their dashboard)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step theme-email">
+      <div class="step-num-wrap">
+        <div class="step-num">3</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Resend delivers two emails simultaneously</div>
+          <div class="step-actor" style="background:#431407;color:#fb923c">Resend</div>
+          <div class="step-actor">Studio Owner</div>
+          <div class="step-actor">Visitor</div>
+        </div>
+        <div class="step-desc">Two emails go out at the same time: one to the studio owner with the lead's contact info, and one to the visitor confirming their message was sent. The studio owner gets a hot lead in their inbox within seconds of the visitor submitting.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">📬</span><span><strong>Email to studio owner:</strong> "New inquiry from [Visitor Name]" — visitor's name, email, message, link to reply</span></div>
+          <div class="step-detail-row"><span class="di">📨</span><span><strong>Email to visitor:</strong> "Your message to [Studio Name] was sent" — confirmation, studio's phone number, link to studio page</span></div>
+          <div class="step-detail-row"><span class="di">📤</span><span>From: <span class="code-pill">info@ballroomdancedirectory.com</span> — sent via Resend using our domain</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EMAIL FLOW 3 -->
+  <div class="section-label">Email Flow 3 — Upgrade Confirmation (triggered by Stripe webhook)</div>
+
+  <div class="flow-wrap">
+
+    <div class="step theme-stripe">
+      <div class="step-num-wrap">
+        <div class="step-num">1</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Stripe webhook fires on successful subscription</div>
+          <div class="step-actor" style="background:#1e1b4b;color:#818cf8">Stripe</div>
+          <div class="step-actor" style="background:#2e1065;color:#a78bfa">Vercel</div>
+        </div>
+        <div class="step-desc">When the Stripe webhook handler (built in Task 1) processes a successful <span class="code-pill">checkout.session.completed</span> event, after it updates Supabase and WordPress, it also calls Resend to send a welcome email to the new paying customer.</div>
+      </div>
+    </div>
+
+    <div class="step theme-email">
+      <div class="step-num-wrap">
+        <div class="step-num">2</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <div class="step-title">Resend sends the "Welcome to Featured" email</div>
+          <div class="step-actor" style="background:#431407;color:#fb923c">Resend</div>
+          <div class="step-actor">Studio Owner</div>
+        </div>
+        <div class="step-desc">The studio owner gets a professional confirmation the moment their card clears. It explains what changed on their listing, what to do next (update their profile, add a logo), and how to manage their subscription. This is the first impression of being a paying customer — it needs to feel premium.</div>
+        <div class="step-detail">
+          <div class="step-detail-row"><span class="di">📧</span><span><strong>Subject:</strong> "Welcome to Featured — [Studio Name] is now live as a Featured listing"</span></div>
+          <div class="step-detail-row"><span class="di">📋</span><span><strong>Contains:</strong> what's now live on their page, link to dashboard to update their profile, billing info (managed via Stripe customer portal), support contact</span></div>
+          <div class="step-detail-row"><span class="di">💳</span><span>Also triggers on cancellation: "Your Featured subscription has ended" — explains what was removed</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- HOW RESEND WORKS -->
+  <div class="section-label">How Resend Works (the vendor itself)</div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:8px;">
+
+    <div style="background:#0d111c; border:1px solid #431407; border-radius:10px; padding:18px;">
+      <div style="font-size:13px; font-weight:700; color:#fb923c; margin-bottom:10px;">📤 Sending an email with Resend</div>
+      <div style="font-size:12px; color:#718096; line-height:1.7;">
+        From our API route, one function call:<br><br>
+        <span class="code-pill">resend.emails.send({</span><br>
+        &nbsp;&nbsp;<span class="code-pill">from: 'info@ballroomdancedirectory.com'</span><br>
+        &nbsp;&nbsp;<span class="code-pill">to: ownerEmail</span><br>
+        &nbsp;&nbsp;<span class="code-pill">subject: '...'</span><br>
+        &nbsp;&nbsp;<span class="code-pill">html: emailTemplate</span><br>
+        <span class="code-pill">})</span><br><br>
+        That's it. Resend handles all the delivery infrastructure, spam scoring, and bounce handling.
+      </div>
+    </div>
+
+    <div style="background:#0d111c; border:1px solid #1e3a5f; border-radius:10px; padding:18px;">
+      <div style="font-size:13px; font-weight:700; color:#60a5fa; margin-bottom:10px;">🌐 Domain verification (one-time setup)</div>
+      <div style="font-size:12px; color:#718096; line-height:1.7;">
+        To send <strong>from</strong> info@ballroomdancedirectory.com, we add 3 DNS records in Namecheap (same place we manage the domain). Takes 5 minutes. Resend then verifies our domain ownership and enables sending. This is what makes emails land in inboxes instead of spam.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="summary-box">
+    <h3>📦 What Gets Built for Task 2</h3>
+    <div class="summary-row"><span class="label">Resend account + domain verification</span><span class="value"><span class="tag-exists">YOU DO</span> Sign up at resend.com + add DNS records in Namecheap</span></div>
+    <div class="summary-row"><span class="label">RESEND_API_KEY env var</span><span class="value"><span class="tag-exists">YOU DO</span> Add to Vercel environment variables</span></div>
+    <div class="summary-row"><span class="label">Update /api/claim</span><span class="value"><span class="tag-new">BUILD</span> Add claim confirmation email on claim submission</span></div>
+    <div class="summary-row"><span class="label">New: /api/lead route</span><span class="value"><span class="tag-new">BUILD</span> Receives contact form → looks up owner → fires 2 emails</span></div>
+    <div class="summary-row"><span class="label">New: LeadForm component</span><span class="value"><span class="tag-new">BUILD</span> Contact form shown only on paid studio pages</span></div>
+    <div class="summary-row"><span class="label">New: leads table in Supabase</span><span class="value"><span class="tag-new">MIGRATE</span> Stores all leads so owners can see them in dashboard</span></div>
+    <div class="summary-row"><span class="label">Update: /dashboard</span><span class="value"><span class="tag-new">UPDATE</span> Show leads table for paid tier owners</span></div>
+    <div class="summary-row"><span class="label">Update: Stripe webhook</span><span class="value"><span class="tag-new">UPDATE</span> Add upgrade + cancellation confirmation emails</span></div>
+    <div class="summary-row"><span class="label">Email templates (3)</span><span class="value"><span class="tag-new">BUILD</span> Claim confirmation, lead notification, upgrade welcome</span></div>
+    <div class="summary-row"><span class="label">Cost</span><span class="value"><span class="tag-free">FREE</span> 3,000 emails/month free — more than enough to start</span></div>
+  </div>
+
+  <div style="background:#0a1a0f; border:1px solid #22c55e; border-radius:10px; padding:16px; margin-top:20px;">
+    <div style="font-size:13px; font-weight:700; color:#4ade80; margin-bottom:8px;">⚡ Dependency note</div>
+    <div style="font-size:13px; color:#718096; line-height:1.65;">
+      <strong style="color:#a0aec0;">Email Flow 1</strong> (claim confirmation) can be built and deployed independently — it just needs a Resend account.<br><br>
+      <strong style="color:#a0aec0;">Email Flow 2</strong> (lead forwarding) requires the lead capture form and <span class="code-pill">LeadForm</span> component, which require a paid studio to test against — so Task 1 (Stripe) needs to be done first, or at minimum we need a test studio manually set to <span class="code-pill">studio_tier = 'paid'</span> in WordPress.<br><br>
+      <strong style="color:#a0aec0;">Email Flow 3</strong> (upgrade confirmation) is built directly into the Stripe webhook handler from Task 1 — it comes along for free.
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

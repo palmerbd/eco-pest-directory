@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ballroom Dance Directory — Initial Build Punchlist</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; padding: 32px 24px; }
+
+  .header { max-width: 900px; margin: 0 auto 32px; }
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #1a1625; border: 1px solid #4a3a6a; border-radius: 10px;
+    padding: 8px 16px; margin-bottom: 20px;
+  }
+  .logo-hex { font-size: 22px; }
+  .logo-text { font-size: 13px; font-weight: 700; color: #e8c560; letter-spacing: 1px; text-transform: uppercase; }
+
+  h1 { font-size: 26px; font-weight: 800; color: #e8c560; margin-bottom: 6px; }
+  .subtitle { color: #718096; font-size: 14px; margin-bottom: 28px; }
+
+  .summary-bar {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 32px;
+    background: #0d1526; border: 1px solid #1e3a5f; border-radius: 12px; padding: 20px;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-size: 28px; font-weight: 800; color: #e8c560; }
+  .stat-label { font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+  .stat-divider { width: 1px; background: #1e3a5f; }
+
+  .section { max-width: 900px; margin: 0 auto 32px; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; border-radius: 10px; margin-bottom: 12px; border: 1px solid;
+  }
+  .section-icon { font-size: 20px; }
+  .section-title { font-size: 16px; font-weight: 700; flex: 1; }
+  .section-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+
+  /* section color themes */
+  .sec-immediate { background: #1a0a0f; border-color: #ec4899; }
+  .sec-immediate .section-title { color: #f472b6; }
+  .sec-immediate .section-badge { background: #500724; color: #f472b6; }
+
+  .sec-dev { background: #0d1526; border-color: #3b82f6; }
+  .sec-dev .section-title { color: #60a5fa; }
+  .sec-dev .section-badge { background: #1e3a5f; color: #60a5fa; }
+
+  .sec-feature { background: #160e2a; border-color: #8b5cf6; }
+  .sec-feature .section-title { color: #a78bfa; }
+  .sec-feature .section-badge { background: #2e1065; color: #a78bfa; }
+
+  .sec-legal { background: #1a150a; border-color: #f59e0b; }
+  .sec-legal .section-title { color: #fbbf24; }
+  .sec-legal .section-badge { background: #451a03; color: #fbbf24; }
+
+  .sec-outreach { background: #0a1a0f; border-color: #22c55e; }
+  .sec-outreach .section-title { color: #4ade80; }
+  .sec-outreach .section-badge { background: #14532d; color: #4ade80; }
+
+  .sec-scale { background: #111117; border-color: #374151; }
+  .sec-scale .section-title { color: #9ca3af; }
+  .sec-scale .section-badge { background: #1f2937; color: #9ca3af; }
+
+  /* items */
+  .item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 14px; border-radius: 8px; margin-bottom: 4px;
+    border: 1px solid transparent; background: #13161f;
+    transition: background 0.2s;
+  }
+  .item:hover { background: #1a1f2e; }
+
+  .item-immediate { border-color: #500724; background: #1a0a12; }
+  .item-immediate:hover { background: #220d18; }
+
+  .check {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; margin-top: 1px; cursor: pointer;
+    border: 1.5px solid #374151; background: #1f2937; color: transparent;
+    transition: all 0.2s;
+  }
+  .check:hover { border-color: #6b7280; }
+  .check.done { background: #14532d; border-color: #22c55e; color: #4ade80; }
+
+  .item-body { flex: 1; }
+  .item-title { font-size: 13px; font-weight: 600; color: #e2e8f0; line-height: 1.4; }
+  .item-desc { font-size: 12px; color: #718096; margin-top: 4px; line-height: 1.5; }
+  .item-note { font-size: 11px; color: #4a5568; margin-top: 3px; font-style: italic; }
+
+  .badge-row { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .badge {
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .badge-you { background: #451a03; color: #fbbf24; }
+  .badge-dev { background: #1e3a5f; color: #60a5fa; }
+  .badge-immediate { background: #500724; color: #f472b6; animation: pulse 2s infinite; }
+  .badge-paid { background: #2e1065; color: #a78bfa; }
+  .badge-legal { background: #451a03; color: #fbbf24; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .priority-label {
+    font-size: 10px; font-weight: 700; color: #4a5568; text-transform: uppercase;
+    letter-spacing: 1px; margin: 16px 0 6px; padding-left: 2px;
+  }
+
+  .spec-box {
+    background: #0d1117; border: 1px solid #1e2a3a; border-radius: 8px;
+    padding: 14px 16px; margin-top: 8px;
+  }
+  .spec-box .spec-title { font-size: 11px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .spec-row { font-size: 12px; color: #718096; padding: 3px 0; display: flex; gap: 8px; align-items: flex-start; }
+  .spec-row::before { content: '›'; color: #4a5568; flex-shrink: 0; }
+
+  .updated { font-size: 11px; color: #4a5568; max-width: 900px; margin: 0 auto; padding-top: 16px; border-top: 1px solid #1e2a3a; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-badge">
+    <span class="logo-hex">⬡</span>
+    <span class="logo-text">Ballroom Dance Directory</span>
+  </div>
+  <h1>Initial Build Punchlist</h1>
+  <p class="subtitle">All remaining tasks to complete the initial launch + SEO growth. Updated Apr 8, 2026.</p>
+
+  <div class="summary-bar">
+    <div class="stat"><div class="stat-num" id="total-count">26</div><div class="stat-label">Total Items</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><div class="stat-num" id="dev-count">8</div><div class="stat-label">Dev Tasks</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><div class="stat-num" id="you-count">7</div><div class="stat-label">Your Actions</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><div class="stat-num" id="done-count">4</div><div class="stat-label">Completed</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     IMMEDIATE PRIORITY
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-immediate">
+    <span class="section-icon">🚨</span>
+    <span class="section-title">Immediate — Do These First</span>
+    <span class="section-badge">3 tasks</span>
+  </div>
+
+  <div class="item item-immediate" style="opacity:0.5;">
+    <div class="check done" onclick="toggleCheck(this)">✓</div>
+    <div class="item-body">
+      <div class="item-title" style="text-decoration:line-through;">Replace "Private Dance Directory" header text with official logo</div>
+      <div class="item-desc">✅ Already live — BD hexagon badge with dancing couple silhouette + "BALLROOM DANCE DIRECTORY — THE ELITE RESOURCE" renders in the site header on all pages.</div>
+      <div class="badge-row">
+        <span class="badge badge-immediate">⚡ Immediate</span>
+        <span class="badge badge-dev">Dev</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="item item-immediate">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Stripe webhook end-to-end test</div>
+      <div class="item-desc">All 4 Stripe live-mode keys are now configured in Vercel. Run a real checkout with a live card or use the Stripe Dashboard → Webhooks → "Send test event" to confirm the upgrade flow works end-to-end: checkout → webhook fires → Supabase tier updates → studio shows as Featured.</div>
+      <div class="item-note">Stripe Dashboard → Developers → Webhooks → select endpoint → Send test event (checkout.session.completed)</div>
+      <div class="badge-row">
+        <span class="badge badge-immediate">⚡ Immediate</span>
+        <span class="badge badge-you">YOU</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="item item-immediate">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Remove displayed star ratings from unclaimed studio listings</div>
+      <div class="item-desc">The directory currently displays Google Places API rating data (stars + review count) on all studio cards. Displaying scraped Google Places ratings in a public directory violates Google's TOS. Ratings should be hidden on unclaimed listings and replaced with "Claim this studio to show your live rating."</div>
+      <div class="item-note">Edit StudioCard.tsx + studio detail page to conditionally render ratings only for claimed + GBP-verified studios</div>
+      <div class="badge-row">
+        <span class="badge badge-immediate">⚡ Immediate</span>
+        <span class="badge badge-dev">Dev</span>
+        <span class="badge badge-legal">Legal Risk</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DEV TASKS — CORE BUILD COMPLETION
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-dev">
+    <span class="section-icon">💻</span>
+    <span class="section-title">Dev Tasks — Core Build Completion</span>
+    <span class="section-badge">5 tasks</span>
+  </div>
+
+  <div class="item" style="opacity:0.5;">
+    <div class="check done" onclick="toggleCheck(this)">✓</div>
+    <div class="item-body">
+      <div class="item-title" style="text-decoration:line-through;">URL-synced filter state on /studios</div>
+      <div class="item-desc">Fixed: changed <code>revalidate=3600</code> → <code>export const dynamic = "force-dynamic"</code> on studios/page.tsx. searchParams (?city=, ?q=, ?style=) are now read fresh on every request. QA confirmed: ?city=Houston ✅ ?q=fred+astaire ✅</div>
+      <div class="item-note">Deployed Apr 8 ✅</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span></div>
+    </div>
+  </div>
+
+  <div class="item" style="opacity:0.5;">
+    <div class="check done" onclick="toggleCheck(this)">✓</div>
+    <div class="item-body">
+      <div class="item-title" style="text-decoration:line-through;">Pricing section on studio detail pages</div>
+      <div class="item-desc">Fixed: pricing section now always visible. When no pricing data, shows "Pricing available upon inquiry" card with 📞 Call for Pricing and Visit Website CTA buttons. ✅</div>
+      <div class="item-note">Deployed Apr 8 ✅</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Chain studio detection — auto-flag Arthur Murray, Fred Astaire, Dance With Me</div>
+      <div class="item-desc">Currently most studios are flagged as "independent" because chain detection relies on data not present in the scraped results. Studios with "Arthur Murray", "Fred Astaire", or "Dance With Me" in their name should be auto-tagged as chain studios.</div>
+      <div class="item-note">Script: loop all WP posts, match studio name against chain keywords, update ACF studio_type field via WP REST API</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Suburb city grouping — roll Frisco, Plano into Dallas; similar markets</div>
+      <div class="item-desc">Suburb cities like Frisco and Plano appear as separate city landing pages when users expect them under "Dallas." These should either be merged under the parent metro or have their city pages display "Part of the Dallas metro area" with a link to the Dallas page.</div>
+      <div class="item-note">Update CITY_CONTENT + getStudiosByCity() to normalize suburb → parent city groupings for major metros</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Populate pricing data for top studios</div>
+      <div class="item-desc">The pricing ACF fields (intro lesson price, monthly package, drop-in rate) are unpopulated for most studios. Use a targeted scraping pass or enrichment script to pull pricing data from studio websites for the top 20–30 studios per market.</div>
+      <div class="item-note">Use Firecrawl or similar to scrape pricing pages. Store in WP ACF via REST API. Start with LA and NYC markets.</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NEW FEATURES
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-feature">
+    <span class="section-icon">✨</span>
+    <span class="section-title">New Features to Build</span>
+    <span class="section-badge">2 major builds</span>
+  </div>
+
+  <!-- City Landing Pages -->
+  <div class="item" style="opacity:0.5;">
+    <div class="check done" onclick="toggleCheck(this)">✓</div>
+    <div class="item-body">
+      <div class="item-title" style="text-decoration:line-through;">Major City Hub Landing Pages with Featured Advertising</div>
+      <div class="item-desc">Dedicated high-traffic landing pages for the largest markets — Chicago, Los Angeles, Dallas, Houston, Atlanta, New York, Miami, Phoenix, San Antonio, San Diego, Philadelphia, and more. Each city hub page is a premium version of the existing city page with advertising and imagery built in.</div>
+      <div class="spec-box">
+        <div class="spec-title">Page Spec</div>
+        <div class="spec-row"><strong>Above the fold:</strong> Full-width hero image of the city skyline/landmark + city name + studio count headline</div>
+        <div class="spec-row"><strong>Featured Advertising Slot (top):</strong> Up to 3 "Sponsored" studio cards with larger display, custom CTA, and "Featured" badge — sold at premium rate ($149–$299/mo)</div>
+        <div class="spec-row"><strong>Below the fold:</strong> Full paginated listing of all studios in that city with existing search/filter functionality</div>
+        <div class="spec-row"><strong>Sidebar:</strong> Style filter quick-links, related cities in the region, "Advertise here" CTA</div>
+        <div class="spec-row"><strong>SEO:</strong> Unique h1, meta description, FAQ schema per city. Target keyword: "ballroom dance lessons [city]"</div>
+        <div class="spec-row"><strong>Priority cities:</strong> Chicago, Los Angeles, Dallas, Houston, Atlanta, New York, Miami, Phoenix, San Antonio, San Diego, Philadelphia, Denver, Seattle</div>
+      </div>
+      <div class="badge-row">
+        <span class="badge badge-dev">Dev</span>
+        <span class="badge badge-paid">Revenue Feature</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GBP OAuth -->
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Google Business Profile OAuth — Live Ratings for Claimed Studios</div>
+      <div class="item-desc">The legally correct path for displaying Google ratings: studio owners authenticate their own GBP account via OAuth and consent to displaying their live rating. This turns the ratings legal problem into a paid tier revenue lever.</div>
+      <div class="spec-box">
+        <div class="spec-title">Build Spec</div>
+        <div class="spec-row"><strong>OAuth flow:</strong> Studio owner clicks "Connect Google Business Profile" in dashboard → Google OAuth consent screen → grants read access to their GBP listing</div>
+        <div class="spec-row"><strong>Data fetch:</strong> Call GBP API v4 → fetch rating + review_count for their location → store in Supabase claims table</div>
+        <div class="spec-row"><strong>Display:</strong> Show live star rating + review count on studio detail page with "Rating from Google" attribution</div>
+        <div class="spec-row"><strong>Refresh:</strong> ISR or daily cron re-fetches ratings for all connected GBP accounts</div>
+        <div class="spec-row"><strong>Tier gate:</strong> GBP connection is a Featured-tier feature only ($49/mo) — unclaimed studios show no rating</div>
+        <div class="spec-row"><strong>Google API:</strong> Business Profile API (formerly My Business API) — enable in Google Cloud Console, OAuth2 client credentials</div>
+      </div>
+      <div class="badge-row">
+        <span class="badge badge-dev">Dev</span>
+        <span class="badge badge-paid">Featured Tier Only</span>
+        <span class="badge badge-legal">Legal Compliant</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     LEGAL (YOUR ACTIONS)
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-legal">
+    <span class="section-icon">⚖️</span>
+    <span class="section-title">Legal — Your Actions</span>
+    <span class="section-badge">3 tasks</span>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Register DMCA designated agent at copyright.gov</div>
+      <div class="item-desc">Required before any serious marketing push. Registers you as the DMCA agent so the site qualifies for Safe Harbor protection under the DMCA. Without this, the site is exposed if any studio claims their content is used without permission.</div>
+      <div class="item-note">copyright.gov/dmca-agent — $6 one-time fee. Takes ~15 minutes.</div>
+      <div class="badge-row"><span class="badge badge-you">YOU</span><span class="badge badge-legal">Legal</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Engage IP/technology attorney for Terms of Service + Privacy Policy review</div>
+      <div class="item-desc">The existing Terms and Privacy pages need review by an attorney before monetization ramps up. Key areas: data scraping legality, Google Places TOS, studio data accuracy disclaimers, and subscription terms.</div>
+      <div class="item-note">Strongly recommended before the first real revenue. Sarah (your legal contact) may be able to do this or refer someone.</div>
+      <div class="badge-row"><span class="badge badge-you">YOU</span><span class="badge badge-legal">Legal</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Send franchise outreach emails — Arthur Murray, Fred Astaire, Dance With Me</div>
+      <div class="item-desc">Reach out to franchise HQs to inform them their locations are listed and offer a verified franchise program (premium placement, branded header, lead routing). Outreach drafts already written. Verify correct contact email at each brand's site before sending.</div>
+      <div class="item-note">Verify contacts: arthurmurray.com, fredastaire.com, dancewithme.com → corporate/franchise contact pages</div>
+      <div class="badge-row"><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     STUDIO OUTREACH (YOUR ACTIONS)
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-outreach">
+    <span class="section-icon">📧</span>
+    <span class="section-title">Studio Outreach — Your Actions</span>
+    <span class="section-badge">4 tasks</span>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Use Hunter.io to find emails for top 20–30 independent studios per market</div>
+      <div class="item-desc">Build the first outreach batch targeting the strongest independent studios in LA, NYC, and Chicago. Avoid chains for the first wave — independent studios are more likely to see value in paid features since they can't rely on brand recognition.</div>
+      <div class="item-note">Use Studio_Outreach_Tracker.xlsx to log contacts. Start with LA (highest studio density).</div>
+      <div class="badge-row"><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Send Email 1 to first batch of studios</div>
+      <div class="item-desc">Send the first outreach email using the Studio_Outreach_Campaign.docx templates. Subject line: "Your studio is listed on Ballroom Dance Directory." Goal is to get studio owners to claim their listing and start the upgrade funnel.</div>
+      <div class="item-note">Template already written. Target 20–30 studios for the first batch. Track opens in your email client or use a send tool.</div>
+      <div class="badge-row"><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Follow up with Email 2 (7 days after Email 1)</div>
+      <div class="item-desc">Send follow-up to studios that didn't respond to Email 1. The sequence is written — this is purely a timing/execution task. Track in the outreach spreadsheet.</div>
+      <div class="badge-row"><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">First paid subscriber goal: 3 studios at $49/mo</div>
+      <div class="item-desc">The first milestone: convert 3 studio owners to Featured tier. This validates the business model, generates first revenue ($147/mo), and creates case studies for the franchise pitch. Track claims and upgrades in Supabase.</div>
+      <div class="badge-row"><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     POST-LAUNCH / SCALE
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header sec-scale">
+    <span class="section-icon">🚀</span>
+    <span class="section-title">Post-Launch Scale Tasks</span>
+    <span class="section-badge">After initial build</span>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Daily description generation — Claude Haiku for studios missing descriptions</div>
+      <div class="item-desc">Automated script scans WP for studios with no description and generates them via Claude Haiku API. Runs daily via WP-Cron or Vercel cron job.</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Neighborhood-level landing pages (e.g. /studios/city/los-angeles/hollywood)</div>
+      <div class="item-desc">Sub-city pages for high-value neighborhoods. Massive long-tail SEO opportunity. Hollywood, Silver Lake, Santa Monica, Midtown Manhattan, Lincoln Park, etc.</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Auto-generated "Top 10" blog posts per city × style</div>
+      <div class="item-desc">E.g. "Top 10 Ballroom Dance Studios in Chicago" — AI-generated with real studio data. Massive SEO content play. Can be auto-refreshed monthly.</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Ahrefs / SEMrush keyword rank tracking setup</div>
+      <div class="item-desc">Set up rank tracking for target keywords: "ballroom dance lessons [city]" for all 24 major markets. Track weekly. Use to prioritize which city pages to improve.</div>
+      <div class="badge-row"><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">GoHighLevel CRM pipeline for studio owner lead management</div>
+      <div class="item-desc">Formalize the studio owner outreach pipeline in a CRM. Track claim → upgrade → renewal funnel for each studio. Automate follow-up sequences.</div>
+      <div class="badge-row"><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">Replicate stack for next niche directory</div>
+      <div class="item-desc">The WordPress + Next.js headless stack is proven. Next candidates: Yoga Studios Directory, Martial Arts / BJJ Directory, Music Lessons Directory, Pilates Studios Directory. Each replication takes ~2 weeks using the same scraper + code base.</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEO GROWTH INITIATIVES — Added Apr 8, 2026
+═══════════════════════════════════════ -->
+<div class="section-header" style="margin-top:36px;">
+  <span style="font-size:18px;">🚀</span>
+  <h2 style="font-size:16px; font-weight:800; color:#c4b5fd; margin:0;">SEO Growth Initiatives</h2>
+  <span style="font-size:12px; color:#4a5568; margin-left:8px;">Content authority, backlinks &amp; distribution · Added Apr 8, 2026</span>
+</div>
+<div class="items">
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">📝 Informational Blog — "How Much Do Dance Lessons Cost in [City]?" series</div>
+      <div class="item-desc">Build a /blog/ route and publish 1–2 posts/month targeting low-competition informational queries: "how much do ballroom dance lessons cost in Dallas", "private vs group dance lessons", "best type of ballroom dance to learn for beginners". Each post links internally to 10–20 studio pages. Estimated 90 days to first ranking. Fastest path to page-1 presence beyond studio listings.</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">🧩 FAQ Schema on all City Hub Pages — Rich Snippet / Answer Box potential</div>
+      <div class="item-desc">Add FAQPage structured data to every city hub using existing data: studio count, avg rating, popular styles, price ranges. FAQ Q&amp;As like "How many dance studios are in Dallas?" and "What does a private dance lesson cost in Dallas?" can earn Google expandable answer blocks on page 1 before the page even ranks. One-time dev task (~3 hrs), applies automatically to all cities.</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">🔗 Backlink Flywheel — Embeddable "Listed on BDD" Studio Badge</div>
+      <div class="item-desc">After studio claims their listing, offer an embeddable badge: "Listed on Ballroom Dance Directory" (image + dofollow link). Add to claim confirmation email + outreach Email 1. Even 2% of 4,374 studios = 87 backlinks from real business domains. Also submit BDD to NDCA, USADF, state dance associations, and local chamber of commerce directories for free citation backlinks.</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">🏆 Dance Competition Calendar — /competitions/ unique content asset</div>
+      <div class="item-desc">"Upcoming ballroom dance competitions in Texas 2026" — nobody owns this search. Curate NDCA/USDC/compete.dance event data into a /competitions/ section. Event organizers link to wherever their event is listed. Dance teachers share calendars with students. Each event page includes "Find studios near this competition" CTA linking to the closest city hub. Positions BDD as a community hub, not just a listings site.</div>
+      <div class="badge-row"><span class="badge badge-dev">Dev</span><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="check" onclick="toggleCheck(this)"></div>
+    <div class="item-body">
+      <div class="item-title">📰 Press Outreach + Guest Posts — target DA 50+ publications</div>
+      <div class="item-desc">One link from a DA 50+ site beats 100 low-quality links. Pitch angle: "We mapped every ballroom dance studio in America — here's what the data shows." Target: Dallas Morning News lifestyle desk, Texas Monthly, DanceTeacher Magazine, DancePlug, local city lifestyle blogs, fitness/wellness roundup sites. Also pursue guest posts on fitness blogs with "Find a Dance Studio Near You" anchor links back to BDD. 2–3 pitches per month. One placement = significant domain authority jump.</div>
+      <div class="badge-row"><span class="badge badge-you">YOU</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="updated">Last updated: April 8, 2026 · Added 5 SEO Growth Initiatives · 4 items completed: Logo, URL filter ISR fix, Pricing inquiry CTA, City Hub advertising features</div>
+
+<script>
+function toggleCheck(el) {
+  el.classList.toggle('done');
+  if (el.classList.contains('done')) el.textContent = '✓';
+  else el.textContent = '';
+  updateCounts();
+}
+
+function updateCounts() {
+  const done = document.querySelectorAll('.check.done').length;
+  document.getElementById('done-count').textContent = done;
+}
+</script>
+</body>
+</html>

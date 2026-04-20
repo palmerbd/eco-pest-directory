@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ballroom Dance Directory — Project Docs</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0f1117; color: #e2e8f0; min-height: 100vh;
+  padding: 40px 28px;
+}
+
+.header { margin-bottom: 40px; }
+.header h1 { font-size: 26px; font-weight: 800; color: #e8c560; margin-bottom: 6px; }
+.header p  { font-size: 14px; color: #718096; }
+.header .site-link { color: #60a5fa; text-decoration: none; font-size: 13px; }
+.header .site-link:hover { text-decoration: underline; }
+
+.section { margin-bottom: 36px; }
+.section-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  color: #4a5568; padding-bottom: 8px; margin-bottom: 14px;
+  border-bottom: 1px solid #1e2a3a;
+}
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+
+.card {
+  display: flex; flex-direction: column;
+  background: #0d111c; border: 1px solid #1e2a3a; border-radius: 12px;
+  padding: 20px; text-decoration: none; color: inherit;
+  transition: all .18s; cursor: pointer;
+}
+.card:hover { border-color: var(--accent, #e8c560); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+
+.card-icon { font-size: 28px; margin-bottom: 10px; }
+.card-tag  { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-bottom: 8px; }
+.card-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: #e2e8f0; }
+.card-desc  { font-size: 12px; color: #718096; line-height: 1.55; flex: 1; }
+.card-meta  { margin-top: 14px; padding-top: 12px; border-top: 1px solid #1e2a3a; font-size: 11px; color: #4a5568; }
+
+/* accent colors per card type */
+.type-interactive { --accent: #e8c560; }
+.type-interactive .card-tag { background: #2a1f00; color: #e8c560; }
+
+.type-visual { --accent: #60a5fa; }
+.type-visual .card-tag { background: #1e3a5f; color: #60a5fa; }
+
+.type-planning { --accent: #a78bfa; }
+.type-planning .card-tag { background: #2e1065; color: #a78bfa; }
+
+.type-legal { --accent: #f87171; }
+.type-legal .card-tag { background: #3b1111; color: #f87171; }
+
+.type-outreach { --accent: #4ade80; }
+.type-outreach .card-tag { background: #14532d; color: #4ade80; }
+
+.type-technical { --accent: #fb923c; }
+.type-technical .card-tag { background: #431407; color: #fb923c; }
+
+/* status dots */
+.status { display: inline-flex; align-items: center; gap: 5px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.dot-live    { background: #4ade80; }
+.dot-planned { background: #f59e0b; }
+
+.last-updated { text-align: right; font-size: 11px; color: #2d3748; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📁 Ballroom Dance Directory — Project Docs</h1>
+  <p style="margin-bottom:8px;">Reference documents, diagrams, and planning files for the directory project.</p>
+  <a class="site-link" href="https://www.ballroomdancedirectory.com" target="_blank">↗ Live site: ballroomdancedirectory.com</a>
+  &nbsp;·&nbsp;
+  <a class="site-link" href="https://github.com/palmerbd/ballroom-dance-directory" target="_blank">↗ GitHub repo</a>
+  &nbsp;·&nbsp;
+  <a class="site-link" href="https://vercel.com/palmerbds-projects/ballroom-dance-directory" target="_blank">↗ Vercel dashboard</a>
+</div>
+
+<!-- INTERACTIVE DIAGRAMS -->
+<div class="section">
+  <div class="section-title">Interactive Diagrams</div>
+  <div class="cards">
+
+    <a class="card type-interactive" href="architecture.html">
+      <div class="card-icon">🏗️</div>
+      <div class="card-tag">Architecture</div>
+      <div class="card-title">How Everything Works Together</div>
+      <div class="card-desc">Visual map of every vendor in the stack — GitHub, Vercel, Hetzner/WordPress, Supabase, Namecheap, Google Places, Stripe, Resend. Shows data flows, costs, and what each piece does.</div>
+      <div class="card-meta">
+        <span class="status"><span class="dot dot-live"></span> Live</span>
+        &nbsp;·&nbsp; 2 tabs: Architecture + Pipeline checklist
+      </div>
+    </a>
+
+    <a class="card type-visual" href="flow-diagrams.html">
+      <div class="card-icon">🔄</div>
+      <div class="card-tag">Flow Diagrams</div>
+      <div class="card-title">Task 1 & 2 — Build Flow Details</div>
+      <div class="card-desc">Step-by-step handoff diagrams for the Stripe paid tier + /upgrade flow (Task 1) and Resend transactional email system (Task 2). Every actor, every API call, every decision point.</div>
+      <div class="card-meta">
+        <span class="status"><span class="dot dot-planned"></span> Build next</span>
+        &nbsp;·&nbsp; 2 tabs: Stripe + Resend
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- PLANNING DOCS -->
+<div class="section">
+  <div class="section-title">Planning & Progress</div>
+  <div class="cards">
+
+    <a class="card type-planning" href="../pipeline.md">
+      <div class="card-icon">✅</div>
+      <div class="card-tag">Pipeline</div>
+      <div class="card-title">Master Project Pipeline</div>
+      <div class="card-desc">Full project checklist across all 6 phases with completion status. ~82% complete overall. Includes architecture overview, tech stack table, next steps, and infrastructure credentials reference.</div>
+      <div class="card-meta">
+        Last updated: 2026-04-02 &nbsp;·&nbsp; Session 7
+      </div>
+    </a>
+
+    <a class="card type-technical" href="../scraping.md">
+      <div class="card-icon">📍</div>
+      <div class="card-tag">Technical</div>
+      <div class="card-title">Google Places Scraping Pipeline</div>
+      <div class="card-desc">Full documentation of how the 932 studios were populated — the Google Places API pipeline, how to run it from the WP admin console, and how to scrape new markets when ready.</div>
+      <div class="card-meta">
+        <span class="status"><span class="dot dot-live"></span> 932 studios in WP</span>
+      </div>
+    </a>
+
+    <a class="card type-technical" href="../datascrape.md">
+      <div class="card-icon">🗂️</div>
+      <div class="card-tag">Technical</div>
+      <div class="card-title">Data Scrape Log</div>
+      <div class="card-desc">Log of each scraping run — which markets were targeted, how many studios were created, scripts used, and any errors or edge cases encountered.</div>
+      <div class="card-meta">Tracks all historical scraping runs</div>
+    </a>
+
+  </div>
+</div>
+
+<!-- OUTREACH & LEGAL -->
+<div class="section">
+  <div class="section-title">Outreach & Legal</div>
+  <div class="cards">
+
+    <a class="card type-outreach" href="../outreach-emails/arthur-murray-outreach.md">
+      <div class="card-icon">💌</div>
+      <div class="card-tag">Outreach</div>
+      <div class="card-title">Arthur Murray — Outreach Email</div>
+      <div class="card-desc">Draft outreach email to Arthur Murray corporate introducing the directory, explaining the listing approach, and inviting partnership / feedback. Ready to send — verify contact email on their site first.</div>
+      <div class="card-meta">
+        <span class="status"><span class="dot dot-planned"></span> Draft ready — not sent yet</span>
+      </div>
+    </a>
+
+    <a class="card type-outreach" href="../outreach-emails/fred-astaire-outreach.md">
+      <div class="card-icon">💌</div>
+      <div class="card-tag">Outreach</div>
+      <div class="card-title">Fred Astaire — Outreach Email</div>
+      <div class="card-desc">Draft outreach email to Fred Astaire Dance Studios corporate. Same approach — introduce the directory, acknowledge their brand listings, invite feedback or partnership.</div>
+      <div class="card-meta">
+        <span class="status"><span class="dot dot-planned"></span> Draft ready — not sent yet</span>
+      </div>
+    </a>
+
+    <a class="card type-outreach" href="../outreach-emails/dance-with-me-outreach.md">
+      <div class="card-icon">💌</div>
+      <div class="card-tag">Outreach</div>
+      <div class="card-title">Dance With Me — Outreach Email</div>
+      <div class="card-desc">Draft outreach email to Dance With Me corporate. Third of three franchise brands listed in the directory that warrant proactive outreach before monetization ramps up.</div>
+      <div class="card-meta">
+        <span class="status"><span class="dot dot-planned"></span> Draft ready — not sent yet</span>
+      </div>
+    </a>
+
+    <div class="card type-legal" style="cursor:default;">
+      <div class="card-icon">⚖️</div>
+      <div class="card-tag">Legal</div>
+      <div class="card-title">Your Pending Legal Action Items</div>
+      <div class="card-desc">
+        Three items that require you directly:<br><br>
+        <strong style="color:#f87171;">1.</strong> Register DMCA agent at copyright.gov — $6<br>
+        <strong style="color:#f87171;">2.</strong> Send the 3 franchise outreach emails above<br>
+        <strong style="color:#f87171;">3.</strong> Engage IP attorney to review /terms and /privacy before active monetization
+      </div>
+      <div class="card-meta">⚠️ Complete before running paid outreach campaign</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="last-updated">Last updated: April 2, 2026</div>
+
+</body>
+</html>

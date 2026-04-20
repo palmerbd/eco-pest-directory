@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio Coverage Analysis — Ballroom Dance Directory</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0c1428; color: #d0d8e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 32px; }
+  h1 { font-size: 22px; font-weight: 800; color: #e8c560; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 32px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 32px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; margin-bottom: 32px; }
+  .kpi { background: #0d1f3c; border: 1px solid #1e3a5f; border-radius: 12px; padding: 20px; }
+  .kpi-val { font-size: 32px; font-weight: 800; color: #e8c560; }
+  .kpi-delta { font-size: 12px; color: #22c55e; font-weight: 700; margin-top: 2px; }
+  .kpi-label { font-size: 12px; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .section-title { font-size: 13px; font-weight: 700; color: #e8c560; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+  .card { background: #0d1f3c; border: 1px solid #1e3a5f; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .region-block { margin-bottom: 24px; }
+  .region-name { font-size: 15px; font-weight: 700; color: #f9f6f0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+  .region-count { background: #1e3a5f; color: #93c5fd; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 20px; }
+  .state-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .state-name { font-size: 12px; color: #9ca3af; width: 140px; flex-shrink: 0; }
+  .bar-wrap { flex: 1; background: #0c1428; border-radius: 4px; height: 8px; overflow: hidden; }
+  .bar { height: 8px; border-radius: 4px; }
+  .bar-green { background: #22c55e; }
+  .bar-yellow { background: #e8c560; }
+  .bar-orange { background: #f59e0b; }
+  .bar-red { background: #ef4444; }
+  .bar-gray { background: #374151; }
+  .state-count { font-size: 12px; font-weight: 700; color: #d1d5db; width: 36px; text-align: right; flex-shrink: 0; }
+  .state-cities { font-size: 11px; color: #4b5563; flex: 2; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+  /* Gap table */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; padding: 8px 12px; color: #6b7280; font-weight: 600; border-bottom: 1px solid #1e3a5f; text-transform: uppercase; font-size: 11px; }
+  td { padding: 8px 12px; border-bottom: 1px solid #0f1f38; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .priority-high { color: #ef4444; font-weight: 700; }
+  .priority-med { color: #f59e0b; font-weight: 700; }
+  .priority-low { color: #22c55e; font-weight: 700; }
+  .priority-done { color: #4b5563; font-weight: 700; text-decoration: line-through; }
+  .tag { display: inline-block; background: #1e3a5f; color: #93c5fd; font-size: 10px; padding: 2px 7px; border-radius: 10px; margin: 1px; }
+  .tag-red { background: #3f0000; color: #fca5a5; }
+  .tag-yellow { background: #2d1c00; color: #fcd34d; }
+  .tag-green { background: #052e16; color: #86efac; }
+  .tag-done { background: #0a1628; color: #374151; text-decoration: line-through; }
+  .divider { border: none; border-top: 1px solid #1e3a5f; margin: 24px 0; }
+  .success { font-size: 11px; color: #86efac; background: #052e16; border: 1px solid #166534; border-radius: 8px; padding: 10px 14px; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<h1>📍 Studio Coverage Analysis</h1>
+<p class="subtitle">Ballroom Dance Directory — 4,374 studios across the US &nbsp;|&nbsp; Updated Apr 5, 2026 &nbsp;|&nbsp; Tier 5 scrape complete · IL metro, WI, NE/IA, MS, AR all covered</p>
+
+<!-- KPIs -->
+<div class="grid-4">
+  <div class="kpi">
+    <div class="kpi-val">4,374</div>
+    <div class="kpi-delta">↑ +947 from Tier 5</div>
+    <div class="kpi-label">Total Studios</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-val">45</div>
+    <div class="kpi-delta">↑ +2 states added (NE, MS)</div>
+    <div class="kpi-label">States + DC Covered</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-val">6</div>
+    <div class="kpi-delta">↓ from 8 (NE + MS now covered)</div>
+    <div class="kpi-label">States With Zero Coverage</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-val">5</div>
+    <div class="kpi-delta">&nbsp;</div>
+    <div class="kpi-label">Tiers Complete</div>
+  </div>
+</div>
+
+<div class="success">
+  ✅ <strong>Tier 5 complete:</strong> Chicago metro (10 search pts), Wisconsin, Nebraska/Iowa, Mississippi, and Arkansas all scraped and imported. 947 new studios created, 0 failures. Total: 4,374 studios across 45 states + DC.
+</div>
+
+<!-- Regional breakdown -->
+<div class="grid-2">
+  <div class="card">
+    <div class="section-title">Coverage by US Region</div>
+
+    <div class="region-block">
+      <div class="region-name">🏖️ South <span class="region-count">1,760 studios · 40%</span></div>
+      <div class="state-row"><span class="state-name">Florida</span><div class="bar-wrap"><div class="bar bar-green" style="width:100%"></div></div><span class="state-count">448</span><span class="state-cities">Miami, Tampa, Orlando, Fort Lauderdale, Jacksonville, Palm Beach…</span></div>
+      <div class="state-row"><span class="state-name">Texas</span><div class="bar-wrap"><div class="bar bar-green" style="width:79%"></div></div><span class="state-count">355</span><span class="state-cities">Austin, Houston, Dallas, San Antonio, Fort Worth, El Paso…</span></div>
+      <div class="state-row"><span class="state-name">North Carolina</span><div class="bar-wrap"><div class="bar bar-green" style="width:36%"></div></div><span class="state-count">161</span><span class="state-cities">Charlotte, Raleigh, Durham, Greensboro, Chapel Hill…</span></div>
+      <div class="state-row"><span class="state-name">Louisiana</span><div class="bar-wrap"><div class="bar bar-green" style="width:29%"></div></div><span class="state-count">128</span><span class="state-cities">New Orleans, Baton Rouge, Metairie, Shreveport…</span></div>
+      <div class="state-row"><span class="state-name">Virginia</span><div class="bar-wrap"><div class="bar bar-green" style="width:27%"></div></div><span class="state-count">120</span><span class="state-cities">Arlington, Alexandria, Richmond, Virginia Beach, Tysons…</span></div>
+      <div class="state-row"><span class="state-name">South Carolina</span><div class="bar-wrap"><div class="bar bar-green" style="width:25%"></div></div><span class="state-count">111</span><span class="state-cities">Charleston, Columbia, Greenville, Myrtle Beach… ✅ T4</span></div>
+      <div class="state-row"><span class="state-name">Alabama</span><div class="bar-wrap"><div class="bar bar-green" style="width:21%"></div></div><span class="state-count">96</span><span class="state-cities">Birmingham, Huntsville, Mobile, Montgomery… ✅ T4</span></div>
+      <div class="state-row"><span class="state-name">Oklahoma</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:14%"></div></div><span class="state-count">61</span><span class="state-cities">Oklahoma City, Tulsa, Norman, Edmond… ✅ T4</span></div>
+      <div class="state-row"><span class="state-name">Georgia</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:8%"></div></div><span class="state-count">35</span><span class="state-cities">Atlanta, Marietta, Alpharetta…</span></div>
+      <div class="state-row"><span class="state-name">Tennessee</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:7%"></div></div><span class="state-count">33</span><span class="state-cities">Nashville, Franklin, Mt. Juliet…</span></div>
+      <div class="state-row"><span class="state-name">Arkansas</span><div class="bar-wrap"><div class="bar bar-green" style="width:30%"></div></div><span class="state-count">137</span><span class="state-cities">Little Rock, Rogers, Fayetteville, Fort Smith, Jonesboro ✅ T5</span></div>
+      <div class="state-row"><span class="state-name">Kentucky</span><div class="bar-wrap"><div class="bar bar-red" style="width:0.7%"></div></div><span class="state-count">3</span><span class="state-cities">Lexington, Louisville</span></div>
+      <div class="state-row"><span class="state-name">West Virginia</span><div class="bar-wrap"><div class="bar bar-red" style="width:0.4%"></div></div><span class="state-count">2</span><span class="state-cities">Charleston, Morgantown</span></div>
+      <div class="state-row"><span class="state-name">Mississippi</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:14%"></div></div><span class="state-count">64</span><span class="state-cities">Jackson, Biloxi, Hattiesburg ✅ T5</span></div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="region-block">
+      <div class="region-name">🌊 West <span class="region-count">912 studios · 27%</span></div>
+      <div class="state-row"><span class="state-name">California</span><div class="bar-wrap"><div class="bar bar-green" style="width:100%"></div></div><span class="state-count">450</span><span class="state-cities">San Diego, LA, Bay Area (SF/SJ/Oakland) ✅ T4 expanded</span></div>
+      <div class="state-row"><span class="state-name">Utah</span><div class="bar-wrap"><div class="bar bar-green" style="width:29%"></div></div><span class="state-count">131</span><span class="state-cities">Salt Lake City, Provo, Orem, Ogden… ✅ T4 (BYU market)</span></div>
+      <div class="state-row"><span class="state-name">Oregon</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:19%"></div></div><span class="state-count">85</span><span class="state-cities">Portland, Beaverton, Tigard, Salem…</span></div>
+      <div class="state-row"><span class="state-name">Arizona</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:16%"></div></div><span class="state-count">73</span><span class="state-cities">Phoenix, Scottsdale, Tempe, Chandler…</span></div>
+      <div class="state-row"><span class="state-name">Washington</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:16%"></div></div><span class="state-count">71</span><span class="state-cities">Seattle, Vancouver, Bellevue, Redmond…</span></div>
+      <div class="state-row"><span class="state-name">Colorado</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:11%"></div></div><span class="state-count">48</span><span class="state-cities">Denver, Boulder, Lakewood, Colorado Springs…</span></div>
+      <div class="state-row"><span class="state-name">Nevada</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:9%"></div></div><span class="state-count">41</span><span class="state-cities">Las Vegas, Henderson, Reno</span></div>
+      <div class="state-row"><span class="state-name">New Mexico</span><div class="bar-wrap"><div class="bar bar-red" style="width:1.3%"></div></div><span class="state-count">6</span><span class="state-cities">Albuquerque, Santa Fe</span></div>
+      <div class="state-row"><span class="state-name">Idaho</span><div class="bar-wrap"><div class="bar bar-red" style="width:1.1%"></div></div><span class="state-count">5</span><span class="state-cities">Boise</span></div>
+      <div class="state-row"><span class="state-name">Hawaii</span><div class="bar-wrap"><div class="bar bar-red" style="width:0.2%"></div></div><span class="state-count">1</span><span class="state-cities">Honolulu</span></div>
+      <div class="state-row"><span class="state-name">Alaska</span><div class="bar-wrap"><div class="bar bar-red" style="width:0.2%"></div></div><span class="state-count">1</span><span class="state-cities">Anchorage</span></div>
+      <div class="state-row" style="opacity:0.5"><span class="state-name">Montana, Wyoming</span><div class="bar-wrap"><div class="bar bar-gray" style="width:0%"></div></div><span class="state-count">0</span><span class="state-cities">—</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Coverage by US Region (cont.)</div>
+
+    <div class="region-block">
+      <div class="region-name">🌽 Midwest <span class="region-count">1,119 studios · 26%</span></div>
+      <div class="state-row"><span class="state-name">Ohio</span><div class="bar-wrap"><div class="bar bar-green" style="width:100%"></div></div><span class="state-count">154</span><span class="state-cities">Columbus, Cleveland, Cincinnati, Akron, Dayton…</span></div>
+      <div class="state-row"><span class="state-name">Michigan</span><div class="bar-wrap"><div class="bar bar-green" style="width:85%"></div></div><span class="state-count">131</span><span class="state-cities">Detroit, Ann Arbor, Grand Rapids, Lansing…</span></div>
+      <div class="state-row"><span class="state-name">Indiana</span><div class="bar-wrap"><div class="bar bar-green" style="width:55%"></div></div><span class="state-count">85</span><span class="state-cities">Indianapolis, Fort Wayne, Bloomington, Carmel… ✅ T4</span></div>
+      <div class="state-row"><span class="state-name">Missouri</span><div class="bar-wrap"><div class="bar bar-green" style="width:50%"></div></div><span class="state-count">77</span><span class="state-cities">Kansas City, St. Louis, Springfield…</span></div>
+      <div class="state-row"><span class="state-name">Minnesota</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:31%"></div></div><span class="state-count">47</span><span class="state-cities">Minneapolis, Saint Paul, Edina, Chanhassen…</span></div>
+      <div class="state-row"><span class="state-name">Illinois</span><div class="bar-wrap"><div class="bar bar-green" style="width:100%"></div></div><span class="state-count">369</span><span class="state-cities">Chicago, Naperville, Evanston, Schaumburg, Aurora, Joliet, Waukegan… ✅ T5</span></div>
+      <div class="state-row"><span class="state-name">Kansas</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:15%"></div></div><span class="state-count">23</span><span class="state-cities">Overland Park, Wichita, Lawrence…</span></div>
+      <div class="state-row"><span class="state-name">Wisconsin</span><div class="bar-wrap"><div class="bar bar-green" style="width:53%"></div></div><span class="state-count">196</span><span class="state-cities">Milwaukee, Madison, Green Bay, Appleton, Racine ✅ T5</span></div>
+      <div class="state-row"><span class="state-name">Iowa</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:32%"></div></div><span class="state-count">117</span><span class="state-cities">Des Moines, Cedar Rapids, Iowa City, Davenport ✅ T5</span></div>
+      <div class="state-row"><span class="state-name">Nebraska</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:33%"></div></div><span class="state-count">120</span><span class="state-cities">Omaha, Lincoln ✅ T5</span></div>
+      <div class="state-row" style="opacity:0.5"><span class="state-name">ND, SD</span><div class="bar-wrap"><div class="bar bar-gray" style="width:0%"></div></div><span class="state-count">0</span><span class="state-cities">—</span></div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="region-block">
+      <div class="region-name">🗽 Northeast <span class="region-count">389 studios · 11%</span></div>
+      <div class="state-row"><span class="state-name">Pennsylvania</span><div class="bar-wrap"><div class="bar bar-green" style="width:100%"></div></div><span class="state-count">128</span><span class="state-cities">Philadelphia, Pittsburgh, Allentown, Harrisburg… ✅ T4</span></div>
+      <div class="state-row"><span class="state-name">New York</span><div class="bar-wrap"><div class="bar bar-green" style="width:59%"></div></div><span class="state-count">75</span><span class="state-cities">NYC, Brooklyn, Queens, Long Island…</span></div>
+      <div class="state-row"><span class="state-name">Massachusetts</span><div class="bar-wrap"><div class="bar bar-green" style="width:52%"></div></div><span class="state-count">67</span><span class="state-cities">Boston, Cambridge, Waltham, Framingham…</span></div>
+      <div class="state-row"><span class="state-name">New Jersey</span><div class="bar-wrap"><div class="bar bar-green" style="width:43%"></div></div><span class="state-count">55</span><span class="state-cities">Fort Lee, Bayonne, Morristown…</span></div>
+      <div class="state-row"><span class="state-name">Maryland</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:18%"></div></div><span class="state-count">23</span><span class="state-cities">Baltimore, Silver Spring, Bethesda, Rockville…</span></div>
+      <div class="state-row"><span class="state-name">Connecticut</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:15%"></div></div><span class="state-count">19</span><span class="state-cities">Stamford, Danbury, Hartford…</span></div>
+      <div class="state-row"><span class="state-name">District of Columbia</span><div class="bar-wrap"><div class="bar bar-yellow" style="width:10%"></div></div><span class="state-count">13</span><span class="state-cities">Washington DC</span></div>
+      <div class="state-row"><span class="state-name">Maine</span><div class="bar-wrap"><div class="bar bar-red" style="width:4%"></div></div><span class="state-count">5</span><span class="state-cities">Portland, South Portland</span></div>
+      <div class="state-row"><span class="state-name">New Hampshire</span><div class="bar-wrap"><div class="bar bar-red" style="width:1.6%"></div></div><span class="state-count">2</span><span class="state-cities">Manchester, North Hampton</span></div>
+      <div class="state-row"><span class="state-name">Delaware</span><div class="bar-wrap"><div class="bar bar-red" style="width:1.6%"></div></div><span class="state-count">2</span><span class="state-cities">Wilmington, Newark</span></div>
+      <div class="state-row" style="opacity:0.5"><span class="state-name">Rhode Island, Vermont</span><div class="bar-wrap"><div class="bar bar-gray" style="width:0%"></div></div><span class="state-count">0</span><span class="state-cities">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Priority Gap Table -->
+<div class="card">
+  <div class="section-title">🎯 Expansion Status — All 5 Tiers Complete</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Market / State</th>
+        <th>Studios Now</th>
+        <th>Key Cities</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Florida</strong></td>
+        <td><span style="color:#22c55e">448</span></td>
+        <td><span class="tag tag-done">Tampa</span><span class="tag tag-done">Orlando</span><span class="tag tag-done">Jacksonville</span><span class="tag tag-done">Fort Lauderdale</span></td>
+        <td>Was 36. Now #2 state in directory. Tier 3 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Virginia / DC Metro</strong></td>
+        <td><span style="color:#22c55e">133</span></td>
+        <td><span class="tag tag-done">Washington DC</span><span class="tag tag-done">Arlington</span><span class="tag tag-done">Richmond</span><span class="tag tag-done">Virginia Beach</span></td>
+        <td>Was 0. VA (120) + DC (13). Tier 3 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Ohio</strong></td>
+        <td><span style="color:#22c55e">154</span></td>
+        <td><span class="tag tag-done">Columbus</span><span class="tag tag-done">Cleveland</span><span class="tag tag-done">Cincinnati</span><span class="tag tag-done">Akron</span></td>
+        <td>Was 1. Full trifecta covered. Tier 3 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Michigan</strong></td>
+        <td><span style="color:#22c55e">131</span></td>
+        <td><span class="tag tag-done">Detroit</span><span class="tag tag-done">Ann Arbor</span><span class="tag tag-done">Grand Rapids</span><span class="tag tag-done">Lansing</span></td>
+        <td>Was 0. Tier 3 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>North Carolina</strong></td>
+        <td><span style="color:#22c55e">161</span></td>
+        <td><span class="tag tag-done">Charlotte</span><span class="tag tag-done">Raleigh</span><span class="tag tag-done">Durham</span><span class="tag tag-done">Greensboro</span></td>
+        <td>Was 1. Research Triangle fully covered. Tier 3 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Missouri</strong></td>
+        <td><span style="color:#22c55e">77</span></td>
+        <td><span class="tag tag-done">Kansas City</span><span class="tag tag-done">St. Louis</span><span class="tag tag-done">Springfield</span></td>
+        <td>Was 2. Both major metros covered. Tier 3 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Louisiana</strong></td>
+        <td><span style="color:#22c55e">128</span></td>
+        <td><span class="tag tag-done">New Orleans</span><span class="tag tag-done">Baton Rouge</span><span class="tag tag-done">Metairie</span></td>
+        <td>Was 0. New Orleans now covered. Tier 3 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Bay Area / CA Expansion</strong></td>
+        <td><span style="color:#22c55e">450</span></td>
+        <td><span class="tag tag-done">San Francisco</span><span class="tag tag-done">San Jose</span><span class="tag tag-done">Oakland</span><span class="tag tag-done">Berkeley</span></td>
+        <td>Was 205 (SD/LA heavy). Bay Area now fully covered. CA is #1 state. Tier 4 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Indiana</strong></td>
+        <td><span style="color:#22c55e">85</span></td>
+        <td><span class="tag tag-done">Indianapolis</span><span class="tag tag-done">Fort Wayne</span><span class="tag tag-done">Bloomington</span><span class="tag tag-done">Carmel</span></td>
+        <td>Was 2. Indy metro fully covered. Tier 4 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Utah</strong></td>
+        <td><span style="color:#22c55e">131</span></td>
+        <td><span class="tag tag-done">Salt Lake City</span><span class="tag tag-done">Provo</span><span class="tag tag-done">Orem</span><span class="tag tag-done">Ogden</span></td>
+        <td>Was 3. BYU ballroom market fully covered. Tier 4 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>South Carolina</strong></td>
+        <td><span style="color:#22c55e">111</span></td>
+        <td><span class="tag tag-done">Charleston</span><span class="tag tag-done">Columbia</span><span class="tag tag-done">Greenville</span><span class="tag tag-done">Myrtle Beach</span></td>
+        <td>Was 4. All major SC metros covered. Tier 4 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Alabama</strong></td>
+        <td><span style="color:#22c55e">96</span></td>
+        <td><span class="tag tag-done">Birmingham</span><span class="tag tag-done">Huntsville</span><span class="tag tag-done">Mobile</span><span class="tag tag-done">Montgomery</span></td>
+        <td>Was 0. Huntsville tech market now covered. Tier 4 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Oklahoma</strong></td>
+        <td><span style="color:#22c55e">61</span></td>
+        <td><span class="tag tag-done">Oklahoma City</span><span class="tag tag-done">Tulsa</span><span class="tag tag-done">Norman</span><span class="tag tag-done">Edmond</span></td>
+        <td>Was 0. OKC + Tulsa covered. Tier 4 ✓</td>
+      </tr>
+      <tr style="opacity:0.45">
+        <td><span class="priority-done">✅ Done</span></td>
+        <td><strong>Pennsylvania Interior</strong></td>
+        <td><span style="color:#22c55e">128</span></td>
+        <td><span class="tag tag-done">Philadelphia</span><span class="tag tag-done">Pittsburgh</span><span class="tag tag-done">Allentown</span><span class="tag tag-done">Harrisburg</span></td>
+        <td>Was 10 (Philly only). Interior now covered. Tier 4 ✓</td>
+      </tr>
+      <tr>
+        <td><span class="priority-high">🔴 T5 Next</span></td>
+        <td><strong>Chicago / Illinois</strong></td>
+        <td><span style="color:#f59e0b">38</span></td>
+        <td><span class="tag tag-red">Chicago</span><span class="tag tag-red">Naperville</span><span class="tag tag-red">Evanston</span><span class="tag tag-red">Schaumburg</span></td>
+        <td>IL has 38 but Chicago metro (9.5M people) should have 150+. Major undercount. T5 priority #1.</td>
+      </tr>
+      <tr>
+        <td><span class="priority-high">🔴 T5 Next</span></td>
+        <td><strong>Wisconsin</strong></td>
+        <td><span style="color:#f59e0b">10</span></td>
+        <td><span class="tag tag-red">Milwaukee</span><span class="tag tag-red">Madison</span><span class="tag tag-red">Green Bay</span></td>
+        <td>Milwaukee (600K) barely in directory. T5 priority #2.</td>
+      </tr>
+      <tr>
+        <td><span class="priority-med">🟡 T5 Next</span></td>
+        <td><strong>Nebraska / Iowa</strong></td>
+        <td><span style="color:#ef4444">2</span></td>
+        <td><span class="tag tag-yellow">Omaha</span><span class="tag tag-yellow">Des Moines</span><span class="tag tag-yellow">Lincoln</span></td>
+        <td>Omaha is a top-50 US metro with near-zero coverage. Est. 30–50 available combined.</td>
+      </tr>
+      <tr>
+        <td><span class="priority-low">🟢 T5 Next</span></td>
+        <td><strong>Mississippi / Arkansas</strong></td>
+        <td><span style="color:#f59e0b">6</span></td>
+        <td><span class="tag tag-green">Jackson</span><span class="tag tag-green">Little Rock</span><span class="tag tag-green">Fayetteville</span></td>
+        <td>MS still zero. Lower density but should have 20–40 available combined.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- States with zero coverage -->
+<div class="card">
+  <div class="section-title">❌ States with Zero Coverage (8 remaining)</div>
+  <p style="font-size:12px; color:#6b7280; margin-bottom:14px;">Down from 12 at Tier 3 and 24 at Tier 2. Remaining zeros are all low-density states — no major metro gaps left after Tier 4.</p>
+  <div style="display:flex; flex-wrap:wrap; gap:8px;">
+    <span class="tag tag-yellow">Mississippi (0)</span>
+    <span class="tag tag-yellow">Nebraska (0)</span>
+    <span class="tag tag-yellow">Montana (0)</span>
+    <span class="tag tag-yellow">North Dakota (0)</span>
+    <span class="tag tag-yellow">South Dakota (0)</span>
+    <span class="tag tag-yellow">Rhode Island (0)</span>
+    <span class="tag tag-yellow">Vermont (0)</span>
+    <span class="tag tag-yellow">Wyoming (0)</span>
+  </div>
+  <p style="font-size:11px; color:#4b5563; margin-top:12px;">All 8 are either Great Plains states (very low dance studio density), New England micro-states, or Mountain West. Mississippi is the only notable gap — Jackson has a real market. All others are Tier 5+ or not worth scraping at current scale.</p>
+</div>
+
+<!-- Roadmap -->
+<div class="card">
+  <div class="section-title">📋 Scraping Roadmap — Status</div>
+  <div class="grid-2" style="margin-bottom:0;">
+    <div>
+      <div style="font-size:12px; font-weight:700; color:#22c55e; margin-bottom:10px;">✅ Tiers 1–4 — All Complete</div>
+      <div style="font-size:12px; color:#4b5563; line-height:1.8; text-decoration: line-through;">
+        <div>Tier 1 — CA (SD/LA), TX, NY, MA, NJ — 932 studios</div>
+        <div>Tier 2 — AZ, CO, WA, OR, NV, MN, GA, TN, MD, CT, KS — 559 studios</div>
+        <div>Tier 3 — FL, VA/DC, OH, MI, NC, MO, LA — 960 studios (1,312 net)</div>
+        <div>Tier 4 — Bay Area CA, IN, UT, SC, AL, OK, PA interior — 983 studios</div>
+      </div>
+      <div style="margin-top:10px; font-size:11px; color:#22c55e;">3,427 total studios · 43 states + DC covered · 4 tiers complete</div>
+    </div>
+    <div>
+      <div style="font-size:12px; font-weight:700; color:#f9f6f0; margin-bottom:10px;">🎯 Tier 5 — Optional Next Round</div>
+      <div style="font-size:12px; color:#9ca3af; line-height:1.8;">
+        <div>1. <strong style="color:#d1d5db;">Chicago metro</strong> — IL has 38, should be 150+ (T5 #1)</div>
+        <div>2. <strong style="color:#d1d5db;">Wisconsin</strong> — Milwaukee, Madison barely covered</div>
+        <div>3. <strong style="color:#d1d5db;">Omaha / Des Moines</strong> — Nebraska + Iowa interior</div>
+        <div>4. <strong style="color:#d1d5db;">Mississippi</strong> — Jackson is last notable zero</div>
+        <div>5. <strong style="color:#d1d5db;">Arkansas expansion</strong> — Fayetteville, NW Arkansas</div>
+      </div>
+      <div style="margin-top:8px; font-size:11px; color:#4b5563;">Note: At 3,427 studios, directory size is no longer the constraint on revenue. Tier 5 is optional — prioritize outreach + Stripe over more scraping.</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
