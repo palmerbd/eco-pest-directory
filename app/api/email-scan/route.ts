@@ -14,7 +14,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const PLACES_KEY = process.env.PLACES_API_KEY!;
-const DETAIL_FIELDS = "name,formatted_address,formatted_phone_number,website,rating,url,business_status";
+// NOTE: "rating" deliberately excluded — it triggers the Atmosphere Data Enterprise SKU
+// (only 1,000 free/month vs 5,000 for Contact Data). Not needed for email outreach.
+const DETAIL_FIELDS = "name,formatted_address,formatted_phone_number,website,url,business_status";
 
 const CITIES: Record<string, { label: string; searchLabel: string }> = {
   // Tier 1 — largest markets (original 25)
