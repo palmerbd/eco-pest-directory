@@ -32,7 +32,7 @@
 // Paste this block first. Wait for "Maps ready ✅" before running Step 2.
 
 (function() {
-  const key = 'AIzaSyCF4sF-gp29l9KiP7j0Xriezbb_S9rLdL4';
+  const key = process.env.PLACES_API_KEY || '';
   if (window._mapsLoaded) { console.log('Maps already loaded ✅'); return; }
   const s = document.createElement('script');
   s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=_mapsReady`;
