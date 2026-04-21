@@ -19,9 +19,9 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
     desc:  "Your claim has been submitted. Our team will review it within 1-2 business days.",
   },
   verified: {
-    label: "Verified",
-    color: "#065f46", bg: "#d1fae5",
-    desc:  "Your email has been verified. Claim review is in progress.",
+    label: "Under Review",
+    color: "#92400e", bg: "#fef3c7",
+    desc:  "Your email is verified and your claim is in our review queue. We'll send an approval email within 1 business day.",
   },
   approved: {
     label: "Approved",
@@ -251,7 +251,7 @@ export default function DashboardPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-2">
-                      Featured Listing — $49/mo
+                      Featured Listing — $199/mo
                     </div>
                     <h3 className="font-bold text-white text-lg mb-2">Upgrade to Featured</h3>
                     <p className="text-white/60 text-sm">

@@ -1,5 +1,5 @@
 // ─── POST /api/stripe/checkout ────────────────────────────────────────────────
-// Creates a Stripe Checkout Session for the $49/mo Featured Listing plan.
+// Creates a Stripe Checkout Session for the $199/mo Featured Listing plan.
 // Called from /upgrade by a verified/approved claim owner.
 //
 // Request body: { claim_id, studio_title, owner_email }

@@ -2,7 +2,7 @@
 
 // ─── /upgrade — Featured Listing Upgrade Page ──────────────────────────────────────────────
 // Only accessible to verified/approved claim owners (redirects unauthenticated users).
-// Shows the $49/mo Featured plan and initiates Stripe Checkout.
+// Shows the $199/mo Featured plan and initiates Stripe Checkout.
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -173,7 +173,7 @@ export default function UpgradePage() {
         {/* Price */}
         <div className="inline-block bg-white/5 border border-white/10 rounded-2xl px-8 py-6 mb-8">
           <div className="text-white/50 text-sm mb-1">Monthly subscription</div>
-          <div className="text-white font-bold text-5xl">$49<span className="text-2xl text-white/50 font-normal">/mo</span></div>
+          <div className="text-white font-bold text-5xl">$199<span className="text-2xl text-white/50 font-normal">/mo</span></div>
           <div className="text-white/40 text-xs mt-2">Cancel anytime. No contracts.</div>
         </div>
 
@@ -224,7 +224,7 @@ export default function UpgradePage() {
               },
               {
                 q: "What if I&apos;m not approved yet?",
-                a: "Upgrade requires a verified claim. If your claim is still pending review, check back in 1-2 business days.",
+                a: "Upgrade requires an approved claim. If your claim is still under review, check back within 1 business day — we'll email you once it's approved.",
               },
               {
                 q: "Do you offer annual pricing?",
@@ -247,7 +247,7 @@ export default function UpgradePage() {
             className="px-10 py-4 rounded-xl font-bold text-gray-900 text-base transition-all hover:brightness-110 disabled:opacity-60"
             style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}
           >
-            {pageState === "redirecting" ? "Redirecting\u2026" : "Upgrade to Featured \u2014 $49/mo \u2192"}
+            {pageState === "redirecting" ? "Redirecting\u2026" : "Upgrade to Featured \u2014 $199/mo \u2192"}
           </button>
           <p className="text-gray-400 text-xs mt-3">Cancel anytime &middot; Powered by Stripe</p>
         </div>

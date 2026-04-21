@@ -539,15 +539,10 @@ export default async function CityPage({
                 Sponsored listings appear first, above all standard listings.
               </p>
               <div className="space-y-2 mb-5">
-                {[
-                  { label: "Featured listing", price: "$149/mo" },
-                  { label: "Premium + gallery",  price: "$299/mo" },
-                ].map((tier) => (
-                  <div key={tier.label} className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/10">
-                    <span className="text-white/80 text-sm">{tier.label}</span>
-                    <span className="font-bold text-sm" style={{ color: "#e8c560" }}>{tier.price}</span>
-                  </div>
-                ))}
+                <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/10">
+                  <span className="text-white/80 text-sm">Featured listing</span>
+                  <span className="font-bold text-sm" style={{ color: "#e8c560" }}>$199/mo</span>
+                </div>
               </div>
               <Link
                 href="/claim"
