@@ -54,11 +54,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Separate into tiers
-  const claimed  = (claims ?? []).filter(c => c.tier === "claimed");
-  const featured = (claims ?? []).filter(c => c.tier === "paid");
+  // Separate by status first, then by tier
+  const pending  = (claims ?? []).filter(c => c.status === "verified");
+  const claimed  = (claims ?? []).filter(c => c.status === "approved" && c.tier === "claimed");
+  const featured = (claims ?? []).filter(c => c.status === "approved" && c.tier === "paid");
 
   return NextResponse.json({
+    pending,
     claimed,
     featured,
     total: (claims ?? []).length,

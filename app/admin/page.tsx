@@ -3,14 +3,15 @@
 /**
  * /admin — BDD Studio Claims Command Center
  * ─────────────────────────────────────────
- * Password-gated admin dashboard showing:
- *   - Claimed studios (free tier, not yet upgraded)
- *   - Featured studios (paid, upgraded)
+ * Password-gated admin dashboard with three tabs:
+ *   1. Pending Review  — status "verified", awaiting approval
+ *   2. Claimed (Free)  — status "approved", tier "claimed"
+ *   3. Featured        — status "approved", tier "paid"
  *
- * Per studio: push to GHL pipeline with one click.
+ * Pending tab: one-click Google verification + Approve / Reject buttons.
+ * Claimed tab: Push to GHL button.
  *
- * Auth: simple password stored in sessionStorage.
- * Password is validated server-side against ADMIN_SECRET env var.
+ * Auth: simple password stored in sessionStorage, validated server-side.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -31,22 +32,27 @@ interface Claim {
   created_at:    string;
   updated_at:    string;
   studio_profiles: {
-    custom_description: string | null;
-    facebook_url:       string | null;
-    instagram_url:      string | null;
-    promo_text:         string | null;
+    custom_description:  string | null;
+    facebook_url:        string | null;
+    instagram_url:       string | null;
+    promo_text:          string | null;
     show_google_reviews: boolean;
   } | null;
   // UI state
-  ghlStatus?: "idle" | "loading" | "success" | "error";
-  ghlMessage?: string;
+  ghlStatus?:    "idle" | "loading" | "success" | "error";
+  ghlMessage?:   string;
+  reviewStatus?: "idle" | "approving" | "rejecting" | "approved" | "rejected" | "error";
+  reviewMessage?: string;
 }
 
 interface ClaimsData {
+  pending:  Claim[];
   claimed:  Claim[];
   featured: Claim[];
   total:    number;
 }
+
+type ActiveTab = "pending" | "claimed" | "featured";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -60,6 +66,11 @@ function daysSince(iso: string) {
   return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
 }
 
+function googleSearchUrl(studioTitle: string) {
+  return `https://www.google.com/search?q=${encodeURIComponent(studioTitle + " dance studio")}`;
+}
+
+const SITE_URL = "https://www.ballroomdancedirectory.com";
 const WP_ADMIN = "http://5.78.144.42/wp-admin/post.php";
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -97,6 +108,219 @@ function ProfileCompleteness({ claim }: { claim: Claim }) {
   );
 }
 
+// ── Pending Review Row ────────────────────────────────────────────────────────
+
+function PendingRow({
+  claim,
+  adminToken,
+  onReviewUpdate,
+}: {
+  claim: Claim;
+  adminToken: string;
+  onReviewUpdate: (id: string, status: Claim["reviewStatus"], msg: string) => void;
+}) {
+  const [rejectReason, setRejectReason] = useState("");
+  const [showReject,   setShowReject]   = useState(false);
+  const days = daysSince(claim.created_at);
+
+  async function approve() {
+    onReviewUpdate(claim.id, "approving", "");
+    try {
+      const res = await fetch("/api/admin/approve-claim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${adminToken}` },
+        body: JSON.stringify({ claim_id: claim.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Unknown error");
+      onReviewUpdate(claim.id, "approved", "Approved — approval email sent");
+    } catch (err: any) {
+      onReviewUpdate(claim.id, "error", err.message);
+    }
+  }
+
+  async function reject() {
+    onReviewUpdate(claim.id, "rejecting", "");
+    try {
+      const res = await fetch("/api/admin/reject-claim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${adminToken}` },
+        body: JSON.stringify({ claim_id: claim.id, reason: rejectReason.trim() || undefined }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Unknown error");
+      onReviewUpdate(claim.id, "rejected", "Rejected — rejection email sent");
+    } catch (err: any) {
+      onReviewUpdate(claim.id, "error", err.message);
+    }
+  }
+
+  const isProcessing = claim.reviewStatus === "approving" || claim.reviewStatus === "rejecting";
+  const isDone       = claim.reviewStatus === "approved" || claim.reviewStatus === "rejected";
+
+  return (
+    <tr className={`border-b border-gray-100 transition-colors ${isDone ? "opacity-40" : "hover:bg-amber-50/30"}`}>
+
+      {/* Studio */}
+      <td className="py-4 px-4">
+        <div className="font-semibold text-gray-900 text-sm">{claim.studio_title}</div>
+        <div className="text-xs text-gray-400 mt-0.5 font-mono">{claim.studio_slug}</div>
+        <div className="flex gap-2 mt-1.5 flex-wrap">
+          <a
+            href={`${SITE_URL}/studios/${claim.studio_slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-blue-500 hover:underline"
+          >
+            View listing ↗
+          </a>
+          <a
+            href={`${WP_ADMIN}?post=${claim.studio_id}&action=edit`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-purple-500 hover:underline"
+          >
+            WP editor ↗
+          </a>
+          <a
+            href={googleSearchUrl(claim.studio_title)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-semibold text-green-600 hover:underline flex items-center gap-0.5"
+          >
+            🔍 Google verify ↗
+          </a>
+        </div>
+      </td>
+
+      {/* Owner */}
+      <td className="py-4 px-4">
+        <div className="text-sm font-semibold text-gray-800">{claim.owner_name}</div>
+        <div className="text-xs text-gray-500 mt-0.5">
+          <a href={`mailto:${claim.owner_email}`} className="hover:underline">{claim.owner_email}</a>
+        </div>
+        {claim.owner_phone && (
+          <div className="text-xs text-gray-500 mt-0.5">
+            <a href={`tel:${claim.owner_phone}`} className="hover:underline">{claim.owner_phone}</a>
+          </div>
+        )}
+      </td>
+
+      {/* Submitted */}
+      <td className="py-4 px-4 whitespace-nowrap">
+        <div className="text-sm text-gray-700">{fmtDate(claim.created_at)}</div>
+        <div className={`text-xs mt-0.5 ${days > 1 ? "text-orange-500 font-medium" : "text-gray-400"}`}>
+          {days === 0 ? "Today" : days === 1 ? "Yesterday" : `${days}d ago`}
+        </div>
+      </td>
+
+      {/* Actions */}
+      <td className="py-4 px-4">
+        {isDone ? (
+          <div className={`text-xs font-semibold ${claim.reviewStatus === "approved" ? "text-green-600" : "text-red-500"}`}>
+            {claim.reviewMessage}
+          </div>
+        ) : claim.reviewStatus === "error" ? (
+          <div className="space-y-1">
+            <div className="text-xs text-red-500">{claim.reviewMessage}</div>
+            <button onClick={() => onReviewUpdate(claim.id, "idle", "")} className="text-xs text-blue-500 hover:underline">Reset</button>
+          </div>
+        ) : showReject ? (
+          <div className="space-y-2">
+            <textarea
+              value={rejectReason}
+              onChange={e => setRejectReason(e.target.value)}
+              placeholder="Reason (optional — included in rejection email)"
+              rows={2}
+              className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 resize-none focus:outline-none focus:ring-1 focus:ring-red-300"
+            />
+            <div className="flex gap-1.5">
+              <button
+                onClick={reject}
+                disabled={isProcessing}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 hover:bg-red-700 text-white transition-colors disabled:opacity-50"
+              >
+                {isProcessing ? "Rejecting…" : "Confirm Reject"}
+              </button>
+              <button
+                onClick={() => setShowReject(false)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <button
+              onClick={approve}
+              disabled={isProcessing}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-600 hover:bg-green-700 text-white transition-colors disabled:opacity-50"
+            >
+              {isProcessing ? <span className="animate-spin text-sm">⟳</span> : "✓"} Approve
+            </button>
+            <button
+              onClick={() => setShowReject(true)}
+              disabled={isProcessing}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors disabled:opacity-50"
+            >
+              ✕ Reject
+            </button>
+          </div>
+        )}
+      </td>
+    </tr>
+  );
+}
+
+// ── Pending Table ─────────────────────────────────────────────────────────────
+
+function PendingTable({
+  claims,
+  adminToken,
+  onReviewUpdate,
+}: {
+  claims: Claim[];
+  adminToken: string;
+  onReviewUpdate: (id: string, status: Claim["reviewStatus"], msg: string) => void;
+}) {
+  if (claims.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <div className="text-4xl mb-3">✅</div>
+        <p className="text-gray-500 text-sm font-medium">All clear — no pending claims to review.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-left">
+        <thead>
+          <tr className="border-b-2 border-gray-200 text-xs text-gray-500 uppercase tracking-wide">
+            <th className="py-2 px-4">Studio</th>
+            <th className="py-2 px-4">Claimant</th>
+            <th className="py-2 px-4">Submitted</th>
+            <th className="py-2 px-4 w-52">Review</th>
+          </tr>
+        </thead>
+        <tbody>
+          {claims.map(claim => (
+            <PendingRow
+              key={claim.id}
+              claim={claim}
+              adminToken={adminToken}
+              onReviewUpdate={onReviewUpdate}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ── Claimed / Featured Row ────────────────────────────────────────────────────
+
 function ClaimRow({
   claim,
   adminToken,
@@ -113,10 +337,7 @@ function ClaimRow({
     try {
       const res = await fetch("/api/admin/push-ghl", {
         method: "POST",
-        headers: {
-          "Content-Type":  "application/json",
-          "Authorization": `Bearer ${adminToken}`,
-        },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${adminToken}` },
         body: JSON.stringify({
           claim_id:     claim.id,
           owner_name:   claim.owner_name,
@@ -129,11 +350,7 @@ function ClaimRow({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Unknown error");
-      onGhlUpdate(
-        claim.id,
-        "success",
-        `✓ ${data.pipeline} → ${data.stage}`
-      );
+      onGhlUpdate(claim.id, "success", `✓ ${data.pipeline} → ${data.stage}`);
     } catch (err: any) {
       onGhlUpdate(claim.id, "error", err.message);
     }
@@ -146,17 +363,15 @@ function ClaimRow({
         <div className="font-medium text-gray-900 text-sm">{claim.studio_title}</div>
         <div className="text-xs text-gray-500 mt-0.5 flex gap-2">
           <a
-            href={`https://www.ballroomdancedirectory.com/studios/${claim.studio_slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`${SITE_URL}/studios/${claim.studio_slug}`}
+            target="_blank" rel="noopener noreferrer"
             className="text-blue-500 hover:underline"
           >
             View listing ↗
           </a>
           <a
             href={`${WP_ADMIN}?post=${claim.studio_id}&action=edit`}
-            target="_blank"
-            rel="noopener noreferrer"
+            target="_blank" rel="noopener noreferrer"
             className="text-purple-500 hover:underline"
           >
             WP editor ↗
@@ -171,8 +386,7 @@ function ClaimRow({
           <div className="text-xs text-gray-400 mt-1">
             <a
               href={`https://dashboard.stripe.com/subscriptions/${claim.stripe_subscription_id}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              target="_blank" rel="noopener noreferrer"
               className="hover:underline"
             >
               Stripe ↗
@@ -214,12 +428,7 @@ function ClaimRow({
         ) : claim.ghlStatus === "error" ? (
           <div className="space-y-1">
             <div className="text-xs text-red-500">{claim.ghlMessage}</div>
-            <button
-              onClick={pushToGHL}
-              className="text-xs text-blue-500 hover:underline"
-            >
-              Retry
-            </button>
+            <button onClick={pushToGHL} className="text-xs text-blue-500 hover:underline">Retry</button>
           </div>
         ) : (
           <button
@@ -228,9 +437,7 @@ function ClaimRow({
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#0f2d6b] hover:bg-[#1a3d8a] text-white transition-colors disabled:opacity-50"
           >
             {claim.ghlStatus === "loading" ? (
-              <>
-                <span className="animate-spin">⟳</span> Pushing…
-              </>
+              <><span className="animate-spin">⟳</span> Pushing…</>
             ) : (
               <>⚡ Push to GHL</>
             )}
@@ -253,9 +460,7 @@ function ClaimsTable({
   emptyMsg: string;
 }) {
   if (claims.length === 0) {
-    return (
-      <div className="text-center py-12 text-gray-400 text-sm">{emptyMsg}</div>
-    );
+    return <div className="text-center py-12 text-gray-400 text-sm">{emptyMsg}</div>;
   }
 
   return (
@@ -297,8 +502,6 @@ function LoginScreen({ onLogin }: { onLogin: (token: string) => void }) {
     e.preventDefault();
     setLoading(true);
     setError("");
-
-    // Validate by hitting the claims endpoint — if it returns 401 the password is wrong
     try {
       const res = await fetch("/api/admin/claims", {
         headers: { Authorization: `Bearer ${password}` },
@@ -324,7 +527,6 @@ function LoginScreen({ onLogin }: { onLogin: (token: string) => void }) {
           <h1 className="text-xl font-bold text-gray-900">BDD Command Center</h1>
           <p className="text-sm text-gray-500 mt-1">Admin access only</p>
         </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="password"
@@ -351,10 +553,10 @@ function LoginScreen({ onLogin }: { onLogin: (token: string) => void }) {
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
 function Dashboard({ adminToken }: { adminToken: string }) {
-  const [data,       setData]       = useState<ClaimsData | null>(null);
-  const [activeTab,  setActiveTab]  = useState<"claimed" | "featured">("claimed");
-  const [loading,    setLoading]    = useState(true);
-  const [error,      setError]      = useState("");
+  const [data,      setData]      = useState<ClaimsData | null>(null);
+  const [activeTab, setActiveTab] = useState<ActiveTab>("pending");
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -364,12 +566,16 @@ function Dashboard({ adminToken }: { adminToken: string }) {
         headers: { Authorization: `Bearer ${adminToken}` },
       });
       if (!res.ok) throw new Error("Failed to load claims");
-      const json: ClaimsData = await res.json();
-      // Attach UI state
-      const addState = (c: Claim): Claim => ({ ...c, ghlStatus: "idle" });
+      const json = await res.json();
+      const addState = (c: Claim): Claim => ({
+        ...c,
+        ghlStatus:    "idle",
+        reviewStatus: "idle",
+      });
       setData({
-        claimed:  json.claimed.map(addState),
-        featured: json.featured.map(addState),
+        pending:  (json.pending  ?? []).map(addState),
+        claimed:  (json.claimed  ?? []).map(addState),
+        featured: (json.featured ?? []).map(addState),
         total:    json.total,
       });
     } catch (err: any) {
@@ -381,6 +587,18 @@ function Dashboard({ adminToken }: { adminToken: string }) {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  function updateReview(id: string, status: Claim["reviewStatus"], msg: string) {
+    setData(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        pending: prev.pending.map(c =>
+          c.id === id ? { ...c, reviewStatus: status, reviewMessage: msg } : c
+        ),
+      };
+    });
+  }
+
   function updateGhl(id: string, status: Claim["ghlStatus"], msg: string) {
     setData(prev => {
       if (!prev) return prev;
@@ -390,17 +608,21 @@ function Dashboard({ adminToken }: { adminToken: string }) {
     });
   }
 
-  const tabs = [
-    { key: "claimed",  label: "Claimed — Free",  count: data?.claimed.length  ?? 0, color: "text-blue-600"  },
-    { key: "featured", label: "Featured",         count: data?.featured.length ?? 0, color: "text-amber-600" },
-  ] as const;
+  const pendingCount  = data?.pending.length  ?? 0;
+  const claimedCount  = data?.claimed.length  ?? 0;
+  const featuredCount = data?.featured.length ?? 0;
 
-  const visibleClaims = activeTab === "claimed"
-    ? (data?.claimed  ?? [])
-    : (data?.featured ?? []);
+  const tabs = [
+    { key: "pending"  as ActiveTab, label: "Pending Review", count: pendingCount,  color: pendingCount > 0 ? "text-orange-600" : "text-gray-400", dot: pendingCount > 0 },
+    { key: "claimed"  as ActiveTab, label: "Claimed — Free", count: claimedCount,  color: "text-blue-600",  dot: false },
+    { key: "featured" as ActiveTab, label: "Featured",       count: featuredCount, color: "text-amber-600", dot: false },
+  ];
+
+  const mrr = featuredCount * 199;
 
   return (
     <div className="min-h-screen bg-gray-50">
+
       {/* Header */}
       <div className="bg-[#0c1428] text-white px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -412,9 +634,7 @@ function Dashboard({ adminToken }: { adminToken: string }) {
         </div>
         <div className="flex items-center gap-4">
           {data && (
-            <span className="text-sm text-gray-400">
-              {data.total} total studio{data.total !== 1 ? "s" : ""}
-            </span>
+            <span className="text-sm text-gray-400">{data.total} total</span>
           )}
           <button
             onClick={fetchData}
@@ -433,28 +653,34 @@ function Dashboard({ adminToken }: { adminToken: string }) {
 
       {/* Stats bar */}
       {data && (
-        <div className="bg-white border-b border-gray-200 px-6 py-3 flex gap-8">
+        <div className="bg-white border-b border-gray-200 px-6 py-3 flex gap-8 flex-wrap">
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{data.claimed.length}</div>
+            <div className={`text-2xl font-bold ${pendingCount > 0 ? "text-orange-500" : "text-gray-400"}`}>
+              {pendingCount}
+            </div>
+            <div className="text-xs text-gray-500">Pending Review</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">{claimedCount}</div>
             <div className="text-xs text-gray-500">Claimed (Free)</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-amber-500">{data.featured.length}</div>
-            <div className="text-xs text-gray-500">Featured ($49/mo)</div>
+            <div className="text-2xl font-bold text-amber-500">{featuredCount}</div>
+            <div className="text-xs text-gray-500">Featured</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              ${data.featured.length * 49}<span className="text-sm font-normal">/mo</span>
+              ${mrr.toLocaleString()}<span className="text-sm font-normal">/mo</span>
             </div>
-            <div className="text-xs text-gray-500">MRR from Featured</div>
+            <div className="text-xs text-gray-500">MRR</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-700">
-              {data.claimed.length > 0
-                ? `${Math.round(data.featured.length / (data.featured.length + data.claimed.length) * 100)}%`
+              {claimedCount + featuredCount > 0
+                ? `${Math.round(featuredCount / (featuredCount + claimedCount) * 100)}%`
                 : "—"}
             </div>
-            <div className="text-xs text-gray-500">Conversion Rate</div>
+            <div className="text-xs text-gray-500">Conversion</div>
           </div>
         </div>
       )}
@@ -466,12 +692,15 @@ function Dashboard({ adminToken }: { adminToken: string }) {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`relative px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.key
-                  ? `border-[#0c1428] text-[#0c1428]`
+                  ? "border-[#0c1428] text-[#0c1428]"
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
+              {tab.dot && (
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-orange-500" />
+              )}
               {tab.label}
               <span className={`ml-2 text-xs font-bold ${activeTab === tab.key ? tab.color : "text-gray-400"}`}>
                 {tab.count}
@@ -491,29 +720,44 @@ function Dashboard({ adminToken }: { adminToken: string }) {
         )}
         {!loading && !error && data && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+
             {/* Tab header */}
             <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
               <h2 className="text-sm font-semibold text-gray-700">
-                {activeTab === "claimed"
-                  ? "Studios that claimed their listing but haven't upgraded yet"
-                  : "Studios on the Featured plan ($49/mo)"}
+                {activeTab === "pending"
+                  ? "Claims awaiting review — verify ownership before approving"
+                  : activeTab === "claimed"
+                  ? "Approved studios on the free tier — push to GHL to start upgrade sequence"
+                  : "Studios on the Featured plan ($199/mo)"}
               </h2>
-              {activeTab === "claimed" && data.claimed.length > 0 && (
-                <span className="text-xs text-gray-400">
-                  Tip: Push to GHL to start the upgrade sequence
+              {activeTab === "pending" && pendingCount > 0 && (
+                <span className="text-xs text-gray-400 italic">
+                  Click 🔍 Google verify to check the studio before acting
                 </span>
               )}
             </div>
-            <ClaimsTable
-              claims={visibleClaims}
-              adminToken={adminToken}
-              onGhlUpdate={updateGhl}
-              emptyMsg={
-                activeTab === "claimed"
-                  ? "No claimed studios yet. Check back after your first outreach."
-                  : "No featured studios yet. Push claimed studios to GHL to start the upgrade pipeline."
-              }
-            />
+
+            {/* Tab content */}
+            {activeTab === "pending" && (
+              <PendingTable
+                claims={data.pending}
+                adminToken={adminToken}
+                onReviewUpdate={updateReview}
+              />
+            )}
+            {activeTab !== "pending" && (
+              <ClaimsTable
+                claims={activeTab === "claimed" ? data.claimed : data.featured}
+                adminToken={adminToken}
+                onGhlUpdate={updateGhl}
+                emptyMsg={
+                  activeTab === "claimed"
+                    ? "No approved studios yet. Approve pending claims first."
+                    : "No featured studios yet."
+                }
+              />
+            )}
+
           </div>
         )}
       </div>
@@ -533,7 +777,7 @@ export default function AdminPage() {
     setChecked(true);
   }, []);
 
-  if (!checked) return null; // Avoid flash
+  if (!checked) return null;
 
   if (!adminToken) {
     return <LoginScreen onLogin={token => setAdminToken(token)} />;
