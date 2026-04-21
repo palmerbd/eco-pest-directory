@@ -177,44 +177,86 @@ export async function POST(req: NextRequest) {
         `,
       });
 
-      // 2. Claimant confirmation
+      // 2. Claimant confirmation — full branded Email #1 template
+      //    (GHL nurture sequence starts at Email #2; this email is owned by Resend)
+      const firstName = owner_name.trim().split(/\s+/)[0] || owner_name;
       await resend.emails.send({
         from:    FROM_EMAIL,
         to:      owner_email,
-        subject: `We received your claim for ${studio_title}`,
-        html: `
-          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
-            <div style="background:linear-gradient(135deg,#0c1428,#1a2d5a);border-radius:12px;padding:32px;text-align:center;margin-bottom:24px">
-              <h1 style="color:#fff;font-size:22px;margin:0">Claim Received!</h1>
-              <p style="color:rgba(255,255,255,0.7);margin:8px 0 0">Ballroom Dance Directory</p>
-            </div>
-            <p style="color:#374151">Hi ${owner_name},</p>
-            <p style="color:#374151">
-              Thanks for claiming your listing for <strong>${studio_title}</strong> on the
-              Ballroom Dance Directory. Your email has been verified — we're now reviewing your claim.
-            </p>
-            <div style="background:#fffbf0;border:1.5px solid #e8c560;border-radius:12px;padding:16px;margin:20px 0">
-              <p style="color:#374151;margin:0 0 4px;font-weight:600">What happens next?</p>
-              <ul style="color:#6b7280;margin:8px 0 0;padding-left:20px;font-size:14px;line-height:1.7">
-                <li>Our team reviews your claim (usually within 1 business day)</li>
-                <li>You'll receive a follow-up email once your listing is approved</li>
-                <li>After approval you can log in to manage your studio and upgrade to a Featured listing</li>
-              </ul>
-            </div>
-            <p style="color:#374151">
-              You can view your studio listing here:<br>
-              <a href="${studioUrl}" style="color:#b8922a">${studioUrl}</a>
-            </p>
-            <p style="color:#374151">
-              Questions? Just reply to this email and we'll get back to you.
-            </p>
-            <p style="color:#374151;margin-top:24px">Best regards,<br>The Ballroom Dance Directory Team</p>
-            <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
-            <p style="color:#9ca3af;font-size:12px;text-align:center">
-              Ballroom Dance Directory · <a href="${SITE_URL}" style="color:#9ca3af">${SITE_URL}</a>
-            </p>
-          </div>
-        `,
+        subject: `Your listing claim for ${studio_title} is confirmed`,
+        html: `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f4f4f0;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f0;padding:32px 16px;">
+<tr><td>
+<table width="600" align="center" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;margin:0 auto;">
+  <tr>
+    <td style="background:linear-gradient(135deg,#0c1428,#1a2d5a);border-radius:12px 12px 0 0;padding:36px 40px;text-align:center;">
+      <p style="color:#b8922a;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin:0 0 10px;">Ballroom Dance Directory</p>
+      <h1 style="color:#fff;font-size:26px;font-weight:300;margin:0;line-height:1.3;">Your listing claim is confirmed.</h1>
+      <p style="color:rgba(255,255,255,0.6);font-size:14px;margin:10px 0 0;">Here's what happens next.</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="background:#fff;padding:40px 40px 32px;">
+      <p style="color:#374151;font-size:16px;margin:0 0 20px;">Hi ${firstName},</p>
+      <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 20px;">Our team has received your claim for <strong>${studio_title}</strong> on Ballroom Dance Directory. Your email is verified — we're reviewing your ownership details now.</p>
+      <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 28px;">Expect an approval email within 1 business day. Once approved, you'll have access to your listing dashboard and everything that comes with it.</p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbf0;border:1.5px solid #e8c560;border-radius:12px;margin-bottom:28px;">
+        <tr><td style="padding:24px 28px;">
+          <p style="color:#374151;font-size:14px;font-weight:700;margin:0 0 14px;text-transform:uppercase;letter-spacing:1px;">What's happening now</p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="28" valign="top" style="padding-right:12px;padding-bottom:14px;">
+                <div style="width:24px;height:24px;border-radius:50%;background:#b8922a;color:#fff;font-size:12px;font-weight:700;text-align:center;line-height:24px;">1</div>
+              </td>
+              <td style="padding-bottom:14px;">
+                <p style="color:#111827;font-size:14px;font-weight:600;margin:0 0 2px;">Claim received &amp; email verified</p>
+                <p style="color:#6b7280;font-size:13px;margin:0;">Done — you're here now.</p>
+              </td>
+            </tr>
+            <tr>
+              <td width="28" valign="top" style="padding-right:12px;padding-bottom:14px;">
+                <div style="width:24px;height:24px;border-radius:50%;background:#e5e7eb;color:#6b7280;font-size:12px;font-weight:700;text-align:center;line-height:24px;">2</div>
+              </td>
+              <td style="padding-bottom:14px;">
+                <p style="color:#111827;font-size:14px;font-weight:600;margin:0 0 2px;">Ownership review</p>
+                <p style="color:#6b7280;font-size:13px;margin:0;">Our team verifies your claim (within 1 business day).</p>
+              </td>
+            </tr>
+            <tr>
+              <td width="28" valign="top" style="padding-right:12px;">
+                <div style="width:24px;height:24px;border-radius:50%;background:#e5e7eb;color:#6b7280;font-size:12px;font-weight:700;text-align:center;line-height:24px;">3</div>
+              </td>
+              <td>
+                <p style="color:#111827;font-size:14px;font-weight:600;margin:0 0 2px;">Listing approved + dashboard access</p>
+                <p style="color:#6b7280;font-size:13px;margin:0;">Manage your profile, respond to inquiries, and upgrade anytime.</p>
+              </td>
+            </tr>
+          </table>
+        </td></tr>
+      </table>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr><td style="text-align:center;padding-bottom:28px;">
+          <a href="${studioUrl}" style="display:inline-block;background:linear-gradient(135deg,#0c1428,#1a2d5a);color:#fff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 36px;border-radius:8px;letter-spacing:0.5px;">View Your Listing &#8594;</a>
+        </td></tr>
+      </table>
+      <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 8px;">Questions? Just reply to this email — it comes straight to us.</p>
+      <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 28px;">Looking forward to helping your studio stand out,</p>
+      <p style="color:#374151;font-size:15px;margin:0;font-weight:600;">The Ballroom Dance Directory Team</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="background:#f9fafb;border-radius:0 0 12px 12px;padding:20px 40px;border-top:1px solid #e5e7eb;">
+      <p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">Ballroom Dance Directory &middot; <a href="${SITE_URL}" style="color:#9ca3af;">www.ballroomdancedirectory.com</a><br>You're receiving this because you claimed a listing on our platform.</p>
+    </td>
+  </tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`,
       });
     } catch (emailErr) {
       // Non-fatal — claim is already recorded; log but don't fail the request
