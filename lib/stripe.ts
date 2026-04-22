@@ -7,7 +7,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-01-27.acacia",
 });
 
-// Shared price ID for the $199/mo Featured Listing plan (studios)
+// Shared price ID for the $49/mo promotional Featured Listing plan (studios — reg. $99/mo)
 export const FEATURED_PRICE_ID = process.env.STRIPE_PRICE_ID!;
 
 // Price ID for the $199/yr Featured Competition plan

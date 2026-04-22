@@ -2,7 +2,7 @@
 
 // ─── /upgrade — Featured Listing Upgrade Page ──────────────────────────────────────────────
 // Only accessible to verified/approved claim owners (redirects unauthenticated users).
-// Shows the $199/mo Featured plan and initiates Stripe Checkout.
+// Shows the $49/mo promotional Featured plan (reg. $99/mo) and initiates Stripe Checkout.
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -172,9 +172,16 @@ export default function UpgradePage() {
 
         {/* Price */}
         <div className="inline-block bg-white/5 border border-white/10 rounded-2xl px-8 py-6 mb-8">
+          <div className="inline-block px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide mb-2"
+            style={{ background: "#b8922a33", color: "#e8c560", border: "1px solid #b8922a55" }}>
+            Limited Time Offer
+          </div>
           <div className="text-white/50 text-sm mb-1">Monthly subscription</div>
-          <div className="text-white font-bold text-5xl">$199<span className="text-2xl text-white/50 font-normal">/mo</span></div>
-          <div className="text-white/40 text-xs mt-2">Cancel anytime. No contracts.</div>
+          <div className="flex items-end justify-center gap-3">
+            <div className="text-white font-bold text-5xl">$49<span className="text-2xl text-white/50 font-normal">/mo</span></div>
+            <div className="text-white/30 text-xl line-through mb-1">$99</div>
+          </div>
+          <div className="text-white/40 text-xs mt-2">Promotional rate for early studios. Cancel anytime.</div>
         </div>
 
         {/* CTA */}
@@ -185,7 +192,7 @@ export default function UpgradePage() {
             className="px-10 py-4 rounded-xl font-bold text-gray-900 text-base transition-all hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed"
             style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}
           >
-            {pageState === "redirecting" ? "Redirecting to checkout\u2026" : "Upgrade to Featured \u2192"}
+            {pageState === "redirecting" ? "Redirecting to checkout\u2026" : "Upgrade to Featured \u2014 $49/mo \u2192"}
           </button>
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <p className="text-white/30 text-xs">
@@ -214,6 +221,10 @@ export default function UpgradePage() {
           <h2 className="font-bold text-gray-900 text-xl mb-6">Common questions</h2>
           <div className="space-y-5">
             {[
+              {
+                q: "What is the promotional price?",
+                a: "You're locking in $49/month — a limited-time promotional rate for early studios. The regular price is $99/month. Your rate is locked as long as your subscription is active.",
+              },
               {
                 q: "Can I cancel anytime?",
                 a: "Yes. Cancel from your dashboard and your listing reverts to the standard claimed tier at the end of your billing period. No penalties.",
@@ -247,9 +258,9 @@ export default function UpgradePage() {
             className="px-10 py-4 rounded-xl font-bold text-gray-900 text-base transition-all hover:brightness-110 disabled:opacity-60"
             style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}
           >
-            {pageState === "redirecting" ? "Redirecting\u2026" : "Upgrade to Featured \u2014 $199/mo \u2192"}
+            {pageState === "redirecting" ? "Redirecting\u2026" : "Upgrade to Featured \u2014 $49/mo \u2192"}
           </button>
-          <p className="text-gray-400 text-xs mt-3">Cancel anytime &middot; Powered by Stripe</p>
+          <p className="text-gray-400 text-xs mt-3">$49/mo promo rate (reg. $99/mo) &middot; Cancel anytime &middot; Powered by Stripe</p>
         </div>
       </div>
     </main>

@@ -251,7 +251,7 @@ export default function DashboardPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-2">
-                      Featured Listing — $199/mo
+                      Featured Listing — $49/mo <span className="text-white/30 line-through font-normal normal-case">$99</span>
                     </div>
                     <h3 className="font-bold text-white text-lg mb-2">Upgrade to Featured</h3>
                     <p className="text-white/60 text-sm">
@@ -270,7 +270,7 @@ export default function DashboardPage() {
                   >
                     Upgrade to Featured &rarr;
 </Link>
-                  <p className="text-white/30 text-xs mt-2">Cancel anytime · Powered by Stripe</p>
+                  <p className="text-white/30 text-xs mt-2">$49/mo promo rate (reg. $99) · Cancel anytime · Powered by Stripe</p>
                 </div>
               </>
             )}

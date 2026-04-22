@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
       contactId,
       name:  `${studio_title} — ${tier === "paid" ? "Featured" : "Claimed (Free)"}`,
       status: tier === "paid" ? "won" : "open",
-      monetaryValue: tier === "paid" ? 199 : 0,
+      monetaryValue: tier === "paid" ? 49 : 0,
       customFields: [
         { key: "listing_url", field_value: listingUrl },
         { key: "claim_id",    field_value: claim_id   },

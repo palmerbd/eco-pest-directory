@@ -618,7 +618,7 @@ function Dashboard({ adminToken }: { adminToken: string }) {
     { key: "featured" as ActiveTab, label: "Featured",       count: featuredCount, color: "text-amber-600", dot: false },
   ];
 
-  const mrr = featuredCount * 199;
+  const mrr = featuredCount * 49;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -728,7 +728,7 @@ function Dashboard({ adminToken }: { adminToken: string }) {
                   ? "Claims awaiting review — verify ownership before approving"
                   : activeTab === "claimed"
                   ? "Approved studios on the free tier — push to GHL to start upgrade sequence"
-                  : "Studios on the Featured plan ($199/mo)"}
+                  : "Studios on the Featured plan ($49/mo)"}
               </h2>
               {activeTab === "pending" && pendingCount > 0 && (
                 <span className="text-xs text-gray-400 italic">

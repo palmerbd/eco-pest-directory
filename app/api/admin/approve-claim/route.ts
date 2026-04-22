@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
                       </td>
                       <td>
                         <p style="color:#111827;font-size:14px;font-weight:600;margin:0 0 2px;">Consider upgrading to Featured</p>
-                        <p style="color:#6b7280;font-size:13px;margin:0;">Stand out from the list with a Featured badge, photo gallery, and priority ranking — $199/month.</p>
+                        <p style="color:#6b7280;font-size:13px;margin:0;">Stand out from the list with a Featured badge, photo gallery, and priority ranking — $49/month (promotional rate, reg. $99/mo).</p>
                       </td>
                     </tr>
                   </table>
