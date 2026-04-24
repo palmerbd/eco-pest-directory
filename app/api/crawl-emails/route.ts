@@ -13,6 +13,16 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+}
+
 const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
 const SKIP_DOMAINS = new Set([
@@ -153,5 +163,5 @@ export async function POST(req: NextRequest) {
     found,
     hit_rate: `${Math.round((found / output.length) * 100)}%`,
     results: output,
-  });
+  }, { headers: CORS_HEADERS });
 }
