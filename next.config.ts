@@ -111,6 +111,17 @@ const nextConfig: NextConfig = {
         destination: "/studios",
         permanent: true,
       },
+
+      // ── Soft 404: /studios?style=X&city=Y ────────────────────────────────
+      // The studios page ignores the "city" query param, so Google marks these
+      // as soft 404s. Redirect to the clean /studios URL; users can filter
+      // by style using the on-page controls.
+      {
+        source: "/studios",
+        has: [{ type: "query", key: "city" }],
+        destination: "/studios",
+        permanent: true,
+      },
     ];
   },
 
