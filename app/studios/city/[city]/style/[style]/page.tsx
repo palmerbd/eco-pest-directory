@@ -58,6 +58,16 @@ export async function generateMetadata({
 
   if (!filtered.length) return { title: `Dance Studios in ${cityName}` };
 
+  // Thin content guard: a single studio doesn't make a useful directory page.
+  // Noindex these so Google stops "Crawled - currently not indexed" churn.
+  // The page still renders (users can land here) but won't appear in search.
+  if (filtered.length < 2) {
+    return {
+      title: `${styleName} Dance Studios in ${cityName} | Ballroom Dance Directory`,
+      robots: { index: false, follow: true },
+    };
+  }
+
   return {
     title: `${styleName} Dance Studios in ${cityName} | Ballroom Dance Directory`,
     description: `Find the best ${styleName.toLowerCase()} dance studios in ${cityName}. ${filtered.length} studio${filtered.length !== 1 ? "s" : ""} offering expert private ${styleName.toLowerCase()} instruction. Book your first lesson today.`,
