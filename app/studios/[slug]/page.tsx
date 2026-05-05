@@ -34,6 +34,27 @@ export async function generateMetadata({
   if (!studio) return { title: "Studio Not Found" };
 
   const location = [studio.city, studio.state].filter(Boolean).join(", ");
+
+  // Thin-content guard: studios with no phone, no website, and no reviews
+  // are too sparse for Google to consider indexable. Mark them noindex so
+  // they land in "Excluded by noindex" rather than "Crawled - currently not
+  // indexed", which is a cleaner signal and concentrates crawl budget.
+  const isThinContent =
+    !studio.phone &&
+    !studio.website &&
+    (!studio.rating || studio.rating < 0.1) &&
+    (!studio.reviewCount || studio.reviewCount === 0);
+
+  if (isThinContent) {
+    return {
+      title: `${studio.title}${location ? " \u2014 " + location : ""} | Ballroom Dance Directory`,
+      robots: { index: false, follow: true },
+      alternates: {
+        canonical: `https://www.ballroomdancedirectory.com/studios/${slug}`,
+      },
+    };
+  }
+
   return {
     title: `${studio.title}${location ? " \u2014 " + location : ""} | Ballroom Dance Directory`,
     description:
@@ -361,11 +382,38 @@ export default async function StudioPage({
           ].filter(Boolean).join(". ") + ".",
         },
       }] : []),
+      // Beginner-friendly question — addresses high-intent "near me" / "classes near me" queries
+      ...(studio.danceStyles.length > 0 ? [{
+        "@type": "Question" as const,
+        "name": `Does ${studio.title} teach beginners?`,
+        "acceptedAnswer": {
+          "@type": "Answer" as const,
+          "text": `Yes. ${studio.title} works with dancers at every level, from complete beginners to advanced students. Private lessons let instructors tailor the pace and curriculum to each student's experience and goals.`,
+        },
+      }] : []),
+      // Wedding-dance question — only when studio offers wedding instruction (high-converting query)
+      ...(studio.danceStyles.includes("wedding_dance") ? [{
+        "@type": "Question" as const,
+        "name": `Does ${studio.title} offer wedding dance lessons?`,
+        "acceptedAnswer": {
+          "@type": "Answer" as const,
+          "text": `Yes. ${studio.title} offers wedding first-dance choreography and preparation packages${studio.city ? ` for couples in ${studio.city}` : ""}. Lessons cover song selection, choreography, and rehearsal technique to help couples feel confident on their wedding day.`,
+        },
+      }] : []),
+      // Lesson format — clarifies private vs group, an extremely common pre-booking question
+      {
+        "@type": "Question" as const,
+        "name": `Are lessons at ${studio.title} private or group?`,
+        "acceptedAnswer": {
+          "@type": "Answer" as const,
+          "text": `${studio.title} primarily offers one-on-one private lessons${studio.amenities && studio.amenities.includes("group_classes") ? ", with group classes also available" : ""}. Private lessons are scheduled by appointment to fit each student's availability.`,
+        },
+      },
       ...(studio.phone || studio.email || studio.website ? [{
-        "@type": "Question",
+        "@type": "Question" as const,
         "name": `How can I contact ${studio.title}?`,
         "acceptedAnswer": {
-          "@type": "Answer",
+          "@type": "Answer" as const,
           "text": [
             studio.phone ? `Call ${studio.phone}` : null,
             studio.email ? `Email ${studio.email}` : null,
@@ -429,11 +477,23 @@ export default async function StudioPage({
           <h1 className="font-display text-white font-bold mb-3"
             style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)" }}>
             {studio.title}
+            {studio.city && (
+              <span className="text-white/70 font-normal">
+                {" — "}
+                {studio.city}
+                {studio.state ? `, ${studio.state}` : ""}
+              </span>
+            )}
           </h1>
 
-          {studio.tagline && (
+          {studio.tagline ? (
             <p className="text-white/60 text-lg italic mb-4">{studio.tagline}</p>
-          )}
+          ) : studio.city ? (
+            <p className="text-white/60 text-lg mb-4">
+              Private dance lessons in {studio.city}
+              {styleList ? ` — ${styleList.toLowerCase()} instruction` : ""}.
+            </p>
+          ) : null}
 
           {/* Rating */}
           {studio.rating && (
@@ -532,7 +592,10 @@ export default async function StudioPage({
             {/* About */}
             {studio.description && (
               <section>
-                <h2 className="font-display font-bold text-gray-900 text-xl mb-3">About</h2>
+                <h2 className="font-display font-bold text-gray-900 text-xl mb-3">
+                  About {studio.title}
+                  {studio.city ? ` in ${studio.city}` : ""}
+                </h2>
                 <p className="text-gray-600 leading-relaxed">{studio.description}</p>
                 {studioProfile?.custom_description && (
                   <p className="text-xs text-gray-400 mt-2 italic">Description provided by studio owner.</p>
@@ -693,6 +756,28 @@ export default async function StudioPage({
                       <MapIcon /> Get Directions
                     </a>
                   )}
+                </div>
+              </section>
+            )}
+
+            {/* Visible FAQ — mirrors FAQPage JSON-LD so Google can validate. Boosts CTR via scan-friendly answers. */}
+            {faqSchema.mainEntity.length > 0 && (
+              <section>
+                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">
+                  Frequently Asked Questions
+                </h2>
+                <div className="rounded-xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+                  {faqSchema.mainEntity.map((q, i) => (
+                    <details key={i} className="group">
+                      <summary className="flex justify-between items-center cursor-pointer px-5 py-4 bg-white hover:bg-gray-50 transition-colors font-semibold text-gray-900 text-sm md:text-base list-none">
+                        <span>{q.name}</span>
+                        <span className="text-gray-400 ml-3 group-open:rotate-180 transition-transform">&#9662;</span>
+                      </summary>
+                      <div className="px-5 py-4 text-gray-600 text-sm leading-relaxed bg-gray-50">
+                        {q.acceptedAnswer.text}
+                      </div>
+                    </details>
+                  ))}
                 </div>
               </section>
             )}

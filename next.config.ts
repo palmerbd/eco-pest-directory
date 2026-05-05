@@ -204,6 +204,33 @@ const nextConfig: NextConfig = {
         destination: "/studios",
         permanent: true,
       },
+
+      // ── Duplicate-city-suffix → clean slug (batch 3) ─────────────────────
+      // Same scrape artifact as batches 1–2. GSC sources:
+      //   - "Duplicate, Google chose different canonical": reno-reno-2
+      //   - "Crawled - currently not indexed": beaverton-beaverton-2, torrance-torrance-2
+      {
+        source: "/studios/arthur-murray-dance-studio-reno-reno-2",
+        destination: "/studios/arthur-murray-dance-studio-reno-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-beaverton-beaverton-2",
+        destination: "/studios/arthur-murray-dance-studio-beaverton-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-torrance-torrance-2",
+        destination: "/studios/arthur-murray-dance-studio-torrance-2",
+        permanent: true,
+      },
+
+      // ── Invalid city×style (Clackamas not in directory) ──────────────────
+      {
+        source: "/studios/city/clackamas/style/ballroom",
+        destination: "/studios",
+        permanent: true,
+      },
     ];
   },
 
