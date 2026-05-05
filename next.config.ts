@@ -98,6 +98,88 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
 
+      // ── Duplicate-city-suffix → clean slug (batch 2) ─────────────────────
+      // Same scrape artifact as batch 1: city name appended twice during import.
+      // Each clean slug exists in WordPress (verified by pattern from batch 1).
+      {
+        source: "/studios/arthur-murray-dance-studio-redwood-city-redwood-city-3",
+        destination: "/studios/arthur-murray-dance-studio-redwood-city-3",
+        permanent: true,
+      },
+      {
+        source: "/studios/divadance-san-antonio-san-antonio-2",
+        destination: "/studios/divadance-san-antonio-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-vancouver-wa-vancouver-3",
+        destination: "/studios/arthur-murray-dance-studio-vancouver-wa-3",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-plano-plano",
+        destination: "/studios/arthur-murray-dance-studio-of-plano",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-stockton-stockton-3",
+        destination: "/studios/arthur-murray-dance-studio-of-stockton-3",
+        permanent: true,
+      },
+      {
+        source: "/studios/dance-with-me-the-woodlands-the-woodlands-2",
+        destination: "/studios/dance-with-me-the-woodlands-2",
+        permanent: true,
+      },
+
+      // ── Deleted / non-existent studios → main directory (batch 2) ────────
+      {
+        source: "/studios/image-ballroom-dance-academy-richardson-2",
+        destination: "/studios",
+        permanent: true,
+      },
+      {
+        source: "/studios/my-heels-on-dance-houston",
+        destination: "/studios",
+        permanent: true,
+      },
+      {
+        source: "/studios/clarity-dance-academy-midland",
+        destination: "/studios",
+        permanent: true,
+      },
+      {
+        source: "/studios/pasofino-salsa-bachata-dance-studio-atlanta",
+        destination: "/studios",
+        permanent: true,
+      },
+      // Malformed slug (2-26 appears to be a scrape artifact in the name field)
+      {
+        source: "/studios/swingtime-center-dancing-2-26-fort-worth-2",
+        destination: "/studios",
+        permanent: true,
+      },
+      {
+        source: "/studios/you-can-dance-dallas-addison",
+        destination: "/studios",
+        permanent: true,
+      },
+
+      // ── Wrong city slug ───────────────────────────────────────────────────
+      // Google indexed /studios/city/new-york — correct slug is new-york-city
+      {
+        source: "/studios/city/new-york",
+        destination: "/studios/city/new-york-city",
+        permanent: true,
+      },
+
+      // ── Invalid city×style (Toledo not in directory) ─────────────────────
+      {
+        source: "/studios/city/toledo/style/ballroom",
+        destination: "/studios",
+        permanent: true,
+      },
+
       // ── Misc stale / malformed root routes ───────────────────────────────
       // Doubled slug — correct page is /wedding-dance-lessons
       {
