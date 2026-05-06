@@ -12,11 +12,11 @@ import ReviewsSection, { type GoogleReview } from "@/components/ReviewsSection";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { type StudioProfile } from "@/lib/supabase";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours — studio data changes infrequently; 1hr was burning Vercel ISR quota
 
 // Static params
 
-// Return empty array — 4,000+ pages are generated on-demand via ISR (revalidate=3600).
+// Return empty array — 4,000+ pages are generated on-demand via ISR (revalidate=86400).
 // Pre-rendering all slugs at build time exceeded Vercel's build resources.
 export async function generateStaticParams() {
   return [];
