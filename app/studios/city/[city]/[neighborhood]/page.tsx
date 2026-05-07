@@ -32,7 +32,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { city: citySlug, neighborhood: hoodSlug } = await params;
   const result = getNeighborhood(citySlug, hoodSlug);
-  if (!result) return { title: "Not Found" };
+  if (!result) return {
+    title: "Not Found",
+    alternates: { canonical: `https://www.ballroomdancedirectory.com/studios/city/${citySlug}` },
+  };
 
   const { city, neighborhood } = result;
   return {

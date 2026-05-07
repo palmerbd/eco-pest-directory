@@ -34,7 +34,10 @@ export async function generateMetadata({
   const { city } = await params;
   const cityName = citySlugToName(city);
   const studios  = await getStudiosByCity(city);
-  if (!studios.length) return { title: "City Not Found" };
+  if (!studios.length) return {
+    title: "City Not Found",
+    alternates: { canonical: `https://www.ballroomdancedirectory.com/studios` },
+  };
 
   return {
     title: `Ballroom Dance Studios in ${cityName} | Ballroom Dance Directory`,

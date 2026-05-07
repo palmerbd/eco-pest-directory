@@ -49,22 +49,31 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { city, style } = await params;
   const styleType = styleSlugToType(style);
-  if (!styleType) return { title: "Not Found" };
+  if (!styleType) return {
+    title: "Not Found",
+    alternates: { canonical: `https://www.ballroomdancedirectory.com/studios` },
+  };
 
   const cityName  = citySlugToName(city);
   const styleName = STYLE_LABELS[styleType];
   const studios   = await getStudiosByCity(city);
   const filtered  = studios.filter((s) => s.danceStyles.includes(styleType));
 
-  if (!filtered.length) return { title: `Dance Studios in ${cityName}` };
+  // 0 studios: page does permanentRedirect to city page — point canonical there too
+  if (!filtered.length) return {
+    title: `Dance Studios in ${cityName}`,
+    alternates: { canonical: `https://www.ballroomdancedirectory.com/studios/city/${city}` },
+  };
 
   // Thin content guard: a single studio doesn't make a useful directory page.
   // Noindex these so Google stops "Crawled - currently not indexed" churn.
   // The page still renders (users can land here) but won't appear in search.
+  // Canonical points to the style page itself to consolidate what signals exist.
   if (filtered.length < 2) {
     return {
       title: `${styleName} Dance Studios in ${cityName} | Ballroom Dance Directory`,
       robots: { index: false, follow: true },
+      alternates: { canonical: `https://www.ballroomdancedirectory.com/studios/city/${city}/style/${style}` },
     };
   }
 

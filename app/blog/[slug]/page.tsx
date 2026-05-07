@@ -17,7 +17,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPost(slug);
-  if (!post) return { title: "Post Not Found" };
+  if (!post) return {
+    title: "Post Not Found",
+    alternates: { canonical: `https://www.ballroomdancedirectory.com/blog` },
+  };
 
   return {
     title: `${post.title} | Ballroom Dance Directory`,
