@@ -231,6 +231,58 @@ const nextConfig: NextConfig = {
         destination: "/studios",
         permanent: true,
       },
+
+      // ── WP duplicate-suffix slugs (batch 4) — 90-page GSC 404 failure ────
+      // WordPress auto-appended -2/-3/-4 when the slug already existed on
+      // a prior import pass. Google crawled these and they all 404.
+      // Two sub-patterns:
+      //   (a) Simple duplicate: dance-with-me-cleveland-2 → dance-with-me-cleveland
+      //   (b) City-doubled duplicate: foo-salt-lake-city-salt-lake-city-4 → foo-salt-lake-city-4
+      {
+        source: "/studios/arthur-murray-dance-studio-west-farms-new-britain-2",
+        destination: "/studios/arthur-murray-dance-studio-west-farms-new-britain",
+        permanent: true,
+      },
+      {
+        source: "/studios/dance-with-me-dance-studio-bayonne-2",
+        destination: "/studios/dance-with-me-dance-studio-bayonne",
+        permanent: true,
+      },
+      {
+        source: "/studios/dance-with-me-cleveland-2",
+        destination: "/studios/dance-with-me-cleveland",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-salt-lake-city-salt-lake-city-4",
+        destination: "/studios/arthur-murray-dance-studio-salt-lake-city-4",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-mcmurray-canonsburg-2",
+        destination: "/studios/arthur-murray-dance-studio-of-mcmurray-canonsburg",
+        permanent: true,
+      },
+      {
+        source: "/studios/the-dance-factory-tampa-bay-tampa-2",
+        destination: "/studios/the-dance-factory-tampa-bay-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/dance-with-me-brooklyn-2",
+        destination: "/studios/dance-with-me-brooklyn",
+        permanent: true,
+      },
+      {
+        source: "/studios/dance-with-me-austin-austin-3",
+        destination: "/studios/dance-with-me-austin-3",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-orange-city-orange-city-2",
+        destination: "/studios/arthur-murray-dance-studio-orange-city-2",
+        permanent: true,
+      },
     ];
   },
 
