@@ -283,6 +283,295 @@ const nextConfig: NextConfig = {
         destination: "/studios/arthur-murray-dance-studio-orange-city-2",
         permanent: true,
       },
+
+      // ── Batch 4 (continued) — Pattern A: strip -N suffix ─────────────────
+      {
+        source: "/studios/dance-with-me-soho-new-york-2",
+        destination: "/studios/dance-with-me-soho-new-york",
+        permanent: true,
+      },
+      {
+        source: "/studios/dance-with-me-studio-by-aura-rogers-2",
+        destination: "/studios/dance-with-me-studio-by-aura-rogers",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-los-angeles-2",
+        destination: "/studios/arthur-murray-dance-studio-los-angeles",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-palm-coast-2",
+        destination: "/studios/arthur-murray-dance-studio-palm-coast",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-mcmurray-canonsburg-3",
+        destination: "/studios/arthur-murray-dance-studio-of-mcmurray-canonsburg",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-estero-fort-myers-2",
+        destination: "/studios/arthur-murray-dance-studio-of-estero-fort-myers",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-shelby-michigan-2",
+        destination: "/studios/arthur-murray-dance-studio-of-shelby-michigan",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-montrose-glendale-3",
+        destination: "/studios/arthur-murray-dance-studio-montrose-glendale",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-montgomery-cincinnati-2",
+        destination: "/studios/arthur-murray-dance-studio-montgomery-cincinnati",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-royal-oak-2",
+        destination: "/studios/arthur-murray-dance-studio-royal-oak",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-center-of-dayton-miamisburg-2",
+        destination: "/studios/arthur-murray-dance-center-of-dayton-miamisburg",
+        permanent: true,
+      },
+      {
+        source: "/studios/fred-astaire-dance-studios-boca-raton-2",
+        destination: "/studios/fred-astaire-dance-studios-boca-raton",
+        permanent: true,
+      },
+      {
+        source: "/studios/salsa-xtreme-llc-tampa-2",
+        destination: "/studios/salsa-xtreme-llc-tampa",
+        permanent: true,
+      },
+      {
+        source: "/studios/suncoast-ballroom-largo-2",
+        destination: "/studios/suncoast-ballroom-largo",
+        permanent: true,
+      },
+      {
+        source: "/studios/salsaville-dance-studios-boulder-2",
+        destination: "/studios/salsaville-dance-studios-boulder",
+        permanent: true,
+      },
+      {
+        source: "/studios/the-real-ballroom-dance-studio-tampa-2",
+        destination: "/studios/the-real-ballroom-dance-studio-tampa",
+        permanent: true,
+      },
+      {
+        source: "/studios/the-dance-den-tampa-2",
+        destination: "/studios/the-dance-den-tampa",
+        permanent: true,
+      },
+      {
+        source: "/studios/rhapsody-ballroom-temple-terrace-2",
+        destination: "/studios/rhapsody-ballroom-temple-terrace",
+        permanent: true,
+      },
+      {
+        source: "/studios/magic-dance-club-ballroom-dance-studio-event-venue-largo-2",
+        destination: "/studios/magic-dance-club-ballroom-dance-studio-event-venue-largo",
+        permanent: true,
+      },
+      {
+        source: "/studios/iroko-latin-dance-academy-tampa-2",
+        destination: "/studios/iroko-latin-dance-academy-tampa",
+        permanent: true,
+      },
+      {
+        source: "/studios/new-heights-dance-academy-tampa-2",
+        destination: "/studios/new-heights-dance-academy-tampa",
+        permanent: true,
+      },
+      {
+        source: "/studios/dance-forever-dance-studio-palm-harbor-2",
+        destination: "/studios/dance-forever-dance-studio-palm-harbor",
+        permanent: true,
+      },
+      {
+        source: "/studios/dancin-motion-school-of-the-arts-tampa-2",
+        destination: "/studios/dancin-motion-school-of-the-arts-tampa",
+        permanent: true,
+      },
+      {
+        source: "/studios/stagecoach-ballroom-fort-worth-2",
+        destination: "/studios/stagecoach-ballroom-fort-worth",
+        permanent: true,
+      },
+      {
+        source: "/studios/studio-one-dance-center-fort-worth-2",
+        destination: "/studios/studio-one-dance-center-fort-worth",
+        permanent: true,
+      },
+      {
+        source: "/studios/aerial-dragons-studios-tampa-2",
+        destination: "/studios/aerial-dragons-studios-tampa",
+        permanent: true,
+      },
+      {
+        source: "/studios/hidden-city-ballroom-richmond-2",
+        destination: "/studios/hidden-city-ballroom-richmond",
+        permanent: true,
+      },
+      {
+        source: "/studios/studio-nightshade-pole-dance-tampa-2",
+        destination: "/studios/studio-nightshade-pole-dance-tampa",
+        permanent: true,
+      },
+      {
+        source: "/studios/dance-with-us-tampa-at-rhapsody-ballroom-tampa-2",
+        destination: "/studios/dance-with-us-tampa-at-rhapsody-ballroom-tampa",
+        permanent: true,
+      },
+      {
+        source: "/studios/allegro-ballroom-richmond-2",
+        destination: "/studios/allegro-ballroom-richmond",
+        permanent: true,
+      },
+      {
+        source: "/studios/usf-dance-studios-tampa-2",
+        destination: "/studios/usf-dance-studios-tampa",
+        permanent: true,
+      },
+      {
+        source: "/studios/montgomery-ballroom-gaithersburg-2",
+        destination: "/studios/montgomery-ballroom-gaithersburg",
+        permanent: true,
+      },
+
+      // ── Batch 4 (continued) — Pattern B: strip doubled city, keep -N ─────
+      {
+        source: "/studios/arthur-murray-dance-studio-of-richmond-richmond-2",
+        destination: "/studios/arthur-murray-dance-studio-of-richmond-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-center-of-pittsburgh-downtown-pittsburgh-3",
+        destination: "/studios/arthur-murray-dance-center-of-pittsburgh-downtown-3",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-charleston-charleston-2",
+        destination: "/studios/arthur-murray-dance-studio-of-charleston-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-danvers-danvers-3",
+        destination: "/studios/arthur-murray-dance-studio-of-danvers-3",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-vancouver-wa-vancouver-2",
+        destination: "/studios/arthur-murray-dance-studio-vancouver-wa-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-alexandria-alexandria-2",
+        destination: "/studios/arthur-murray-dance-studio-of-alexandria-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-charlotte-charlotte-2",
+        destination: "/studios/arthur-murray-dance-studio-charlotte-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-wildwood-wildwood-2",
+        destination: "/studios/arthur-murray-dance-studio-wildwood-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-folsom-folsom-2",
+        destination: "/studios/arthur-murray-dance-studio-of-folsom-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-rochester-rochester-2",
+        destination: "/studios/arthur-murray-dance-studio-of-rochester-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-st-augustine-st-augustine-2",
+        destination: "/studios/arthur-murray-dance-studio-st-augustine-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-monterey-monterey-2",
+        destination: "/studios/arthur-murray-dance-studio-monterey-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-merrick-merrick-2",
+        destination: "/studios/arthur-murray-dance-studio-of-merrick-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-temecula-temecula-3",
+        destination: "/studios/arthur-murray-dance-studio-temecula-3",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-bay-shore-ny-bay-shore-2",
+        destination: "/studios/arthur-murray-dance-studio-bay-shore-ny-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-sarasota-sarasota-3",
+        destination: "/studios/arthur-murray-dance-studio-sarasota-3",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-whitefish-bay-whitefish-bay-3",
+        destination: "/studios/arthur-murray-dance-studio-whitefish-bay-3",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-ormond-beach-ormond-beach-2",
+        destination: "/studios/arthur-murray-dance-studio-of-ormond-beach-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-albuquerque-albuquerque-2",
+        destination: "/studios/arthur-murray-dance-studio-albuquerque-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-centers-ocala-ocala-2",
+        destination: "/studios/arthur-murray-dance-centers-ocala-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-summerville-summerville-2",
+        destination: "/studios/arthur-murray-dance-studio-of-summerville-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-of-york-york-2",
+        destination: "/studios/arthur-murray-dance-studio-of-york-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-jacksonville-jacksonville-2",
+        destination: "/studios/arthur-murray-dance-studio-jacksonville-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/arthur-murray-dance-studio-ashburn-ashburn-2",
+        destination: "/studios/arthur-murray-dance-studio-ashburn-2",
+        permanent: true,
+      },
+      {
+        source: "/studios/first-dance-charlotte-charlotte-2",
+        destination: "/studios/first-dance-charlotte-2",
+        permanent: true,
+      },
     ];
   },
 
