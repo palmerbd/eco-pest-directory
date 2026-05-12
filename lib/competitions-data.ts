@@ -754,4 +754,31 @@ export const COMPETITIONS: Competition[] = [
   },
 ];
 
-// ── Helpers ──────────────────────────────────────────────────�
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+/** Sort competitions by dateStart ascending (TBA goes to end) */
+export function sortedByDate(comps: Competition[]): Competition[] {
+  return [...comps].sort((a, b) => {
+    if (!a.dateStart && !b.dateStart) return a.typicalMonth - b.typicalMonth;
+    if (!a.dateStart) return 1;
+    if (!b.dateStart) return -1;
+    return new Date(a.dateStart).getTime() - new Date(b.dateStart).getTime();
+  });
+}
+
+/** Filter helpers */
+export function getByRegion(region: string): Competition[] {
+  return COMPETITIONS.filter((c) => c.region === region);
+}
+
+export function getByStyle(style: string): Competition[] {
+  return COMPETITIONS.filter((c) => c.styles.includes(style as any));
+}
+
+export function getBySlug(slug: string): Competition | undefined {
+  return COMPETITIONS.find((c) => c.slug === slug);
+}
+
+export function getFeatured(): Competition[] {
+  return COMPETITIONS.filter((c) => c.isFeatured);
+}
