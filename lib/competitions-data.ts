@@ -333,7 +333,7 @@ export const COMPETITIONS: Competition[] = [
     organization:        "NDCA",
     styles:              ["standard","latin","smooth","rhythm"],
     levels:              ["amateur","pro_am"],
-    description:         "The Texas Challenge DanceSport is a well-regarded NDCA Premier competition held each spring in the heart of Houston. It draws a strong regional field of Amateur and Pro/Am competitors from Texas, Louisiana, and Oklahoma, with a reputation for smooth organization and a welcoming competition atmosphere.",
+    description:         "The Texas Challenge DanceSport is a well-regarded NDCA Premier ballroom dance competition held each May at the Marriott Houston at the Texas Medical Center in Houston, Texas. As one of the Southwest's premier NDCA-sanctioned events, Texas Challenge DanceSport draws a strong regional field of Amateur and Pro/Am competitors from Texas, Louisiana, Oklahoma, New Mexico, and Arkansas. The competition is organized into International Standard, International Latin, American Smooth, and American Rhythm style divisions, with Pro/Am scholarship rounds, Amateur championships, and open events scheduled across the three-day weekend. Texas Challenge DanceSport has built a reputation among Houston ballroom dancers and visiting competitors for smooth organization, professional NDCA judging panels, and a welcoming atmosphere that supports first-time competitors and seasoned national-ranking couples alike. Entry fees typically range from $14 to $26 per event, and registration is handled directly through texaschallenge.com. Whether you are an Amateur Open Smooth couple, a Pro/Am Bronze student, or a competitive ballroom dance instructor traveling with students, Texas Challenge DanceSport is the Houston DanceSport event to put on your calendar each spring.",
     website:             "https://www.texaschallenge.com",
     registrationDeadline: null,
     entryFeeMin:         14,
@@ -754,31 +754,4 @@ export const COMPETITIONS: Competition[] = [
   },
 ];
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
-
-/** Sort competitions by dateStart ascending (TBA goes to end) */
-export function sortedByDate(comps: Competition[]): Competition[] {
-  return [...comps].sort((a, b) => {
-    if (!a.dateStart && !b.dateStart) return a.typicalMonth - b.typicalMonth;
-    if (!a.dateStart) return 1;
-    if (!b.dateStart) return -1;
-    return new Date(a.dateStart).getTime() - new Date(b.dateStart).getTime();
-  });
-}
-
-/** Filter helpers */
-export function getByRegion(region: string): Competition[] {
-  return COMPETITIONS.filter((c) => c.region === region);
-}
-
-export function getByStyle(style: string): Competition[] {
-  return COMPETITIONS.filter((c) => c.styles.includes(style as any));
-}
-
-export function getBySlug(slug: string): Competition | undefined {
-  return COMPETITIONS.find((c) => c.slug === slug);
-}
-
-export function getFeatured(): Competition[] {
-  return COMPETITIONS.filter((c) => c.isFeatured);
-}
+// ── Helpers ──────────────────────────────────────────────────�

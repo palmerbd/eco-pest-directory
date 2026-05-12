@@ -199,6 +199,63 @@ export default async function HomePage() {
         </div>
       </section>
 
+
+      {/* Trending This Week - additional internal links for SEO targets */}
+      <section className="py-16 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs font-bold tracking-[0.15em] uppercase mb-3" style={{ color: "#b8922a" }}>
+              Trending This Week
+            </p>
+            <h2 className="font-display text-gray-900 font-bold"
+              style={{ fontSize: "clamp(1.5rem, 3.5vw, 2rem)" }}>
+              Studios and Competitions Worth a Closer Look
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link href="/competitions/houston-dancesport"
+              className="group p-6 bg-gray-50 rounded-xl border border-gray-200
+                         hover:border-yellow-400 hover:shadow-md transition-all duration-200 block">
+              <p className="text-xs font-bold tracking-wide uppercase text-gray-400 mb-2">Competition - Houston, TX</p>
+              <h3 className="font-display font-bold text-gray-900 text-lg mb-2
+                             group-hover:text-yellow-700 transition-colors">
+                Texas Challenge DanceSport
+              </h3>
+              <p className="text-sm font-semibold mb-3" style={{ color: "#b8922a" }}>NDCA Premier - May</p>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                The Southwest&apos;s premier NDCA-sanctioned ballroom competition - Standard, Latin, Smooth, and Rhythm divisions for Amateur and Pro/Am competitors.
+              </p>
+            </Link>
+            <Link href="/studios/arthur-murray-dance-studio-of-williston-park-williston-park"
+              className="group p-6 bg-gray-50 rounded-xl border border-gray-200
+                         hover:border-yellow-400 hover:shadow-md transition-all duration-200 block">
+              <p className="text-xs font-bold tracking-wide uppercase text-gray-400 mb-2">Studio - Williston Park, NY</p>
+              <h3 className="font-display font-bold text-gray-900 text-lg mb-2
+                             group-hover:text-yellow-700 transition-colors">
+                Arthur Murray Dance Studio of Williston Park
+              </h3>
+              <p className="text-sm font-semibold mb-3" style={{ color: "#b8922a" }}>4.9 stars (31 reviews)</p>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Arthur Murray franchise serving Nassau County and Long Island - ballroom, Latin, tango, waltz, and wedding-dance instruction.
+              </p>
+            </Link>
+            <Link href="/studios/art-dance-education-child-care-madison"
+              className="group p-6 bg-gray-50 rounded-xl border border-gray-200
+                         hover:border-yellow-400 hover:shadow-md transition-all duration-200 block">
+              <p className="text-xs font-bold tracking-wide uppercase text-gray-400 mb-2">Studio - Madison, WI</p>
+              <h3 className="font-display font-bold text-gray-900 text-lg mb-2
+                             group-hover:text-yellow-700 transition-colors">
+                ART DANCE EDUCATION Child Care
+              </h3>
+              <p className="text-sm font-semibold mb-3" style={{ color: "#b8922a" }}>5.0 stars (10 reviews)</p>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Madison ballroom dance education with child-care-friendly scheduling - serving Dane County, including Sun Prairie, Middleton, and Fitchburg.
+              </p>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Why Private Lessons */}
       <section className="py-20 px-6" style={{ background: "#0c1428" }}>
         <div className="max-w-4xl mx-auto text-center">
@@ -229,7 +286,8 @@ export default async function HomePage() {
             <div className="font-display font-bold text-gray-900 text-lg">Ballroom Dance Directory</div>
             <p className="text-gray-400 text-sm mt-1">America&apos;s premier resource for private dance instruction</p>
           </div>
-          <div className="flex gap-6 text-sm text-gray-400">
+          <div className="flex flex-wrap gap-6 text-sm text-gray-400">
+            <Link href="/dance-lessons-near-me"  className="hover:text-gray-900 transition-colors">Lessons Near Me</Link>
             <Link href="/ballroom-dance-lessons" className="hover:text-gray-900 transition-colors">Ballroom</Link>
             <Link href="/latin-dance-lessons"    className="hover:text-gray-900 transition-colors">Latin</Link>
             <Link href="/tango-dance-lessons"    className="hover:text-gray-900 transition-colors">Tango</Link>
