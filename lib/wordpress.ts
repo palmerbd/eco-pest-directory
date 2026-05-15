@@ -527,3 +527,5 @@ export async function getBlogSlugs(): Promise<string[]> {
   const posts = await getBlogPosts(100);
   return posts.map((p) => p.slug);
 }
+
+// Cache-bust deploy: 2026-05-15T20:46 UTC — clears ISR caches after crawl-induced 404s
