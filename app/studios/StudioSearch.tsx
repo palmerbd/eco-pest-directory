@@ -432,12 +432,37 @@ export function StudioSearch({
 
   const hasFilters = !!(query || city || stateSearch || style || chain || minRating);
 
+  // ── Lazy full-dataset load ────────────────────────────────────────────────
+  // The server only passes the first 48 studios (ISR-cached default view).
+  // When the user applies any filter we need the full ~4,100-studio set, so
+  // we fetch it once from /api/studios/all and cache it in component state.
+  const [allStudios,      setAllStudios]      = useState<StudioCard[] | null>(null);
+  const [allStudiosLoading, setAllStudiosLoading] = useState(false);
+
+  useEffect(() => {
+    if (!hasFilters || allStudios !== null || allStudiosLoading) return;
+    setAllStudiosLoading(true);
+    fetch("/api/studios/all")
+      .then((r) => r.json())
+      .then((data: { studios: StudioCard[] }) => {
+        setAllStudios(data.studios ?? []);
+      })
+      .catch(() => {
+        // On error fall back gracefully — user sees the 48 server-side studios
+        setAllStudios([]);
+      })
+      .finally(() => setAllStudiosLoading(false));
+  }, [hasFilters, allStudios, allStudiosLoading]);
+
+  // The dataset to filter against: full set once loaded, else server-passed 48
+  const filterSource = allStudios ?? studios;
+
   // ── Derive city list directly from live data ──────────────────────────────
   const cities = useMemo(() => {
     const seen = new Set<string>();
-    studios.forEach((s) => { if (s.city) seen.add(s.city); });
+    filterSource.forEach((s) => { if (s.city) seen.add(s.city); });
     return Array.from(seen).sort();
-  }, [studios]);
+  }, [filterSource]);
 
   // ── Sync state → URL ──────────────────────────────────────────────────────
   const updateURL = useCallback(
@@ -474,7 +499,7 @@ export function StudioSearch({
 
   // ── Filter + sort ─────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
-    let result = studios;
+    let result = filterSource;
 
     if (query.trim()) {
       const q   = query.trim().toLowerCase();
@@ -541,7 +566,7 @@ export function StudioSearch({
     const rest = result.filter((s) => s.tier !== "paid").sort(sortFn);
 
     return [...paid, ...rest];
-  }, [studios, query, city, stateSearch, style, chain, minRating, sortBy]);
+  }, [filterSource, query, city, stateSearch, style, chain, minRating, sortBy]);
 
   // ── Pagination ────────────────────────────────────────────────────────────
   // When filters are active: client-side pagination over filtered subset.
@@ -684,13 +709,23 @@ export function StudioSearch({
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <p className="text-sm text-gray-500">
               {hasFilters ? (
-                <>
-                  <span className="font-semibold text-gray-800">{filtered.length}</span>{" "}
-                  studio{filtered.length !== 1 ? "s" : ""} match your filters
-                  {clientTotalPages > 1 && (
-                    <span className="text-gray-400"> — page {safePage} of {clientTotalPages}</span>
-                  )}
-                </>
+                allStudiosLoading ? (
+                  <span className="inline-flex items-center gap-2 text-gray-400">
+                    <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                    </svg>
+                    Searching all studios…
+                  </span>
+                ) : (
+                  <>
+                    <span className="font-semibold text-gray-800">{filtered.length}</span>{" "}
+                    studio{filtered.length !== 1 ? "s" : ""} match your filters
+                    {clientTotalPages > 1 && (
+                      <span className="text-gray-400"> — page {safePage} of {clientTotalPages}</span>
+                    )}
+                  </>
+                )
               ) : (
                 <>
                   <span className="font-semibold text-gray-800">
