@@ -24,28 +24,27 @@ export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
 }
 
-// Pages to try, in order — most likely to have owner names first
+// Pages to try in order — most likely to have owner names first
 const ABOUT_PATHS = [
   "/about",
   "/about-us",
-  "/about-us/",
   "/our-team",
-  "/meet-us",
   "/meet-the-team",
   "/staff",
   "/instructors",
   "/our-instructors",
   "/meet-your-instructor",
   "/team",
-  "", // homepage last — least specific
+  "/meet-us",
+  "", // homepage last
 ];
 
-// Trigger words that signal a person's role (case-insensitive)
+// Trigger words that signal a person's role
 const OWNER_TRIGGERS = [
   "owner",
+  "co-owner",
   "founder",
   "co-founder",
-  "co founder",
   "director",
   "studio director",
   "head instructor",
@@ -55,14 +54,46 @@ const OWNER_TRIGGERS = [
   "principal",
 ];
 
-// Noise names to reject
-const NOISE_NAMES = new Set([
-  "About Us", "Our Team", "Meet Us", "The Team", "Our Staff",
-  "Dance Studio", "Ballroom Dance", "Dance Lessons", "Dance School",
-  "Contact Us", "Home", "Welcome", "Read More", "Learn More",
-  "Follow Us", "Sign Up", "Log In", "Book Now", "Get Started",
-  "All Rights", "Privacy Policy", "Terms Of Service",
+// CSS class/id fragments that typically wrap a person's name in team/bio sections
+const NAME_CONTAINER_PATTERNS = [
+  "staff-name", "member-name", "team-name", "person-name",
+  "bio-name", "instructor-name", "author-name", "owner-name",
+  "team_name", "member_name", "instructor_name", "person_title",
+  "card-title", "card-name",
+];
+
+// 400 most common American first names (covers ~95% of real names encountered)
+const COMMON_FIRST_NAMES = new Set([
+  "james","john","robert","michael","william","david","richard","joseph","thomas","charles",
+  "christopher","daniel","matthew","anthony","mark","donald","steven","paul","andrew","kenneth",
+  "george","joshua","kevin","brian","edward","ronald","timothy","jason","jeffrey","ryan",
+  "jacob","gary","nicholas","eric","jonathan","stephen","larry","justin","scott","brandon",
+  "benjamin","samuel","raymond","frank","gregory","frank","raymond","alexander","patrick","jack",
+  "dennis","jerry","tyler","aaron","jose","adam","henry","nathan","douglas","zachary","peter",
+  "kyle","walter","ethan","jeremy","harold","terry","sean","christian","austin","joe","arthur",
+  "lawrence","dylan","jesse","jordan","bryan","billy","joe","bruce","ralph","roy","eugene",
+  "alan","juan","wayne","albert","bobby","carlos","joe","luis","johnny","adam","lance","derek",
+  "mary","patricia","jennifer","linda","barbara","elizabeth","susan","jessica","sarah","karen",
+  "lisa","nancy","betty","margaret","sandra","ashley","dorothy","kimberly","emily","donna",
+  "michelle","carol","amanda","melissa","deborah","stephanie","rebecca","sharon","laura","cynthia",
+  "kathleen","amy","angela","shirley","anna","brenda","pamela","emma","nicole","helen","samantha",
+  "katherine","christine","debra","rachel","carolyn","janet","catherine","maria","heather","diane",
+  "julie","joyce","victoria","kelly","christina","joan","evelyn","lauren","judith","olivia","megan",
+  "cheryl","andrea","katharine","meredith","julia","jacqueline","grace","amber","alice","jean",
+  "denise","danielle","brittany","diana","abigail","chelsea","natalie","sophia","madison","tiffany",
+  "marie","crystal","rita","claire","april","virginia","teresa","janice","vanessa","gloria",
+  "connie","tammy","dawn","stacy","leah","renee","dawn","gina","monica","wendy","robin","tracy",
+  "beverly","holly","erin","courtney","jill","natasha","kathy","alyssa","caitlin","brooke",
+  "autumn","miranda","candice","bridget","kate","paige","haley","alexis","taylor","jessica",
+  "brittney","audrey","veronica","kelsey","tara","lori","marissa","shannon","melanie","shelby",
+  "allison","gillian","lorraine","sherri","marcia","jenna","dana","faith","penny","kristin",
+  "marlene","sheila","elaine","ann","sue","peggy","ruth","eileen","georgia","ellen","linda",
+  "leann","kathryn","petra","lana","gail","carol","fiona","valerie","dee","lisa",
 ]);
+
+function isLikelyFirstName(word: string): boolean {
+  return COMMON_FIRST_NAMES.has(word.toLowerCase());
+}
 
 /**
  * Extract clean text from HTML — strip tags, decode basic entities.
@@ -83,32 +114,31 @@ function htmlToText(html: string): string {
 }
 
 /**
- * Check if a string looks like a real person name:
- * - 2–4 words
- * - Each word is Title Case (first letter uppercase, rest lowercase or hyphen)
+ * Strict name validation:
+ * - 2–3 words only
+ * - Each word Title Case
  * - No digits
- * - Min 2 chars per word
+ * - FIRST word must be a recognized common English first name
+ * - Min 2 chars per word, max 18
  */
-function looksLikeName(candidate: string): boolean {
+function isValidPersonName(candidate: string): boolean {
   if (!candidate) return false;
   const words = candidate.trim().split(/\s+/);
-  if (words.length < 2 || words.length > 4) return false;
-  if (NOISE_NAMES.has(candidate)) return false;
-  return words.every(w =>
-    w.length >= 2 &&
-    /^[A-Z][a-zA-Z'\-\.]+$/.test(w) &&
-    !/\d/.test(w)
+  if (words.length < 2 || words.length > 3) return false;
+  const allTitleCase = words.every(
+    w => w.length >= 2 && w.length <= 18 && /^[A-Z][a-zA-Z'\-]+$/.test(w) && !/\d/.test(w)
   );
+  if (!allTitleCase) return false;
+  // First word must be a real first name
+  return isLikelyFirstName(words[0]);
 }
 
 /**
- * Split a full name into first and last components.
- * Handles: "First Last", "First Middle Last", "First de Last", "Mr. First Last"
+ * Split a full name into first and last.
  */
 function splitName(fullName: string): { first: string; last: string } {
   const words = fullName.trim().split(/\s+/);
-  // Drop honorifics
-  const honorifics = /^(Mr|Mrs|Ms|Dr|Prof|Sir|Mme|Mde|Msr)\.?$/i;
+  const honorifics = /^(Mr|Mrs|Ms|Dr|Prof|Sir)\.?$/i;
   const filtered = words.filter(w => !honorifics.test(w));
   if (filtered.length === 0) return { first: "", last: "" };
   if (filtered.length === 1) return { first: filtered[0], last: "" };
@@ -125,8 +155,24 @@ interface OwnerResult {
 }
 
 /**
+ * Strategy 0: HTML class/id attribute scan
+ * Looks for elements whose class or id contains known name-container patterns.
+ */
+function tryClassPatterns(html: string): string | null {
+  const pattern = new RegExp(
+    `(?:class|id)="[^"]*(?:${NAME_CONTAINER_PATTERNS.join("|")})[^"]*"[^>]*>([^<]{2,50})<`,
+    "gi"
+  );
+  let m;
+  while ((m = pattern.exec(html)) !== null) {
+    const candidate = htmlToText(m[1]).trim();
+    if (isValidPersonName(candidate)) return candidate;
+  }
+  return null;
+}
+
+/**
  * Strategy 1: schema.org Person markup
- * Looks for <script type="application/ld+json"> with @type: Person
  */
 function trySchemaOrg(html: string): string | null {
   const scriptRe = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
@@ -136,28 +182,19 @@ function trySchemaOrg(html: string): string | null {
       const data = JSON.parse(m[1]);
       const entries = Array.isArray(data) ? data : [data];
       for (const entry of entries) {
-        // Could be top-level or nested under @graph
         const nodes = entry["@graph"] ? [...entry["@graph"], entry] : [entry];
         for (const node of nodes) {
-          if (
-            node["@type"] === "Person" &&
-            typeof node["name"] === "string" &&
-            node["name"].trim().length > 0
-          ) {
-            // Check for role keyword
+          if (node["@type"] === "Person" && typeof node["name"] === "string") {
+            const candidate = node["name"].trim();
             const jobTitle = (node["jobTitle"] ?? "").toLowerCase();
-            const description = (node["description"] ?? "").toLowerCase();
-            const isOwner = OWNER_TRIGGERS.some(t =>
-              jobTitle.includes(t) || description.includes(t)
-            );
-            if (isOwner || jobTitle.length === 0) {
-              return node["name"].trim();
-            }
+            const isOwner =
+              OWNER_TRIGGERS.some(t => jobTitle.includes(t)) || jobTitle.length === 0;
+            if (isOwner && isValidPersonName(candidate)) return candidate;
           }
         }
       }
     } catch {
-      // malformed JSON — skip
+      // malformed JSON
     }
   }
   return null;
@@ -165,55 +202,61 @@ function trySchemaOrg(html: string): string | null {
 
 /**
  * Strategy 2: Trigger-word proximity scan
- * Searches text for an owner/founder/director trigger word,
- * then looks within ±120 chars for a Title Case name pattern.
+ * Finds a trigger word (owner/founder/director) then looks within ±150 chars
+ * for a valid person name.
  */
 function tryTriggerProximity(text: string): string | null {
   const triggerPattern = new RegExp(
     `(${OWNER_TRIGGERS.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`,
     "gi"
   );
-
-  // Title Case name: 2-4 words, each starting with capital
-  const namePattern = /\b([A-Z][a-z'\-]{1,20})(?:\s+[A-Z][a-z'\-]{1,20}){1,3}\b/g;
+  const namePattern = /\b([A-Z][a-z'\-]{1,17})(?:\s+[A-Z][a-z'\-]{1,17}){1,2}\b/g;
 
   let m: RegExpExecArray | null;
   while ((m = triggerPattern.exec(text)) !== null) {
-    const start = Math.max(0, m.index - 120);
-    const end = Math.min(text.length, m.index + 120);
+    const start = Math.max(0, m.index - 150);
+    const end = Math.min(text.length, m.index + 150);
     const window = text.slice(start, end);
 
     let nm: RegExpExecArray | null;
     const nameRe = new RegExp(namePattern.source, "g");
     while ((nm = nameRe.exec(window)) !== null) {
       const candidate = nm[0].trim();
-      if (looksLikeName(candidate)) {
-        return candidate;
-      }
+      if (isValidPersonName(candidate)) return candidate;
     }
   }
   return null;
 }
 
 /**
- * Strategy 3: Heading tags on about/team pages
- * On pages like /about or /our-team, the first meaningful h1/h2/h3
- * that looks like a name is likely the owner.
+ * Strategy 3: "Hi I'm / My name is" patterns
+ * Common in small business about pages.
+ */
+function tryIntroPattern(text: string): string | null {
+  const introPattern = /(?:hi[,!]?\s+i(?:'m|'m|`m|\s+am)|my name is|i(?:'m|'m|`m)\s+)([A-Z][a-z'\-]{1,17}(?:\s+[A-Z][a-z'\-]{1,17}){1,2})/gi;
+  let m;
+  while ((m = introPattern.exec(text)) !== null) {
+    const candidate = m[1].trim();
+    if (isValidPersonName(candidate)) return candidate;
+  }
+  return null;
+}
+
+/**
+ * Strategy 4: Headings on about pages — restricted to 2-3 words matching a real name
  */
 function tryHeadings(html: string): string | null {
   const headingRe = /<h[123][^>]*>([\s\S]*?)<\/h[123]>/gi;
   let m;
   while ((m = headingRe.exec(html)) !== null) {
     const text = htmlToText(m[1]).trim();
-    if (looksLikeName(text)) {
-      return text;
-    }
+    if (isValidPersonName(text)) return text;
   }
   return null;
 }
 
 /**
- * Fetch a URL with 6s timeout and standard browser-like headers.
+ * Fetch a URL with 6s timeout.
  */
 async function fetchPage(url: string): Promise<string | null> {
   try {
@@ -240,20 +283,28 @@ async function fetchPage(url: string): Promise<string | null> {
 }
 
 /**
- * Run all three extraction strategies against an HTML page.
+ * Run all extraction strategies against a fetched HTML page.
  */
 function extractOwner(html: string, isAboutPage: boolean): string | null {
-  // 1. Schema.org — most reliable when present
+  // 0. HTML class patterns — most precise
+  const cls = tryClassPatterns(html);
+  if (cls) return cls;
+
+  // 1. Schema.org
   const schema = trySchemaOrg(html);
-  if (schema && looksLikeName(schema)) return schema;
+  if (schema) return schema;
 
   const text = htmlToText(html);
 
-  // 2. Trigger-word proximity
+  // 2. "Hi I'm..." intro patterns
+  const intro = tryIntroPattern(text);
+  if (intro) return intro;
+
+  // 3. Trigger-word proximity
   const trigger = tryTriggerProximity(text);
   if (trigger) return trigger;
 
-  // 3. Headings — only reliable on about/team pages, not homepage
+  // 4. Headings — only on about/team pages
   if (isAboutPage) {
     const heading = tryHeadings(html);
     if (heading) return heading;
