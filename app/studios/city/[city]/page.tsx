@@ -9,7 +9,7 @@ import { StudioCard, CHAIN_CONFIG, STYLE_LABELS, DanceStyle, DANCE_STYLES } from
 import { getCityConfig } from "@/lib/neighborhoods";
 import { getCityIntroCopy } from "@/lib/seo-copy";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours — city data is stable; reduces ISR cost
 
 // ── Static params ─────────────────────────────────────────────────────────────
 

@@ -12,7 +12,7 @@ import {
 } from "@/types/competition";
 import { CompetitionFilters } from "@/components/CompetitionFilters";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours
 
 const VALID_REGIONS = Object.keys(COMP_REGION_LABELS) as CompRegion[];
 

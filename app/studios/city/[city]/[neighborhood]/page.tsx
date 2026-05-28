@@ -9,7 +9,7 @@ import {
   matchStudiosToNeighborhood,
 } from "@/lib/neighborhoods";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours — neighborhood data is stable
 
 // ── Static params ─────────────────────────────────────────────────────────────
 

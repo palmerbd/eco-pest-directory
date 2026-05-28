@@ -10,7 +10,7 @@ import {
 } from "@/lib/competitions-data";
 import { COMP_REGION_LABELS, COMP_STYLE_LABELS } from "@/types/competition";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours
 
 export const metadata: Metadata = {
   title: "Ballroom Dance Competitions | US Competition Calendar",

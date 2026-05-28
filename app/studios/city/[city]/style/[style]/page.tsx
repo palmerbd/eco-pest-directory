@@ -7,7 +7,7 @@ import {
 } from "@/types/studio";
 import { getStyleIntroCopy } from "@/lib/seo-copy";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours — city+style pages are stable
 
 // ── Style slug helpers ────────────────────────────────────────────────────────
 // URL uses hyphens (wedding-dance), DanceStyle uses underscores (wedding_dance)

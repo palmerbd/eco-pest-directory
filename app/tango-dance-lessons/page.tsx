@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { getAllStudios } from "@/lib/wordpress";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours
 
 export const metadata: Metadata = {
   title: "Tango Dance Lessons — Find Private Instruction Near You",

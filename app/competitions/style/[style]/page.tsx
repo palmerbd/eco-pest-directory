@@ -12,7 +12,7 @@ import {
 } from "@/types/competition";
 import { CompetitionFilters } from "@/components/CompetitionFilters";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours
 
 const VALID_STYLES = Object.keys(COMP_STYLE_LABELS) as CompStyle[];
 

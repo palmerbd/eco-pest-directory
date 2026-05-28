@@ -19,7 +19,7 @@ import {
 import { CompetitionCard } from "@/components/CompetitionCard";
 import { supabaseAdmin }   from "@/lib/supabase-admin";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours — competition data from static file, changes infrequently
 
 // ── Static params ─────────────────────────────────────────────────────────────
 

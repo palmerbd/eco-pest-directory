@@ -11,7 +11,7 @@ import { StudioSearch } from "./StudioSearch";
 //
 // This replaces force-dynamic (which ran the server component on every request).
 // CPU usage goes from ~1 invocation/request to ~1/hour.
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours — studio listing data changes infrequently; reduces ISR function invocations ~24x
 
 export const metadata: Metadata = {
   title: "Find Private Dance Studios Near You",

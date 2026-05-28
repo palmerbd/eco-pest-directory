@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getAllStudios } from "@/lib/wordpress";
 import { DANCE_STYLES, STYLE_LABELS, DanceStyle } from "@/types/studio";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours
 
 export const metadata: Metadata = {
   title: "Browse Studios by Dance Style | Ballroom Dance Directory",

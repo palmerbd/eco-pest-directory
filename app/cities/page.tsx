@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { getAllCities } from "@/lib/wordpress";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // 24 hours
 
 export const metadata: Metadata = {
   title: "Browse Dance Studios by City | Ballroom Dance Directory",
