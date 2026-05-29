@@ -1,6 +1,6 @@
-# Ballroom Dance Directory — Project Pipeline
+# Green Pest Control Directory — Project Pipeline
 
-**Live URL:** https://www.ballroomdancedirectory.com *(also: https://ballroom-dance-directory.vercel.app)*
+**Live URL:** https://www.greenpestdirectory.com *(also: https://eco-pest-directory.vercel.app)*
 **GitHub:** https://github.com/palmerbd/ballroom-dance-directory
 **Last Updated:** 2026-04-02 (Session 8 — ISR end-to-end test confirmed: WP save_post hook → /api/revalidate → HTTP 200 revalidated:true. Hook lives in hello.php on Hetzner; fires to dance-directory.vercel.app until custom domain added to Vercel.)
 
@@ -34,7 +34,7 @@ Next revenue: Stripe paid tier (Phase 5.2) → first $199/mo subscription
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        PUBLIC INTERNET                          │
-│                    ballroomdancedirectory.com                   │
+│                    greenpestdirectory.com                   │
 └──────────────────────────┬──────────────────────────────────────┘
                            │
 ┌──────────────────────────▼──────────────────────────────────────┐
@@ -52,12 +52,12 @@ Next revenue: Stripe paid tier (Phase 5.2) → first $199/mo subscription
 └──────────────────────────┬──────────────────────────────────────┘
                            │ REST API (ISR, server-side)
 ┌──────────────────────────▼──────────────────────────────────────┐
-│              HETZNER VPS · 5.78.144.42 (CX22)                  │
+│              HETZNER VPS · 178.156.197.177 (CX22)                  │
 │              WordPress (Headless) · PHP 8.3 · MySQL 8          │
 │                                                                 │
-│  Custom Post Type: dance_studio                                 │
+│  Custom Post Type: pest_company                                 │
 │  ACF Pro fields: address, phone, styles, hours, rating, etc.   │
-│  REST endpoint: /wp-json/wp/v2/dance_studio                    │
+│  REST endpoint: /wp-json/wp/v2/pest_company                    │
 │  Plugins: ACF Pro, WPGraphQL, JWT Auth, Yoast SEO              │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -89,16 +89,16 @@ Next revenue: Stripe paid tier (Phase 5.2) → first $199/mo subscription
 ## PHASE 1 — Foundation & Infrastructure ✅ COMPLETE
 
 ### 1.1 Server Setup
-- [x] Hetzner VPS provisioned (CX22, Ubuntu 24.04, 5.78.144.42)
+- [x] Hetzner VPS provisioned (CX22, Ubuntu 24.04, 178.156.197.177)
 - [x] Nginx + PHP 8.3-fpm + MySQL 8.0 installed via cloud-init
 - [x] WordPress installed (headless config, table prefix `dd_`)
 - [x] WP-CLI installed
 - [x] WordPress admin created: `danceadmin` / `danceadmin2024`
 
 ### 1.2 WordPress Configuration
-- [x] Custom post type registered: `dance_studio`
+- [x] Custom post type registered: `pest_company`
 - [x] ACF Pro installed and activated
-- [x] ACF field group created: "Dance Studio Details" — all fields:
+- [x] ACF field group created: "Pest Control Company Details" — all fields:
   - `studio_address_street`, `studio_address_city`, `studio_address_state`, `studio_address_zip`
   - `studio_phone`, `studio_email`, `studio_website`
   - `studio_dance_styles` (checkbox — valid values: ballroom, latin, tango, salsa, swing, waltz, foxtrot, wedding, social, competitive)
@@ -121,8 +121,8 @@ Next revenue: Stripe paid tier (Phase 5.2) → first $199/mo subscription
 ### 1.4 Vercel Deployment
 - [x] Vercel project created: `palmerbds-projects/ballroom-dance-directory`
 - [x] GitHub → Vercel auto-deploy pipeline connected
-- [x] Environment variable: `NEXT_PUBLIC_WP_API_URL=http://5.78.144.42/wp-json`
-- [x] Production URL live: https://ballroom-dance-directory.vercel.app
+- [x] Environment variable: `NEXT_PUBLIC_WP_API_URL=http://178.156.197.177/wp-json`
+- [x] Production URL live: https://eco-pest-directory.vercel.app
 - [x] Auto SSL via Vercel
 
 ---
@@ -182,13 +182,13 @@ Next revenue: Stripe paid tier (Phase 5.2) → first $199/mo subscription
 
 ### 2.4 ISR Revalidation ✅ COMPLETE
 - [x] `/api/revalidate` webhook endpoint coded and fixed (correct slug structure, style page revalidation map added)
-- [x] `save_post_dance_studio` hook injected into `hello.php` (Hello Dolly plugin) on Hetzner — fires on every `dance_studio` publish/update ✅
+- [x] `save_post_pest_company` hook injected into `hello.php` (Hello Dolly plugin) on Hetzner — fires on every `pest_company` publish/update ✅
 - [x] `WP_REVALIDATE_SECRET` set in Vercel env vars dashboard ✅
 - [x] **End-to-end test passed 2026-04-02** — WP save → `wp_remote_post` → `/api/revalidate` → `HTTP 200 {"revalidated":true}` ✅
   - Revalidated paths confirmed: `/studios/[slug]`, `/studios`, `/`
   - City path also revalidates when `city` meta field is populated
 - [x] Standalone plugin reference: `docs/wp-revalidate-plugin.php` (use this when migrating off Hello Dolly)
-- [x] WP hook URL updated to `https://www.ballroomdancedirectory.com/api/revalidate` in `hello.php` ✅ 2026-04-02
+- [x] WP hook URL updated to `https://www.greenpestdirectory.com/api/revalidate` in `hello.php` ✅ 2026-04-02
 
 ---
 
@@ -267,7 +267,7 @@ Next revenue: Stripe paid tier (Phase 5.2) → first $199/mo subscription
 - [x] Canonical URLs
 - [x] **Style landing pages** — all 6 built and live ✅
 - [x] **Google Search Console** — property verified (HTML file method), sitemap submitted ✅ 2026-04-01
-- [x] **Bing Webmaster Tools** — submitted via GSC import (ballroomdancedirectory.com + sitemap imported) ✅ 2026-04-01
+- [x] **Bing Webmaster Tools** — submitted via GSC import (greenpestdirectory.com + sitemap imported) ✅ 2026-04-01
 
 ### 3.6 Design System
 - [x] Color palette: Navy `#0c1428` / `#1a2d5a`, Gold `#b8922a` / `#e8c560`, Cream `#f9f6f0`
@@ -284,7 +284,7 @@ Next revenue: Stripe paid tier (Phase 5.2) → first $199/mo subscription
 - [x] Em dash encoding fix — was stored as raw UTF-8 bytes (E2 80 94), now `\u2014`
 - [x] HTML entity decoding — `&#8217;` (apostrophe) etc. decoded in `decodeHtmlEntities()`
 - [x] Duplicate page title suffix — layout template `%s | Private Dance Directory` was doubling on some pages
-- [x] Studios page title cleaned (`Find Private Dance Studios Near You | Private Dance Directory`)
+- [x] Studios page title cleaned (`Find Private Pest Control Companies Near You | Private Dance Directory`)
 - [x] ACF style value mismatch — `cha_cha` / `rumba` are not valid WP checkbox values; removed from STYLE_MAP and filter dropdown
 - [x] UTF-8 mojibake on studio detail page — ★ ✓ · ← → all replaced with `{"\uXXXX"}` Unicode escapes
 - [x] `classNama` typo fixed → `className` on Reviews section
@@ -314,18 +314,18 @@ Next revenue: Stripe paid tier (Phase 5.2) → first $199/mo subscription
 
 ### 4.3 ISR Webhook Wiring ✅ COMPLETE
 - [x] Next.js `/api/revalidate` route updated — correct slug paths, style page map, WP code documented
-- [x] `save_post_dance_studio` hook added to `hello.php` on Hetzner WP ✅
+- [x] `save_post_pest_company` hook added to `hello.php` on Hetzner WP ✅
 - [x] `WP_REVALIDATE_SECRET` set in Vercel env vars ✅
 - [x] **End-to-end test confirmed 2026-04-02** — WP save → HTTP 200 `{"revalidated":true}` ✅
 
 ### 4.4 Domain & DNS ✅ COMPLETE
-- [x] Domain: `ballroomdancedirectory.com` (registered via Namecheap)
+- [x] Domain: `greenpestdirectory.com` (registered via Namecheap)
 - [x] A record `@` → `76.76.21.21` set in Namecheap Advanced DNS
 - [x] CNAME `www` → `4040a9428ac2006d.vercel-dns-017.com` set (Vercel recommended record)
 - [x] Custom domain added in Vercel project settings — all three entries Valid Configuration ✅
 - [x] SSL auto-provisioned via Vercel (Let's Encrypt) ✅
-- [x] Site live at https://www.ballroomdancedirectory.com (confirmed 2026-04-01) ✅
-- [x] `NEXT_PUBLIC_SITE_URL=https://www.ballroomdancedirectory.com` set in Vercel (All Environments) ✅ 2026-04-01
+- [x] Site live at https://www.greenpestdirectory.com (confirmed 2026-04-01) ✅
+- [x] `NEXT_PUBLIC_SITE_URL=https://www.greenpestdirectory.com` set in Vercel (All Environments) ✅ 2026-04-01
 
 ### 4.5 Search Console Submission
 **Status: UNBLOCKED — custom domain is now live ✅**
@@ -334,8 +334,8 @@ Next revenue: Stripe paid tier (Phase 5.2) → first $199/mo subscription
 - [x] ISR webhook working ✅
 - [x] Custom domain live ✅ (2026-04-01)
 - [x] **Submit sitemap to Google Search Console** ✅ 2026-04-01 — sitemap.xml submitted, Google processing
-- [x] **Submit to Bing Webmaster Tools** ✅ 2026-04-01 — GSC import completed; ballroomdancedirectory.com + 1 sitemap live in Bing Webmaster Tools
-- [x] Set `NEXT_PUBLIC_SITE_URL=https://www.ballroomdancedirectory.com` in Vercel ✅ 2026-04-01
+- [x] **Submit to Bing Webmaster Tools** ✅ 2026-04-01 — GSC import completed; greenpestdirectory.com + 1 sitemap live in Bing Webmaster Tools
+- [x] Set `NEXT_PUBLIC_SITE_URL=https://www.greenpestdirectory.com` in Vercel ✅ 2026-04-01
 
 ### 4.6 Content Depth — Priority Pages
 - [x] About page (`/about`) — live ✅
@@ -355,7 +355,7 @@ Next revenue: Stripe paid tier (Phase 5.2) → first $199/mo subscription
 - [x] **SQL migration run** — `claims` table created with all 11 columns, RLS policies, auto-updated_at trigger ✅
 - [x] **WP Application Password generated** — `danceadmin / Vercel Claim Flow` (stored in `.env.local` as `WP_APP_PASSWORD`) ✅
 - [x] **All env vars added to Vercel** — NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, WP_APP_USER, WP_APP_PASSWORD ✅
-- [x] **Supabase auth configured** — site_url set to `https://www.ballroomdancedirectory.com`, redirect allow-list includes both prod + localhost ✅
+- [x] **Supabase auth configured** — site_url set to `https://www.greenpestdirectory.com`, redirect allow-list includes both prod + localhost ✅
 - [x] `@supabase/supabase-js` installed ✅
 - [x] `lib/supabase.ts` — browser client + Claim type ✅
 - [x] `lib/supabase-admin.ts` — server-side service role client ✅
@@ -489,7 +489,7 @@ ballroom-dance-directory/
 
 | Service | URL / Access |
 |---|---|
-| WordPress Admin | http://5.78.144.42/wp-admin — `danceadmin` / `danceadmin2024` |
+| WordPress Admin | http://178.156.197.177/wp-admin — `danceadmin` / `danceadmin2024` |
 | Hetzner Console | https://console.hetzner.cloud — API Token in memory |
 | Vercel Dashboard | https://vercel.com/palmerbd/ballroom-dance-directory |
 | GitHub Repo | https://github.com/palmerbd/ballroom-dance-directory |
@@ -527,7 +527,7 @@ ballroom-dance-directory/
 
 #### Attorney Review
 - [ ] **IP/technology attorney review of site content** — Have attorney review all disclaimer language, the About page, Terms, Privacy Policy, and at least a sample of listing descriptions before custom domain launch. *(Risk Assessment: Strongly Recommended)*
-- [ ] **Domain name cleared for trademark conflicts** — Confirm `ballroomdancedirectory.com` contains no registered trademark terms. (Note: "Ballroom Dance Directory" is generic/descriptive — likely clear, but attorney should confirm.)
+- [ ] **Domain name cleared for trademark conflicts** — Confirm `greenpestdirectory.com` contains no registered trademark terms. (Note: "Green Pest Control Directory" is generic/descriptive — likely clear, but attorney should confirm.)
 - [ ] **E&O and general liability insurance obtained** — Errors & Omissions insurance covering intellectual property claims. *(Risk Assessment: Strongly Recommended)*
 
 #### Franchise Brand Outreach
@@ -599,13 +599,13 @@ DONE ✅  →  Footer + per-listing disclaimers (live)
             Tier 1 scraper run (Las Vegas, Phoenix, Scottsdale, Minneapolis, Nashville, Boston) — 277 new studios ✅ (2026-04-01)
             932 total studios in WordPress ✅ (2026-04-01)
             Description enrichment — all 932 studios have original copy ✅ (2026-04-01)
-            CUSTOM DOMAIN LIVE — https://www.ballroomdancedirectory.com ✅ (2026-04-01)
+            CUSTOM DOMAIN LIVE — https://www.greenpestdirectory.com ✅ (2026-04-01)
             Homepage search fixed — routes to /studios with query params ✅ (2026-04-01)
-            Email updated site-wide to info@ballroomdancedirectory.com ✅ (2026-04-01)
+            Email updated site-wide to info@greenpestdirectory.com ✅ (2026-04-01)
             NEXT_PUBLIC_SITE_URL set in Vercel (All Environments) ✅ (2026-04-01)
             /studios city dropdown expanded to 10 markets ✅ (2026-04-01)
             Google Search Console: property verified + sitemap submitted ✅ (2026-04-01)
-            Bing Webmaster Tools: ballroomdancedirectory.com submitted via GSC import ✅ (2026-04-01)
+            Bing Webmaster Tools: greenpestdirectory.com submitted via GSC import ✅ (2026-04-01)
             Tier 1 markets scraper built + run (Las Vegas, Phoenix, Scottsdale, Minneapolis, Nashville, Boston) ✅ (2026-04-01)
             932 total studios, all descriptions enriched ✅ (2026-04-01)
             Claim Flow fully built (Supabase auth, /claim, /dashboard, API routes, Verified badge) ✅ (2026-04-01)

@@ -16,7 +16,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import type Stripe from "stripe";
 
 const WEBHOOK_SECRET  = process.env.STRIPE_WEBHOOK_SECRET!;
-const WP_API_URL      = process.env.WP_API_URL || "http://5.78.144.42/wp-json";
+const WP_API_URL      = process.env.WP_API_URL || "http://178.156.197.177/wp-json";
 const WP_APP_USER     = process.env.WP_APP_USER!;
 const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD!;
 
@@ -35,7 +35,7 @@ function wpAuthHeader() {
 async function updateWpTier(studioSlug: string, tier: "claimed" | "paid") {
   try {
     const searchRes = await fetch(
-      `${WP_API_URL}/wp/v2/dance_studio?slug=${studioSlug}&_fields=id`,
+      `${WP_API_URL}/wp/v2/pest_company?slug=${studioSlug}&_fields=id`,
       { headers: { Authorization: wpAuthHeader() } }
     );
     if (!searchRes.ok) return;
@@ -43,7 +43,7 @@ async function updateWpTier(studioSlug: string, tier: "claimed" | "paid") {
     if (!studios.length) return;
 
     const studioId = studios[0].id;
-    await fetch(`${WP_API_URL}/wp/v2/dance_studio/${studioId}`, {
+    await fetch(`${WP_API_URL}/wp/v2/pest_company/${studioId}`, {
       method: "POST",
       headers: {
         "Content-Type":  "application/json",

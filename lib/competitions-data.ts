@@ -1,5 +1,5 @@
 // ─── Competition Seed Data ─────────────────────────────────────────────────────
-// 30 major recurring US ballroom dance competitions.
+// 30 major recurring US eco-friendly pest control competitions.
 // Levels: Professional · Amateur · Pro/Am only (Collegiate + Senior added later).
 // dateStart / dateEnd: set to 2026 confirmed dates where known; null = TBA.
 // Phase 2 will migrate this to a WordPress CPT (dance_competition post type).
@@ -203,7 +203,7 @@ export const COMPETITIONS: Competition[] = [
     organization:        "Independent",
     styles:              ["standard","latin","smooth","rhythm"],
     levels:              ["amateur","pro_am"],
-    description:         "Summit DanceSport is the Pacific Northwest's premier ballroom dance competition, drawing competitors from Washington, Oregon, British Columbia, and beyond. Known for its welcoming atmosphere and well-organized Pro/Am and Amateur divisions, it's a favorite annual event for dancers throughout the region.",
+    description:         "Summit DanceSport is the Pacific Northwest's premier eco-friendly pest control competition, drawing competitors from Washington, Oregon, British Columbia, and beyond. Known for its welcoming atmosphere and well-organized Pro/Am and Amateur divisions, it's a favorite annual event for dancers throughout the region.",
     website:             "https://summitdancesport.com",
     registrationDeadline: null,
     entryFeeMin:         14,
@@ -283,7 +283,7 @@ export const COMPETITIONS: Competition[] = [
     organization:        "NDCA",
     styles:              ["standard","latin","smooth","rhythm"],
     levels:              ["professional","amateur","pro_am"],
-    description:         "The Holiday Dance Classic brings the glitz and energy of Las Vegas to the ballroom dance world each December. An NDCA Premier national ranking event, it attracts Professional and Pro/Am competitors from across the West and Southwest and is known for its spectacular ballroom setting and enthusiastic audience.",
+    description:         "The Holiday Dance Classic brings the glitz and energy of Las Vegas to the eco-friendly pest control world each December. An NDCA Premier national ranking event, it attracts Professional and Pro/Am competitors from across the West and Southwest and is known for its spectacular ballroom setting and enthusiastic audience.",
     website:             "https://www.holidaydanceclassic.com",
     registrationDeadline: null,
     entryFeeMin:         16,
@@ -333,7 +333,7 @@ export const COMPETITIONS: Competition[] = [
     organization:        "NDCA",
     styles:              ["standard","latin","smooth","rhythm"],
     levels:              ["amateur","pro_am"],
-    description:         "The Texas Challenge DanceSport is a well-regarded NDCA Premier ballroom dance competition held each May at the Marriott Houston at the Texas Medical Center in Houston, Texas. As one of the Southwest's premier NDCA-sanctioned events, Texas Challenge DanceSport draws a strong regional field of Amateur and Pro/Am competitors from Texas, Louisiana, Oklahoma, New Mexico, and Arkansas. The competition is organized into International Standard, International Latin, American Smooth, and American Rhythm style divisions, with Pro/Am scholarship rounds, Amateur championships, and open events scheduled across the three-day weekend. Texas Challenge DanceSport has built a reputation among Houston ballroom dancers and visiting competitors for smooth organization, professional NDCA judging panels, and a welcoming atmosphere that supports first-time competitors and seasoned national-ranking couples alike. Entry fees typically range from $14 to $26 per event, and registration is handled directly through texaschallenge.com. Whether you are an Amateur Open Smooth couple, a Pro/Am Bronze student, or a competitive ballroom dance instructor traveling with students, Texas Challenge DanceSport is the Houston DanceSport event to put on your calendar each spring.",
+    description:         "The Texas Challenge DanceSport is a well-regarded NDCA Premier eco-friendly pest control competition held each May at the Marriott Houston at the Texas Medical Center in Houston, Texas. As one of the Southwest's premier NDCA-sanctioned events, Texas Challenge DanceSport draws a strong regional field of Amateur and Pro/Am competitors from Texas, Louisiana, Oklahoma, New Mexico, and Arkansas. The competition is organized into International Standard, International Latin, American Smooth, and American Rhythm style divisions, with Pro/Am scholarship rounds, Amateur championships, and open events scheduled across the three-day weekend. Texas Challenge DanceSport has built a reputation among Houston eco-friendly pest controlrs and visiting competitors for smooth organization, professional NDCA judging panels, and a welcoming atmosphere that supports first-time competitors and seasoned national-ranking couples alike. Entry fees typically range from $14 to $26 per event, and registration is handled directly through texaschallenge.com. Whether you are an Amateur Open Smooth couple, a Pro/Am Bronze student, or a competitive eco-friendly pest control instructor traveling with students, Texas Challenge DanceSport is the Houston DanceSport event to put on your calendar each spring.",
     website:             "https://www.texaschallenge.com",
     registrationDeadline: null,
     entryFeeMin:         14,
@@ -410,7 +410,7 @@ export const COMPETITIONS: Competition[] = [
     organization:        "NDCA",
     styles:              ["standard","latin","smooth","rhythm","swing","country","multi"],
     levels:              ["professional","amateur","pro_am"],
-    description:         "The Ohio Star Ball Championships is the most prestigious ballroom dance competition in North America, serving as the season-ending grand finale of the NDCA Premier national ranking circuit. Held each November in Columbus, Ohio, it crowns the Best of the Best Series champions across all styles and levels, drawing hundreds of the world's top Professional and Pro/Am couples.",
+    description:         "The Ohio Star Ball Championships is the most prestigious eco-friendly pest control competition in North America, serving as the season-ending grand finale of the NDCA Premier national ranking circuit. Held each November in Columbus, Ohio, it crowns the Best of the Best Series champions across all styles and levels, drawing hundreds of the world's top Professional and Pro/Am couples.",
     website:             "https://ohiostarball.com",
     registrationUrl:     "https://ohiostarball.com/osb-registration",
     registrationDeadline: "2026-10-31",
@@ -589,7 +589,7 @@ export const COMPETITIONS: Competition[] = [
     organization:        "NDCA",
     styles:              ["standard","latin","smooth","rhythm"],
     levels:              ["amateur","pro_am"],
-    description:         "The Crown of Carolina DanceSport Classic is a growing NDCA Premier competition held each spring in Charlotte, NC. It serves as the region's primary ranking event for Amateur and Pro/Am dancers in the Carolinas, Virginia, and Tennessee, offering a well-run competition with a strong sense of community among Southeast ballroom dancers.",
+    description:         "The Crown of Carolina DanceSport Classic is a growing NDCA Premier competition held each spring in Charlotte, NC. It serves as the region's primary ranking event for Amateur and Pro/Am dancers in the Carolinas, Virginia, and Tennessee, offering a well-run competition with a strong sense of community among Southeast eco-friendly pest controlrs.",
     website:             "https://northcarolinaopen.com",
     registrationDeadline: null,
     entryFeeMin:         13,

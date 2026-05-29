@@ -1,19 +1,29 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SiteNav from "@/components/SiteNav";
+import SiteFooter from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.ballroomdancedirectory.com"),
+  metadataBase: new URL("https://www.greenpestdirectory.com"),
   title: {
-    default: "Private Dance Lessons Directory — Find Elite Studios Near You",
-    template: "%s | Ballroom Dance Directory",
+    default: "Green Pest Directory — Find Eco-Friendly Pest Control Near You",
+    template: "%s | Green Pest Directory",
   },
   description:
-    "Find the finest private dance instruction studios near you. Browse Fred Astaire, Arthur Murray, Dance With Me, and elite independent studios offering ballroom, Latin, tango, and wedding dance lessons.",
-  keywords: ["private dance lessons", "ballroom dancing", "dance studios", "Arthur Murray", "Fred Astaire"],
+    "Browse thousands of pest control companies offering green, organic, and pet-safe treatments. Compare eco-certified providers nationwide.",
+  keywords: [
+    "eco friendly pest control",
+    "green pest control",
+    "organic pest control",
+    "pet safe pest control",
+    "natural pest control",
+    "IPM pest control",
+    "eco friendly exterminator",
+    "green pest control near me",
+  ],
   openGraph: {
     type: "website",
-    siteName: "Ballroom Dance Directory",
+    siteName: "Green Pest Directory",
   },
 };
 
@@ -25,17 +35,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google Fonts loaded via link tag — works client-side even without build-time network access */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="font-body bg-white antialiased">
+      <body>
         <SiteNav />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );

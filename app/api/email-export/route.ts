@@ -51,7 +51,7 @@ const SKIP_DOMAINS = new Set([
 async function textSearch(cityLabel: string): Promise<any[]> {
   try {
     const params = new URLSearchParams({
-      query: `ballroom dance studio in ${cityLabel}`,
+      query: `eco-friendly pest control studio in ${cityLabel}`,
       type: "establishment",
       key: PLACES_KEY,
     });

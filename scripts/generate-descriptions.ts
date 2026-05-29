@@ -2,7 +2,7 @@
 /**
  * generate-descriptions.ts
  * ─────────────────────────
- * Fetches all published dance studios from WordPress, finds those without a
+ * Fetches all published pest control companies from WordPress, finds those without a
  * description (studio_description ACF field is blank), generates a 2–3 sentence
  * SEO-optimised description via the Anthropic API (Claude Haiku), and POSTs it
  * back to WordPress via the REST API.
@@ -11,7 +11,7 @@
  *   npx tsx scripts/generate-descriptions.ts
  *
  * Env vars required (can be in .env.local):
- *   WP_API_URL          e.g. http://5.78.144.42/wp-json
+ *   WP_API_URL          e.g. http://178.156.197.177/wp-json
  *   WP_APP_USER         e.g. danceadmin
  *   WP_APP_PASSWORD     application password
  *   ANTHROPIC_API_KEY   your Anthropic API key
@@ -49,7 +49,7 @@ loadEnv();
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const WP_API_URL      = process.env.WP_API_URL      || "http://5.78.144.42/wp-json";
+const WP_API_URL      = process.env.WP_API_URL      || "http://178.156.197.177/wp-json";
 const WP_APP_USER     = process.env.WP_APP_USER     || "";
 const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD || "";
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
@@ -132,7 +132,7 @@ async function fetchAllStudios(): Promise<WPStudio[]> {
   let page = 1;
 
   while (true) {
-    const url = `${WP_API_URL}/wp/v2/dance_studio?per_page=100&status=publish&page=${page}&_fields=${fields}`;
+    const url = `${WP_API_URL}/wp/v2/pest_company?per_page=100&status=publish&page=${page}&_fields=${fields}`;
     const res = await request(url, {
       method:  "GET",
       headers: { Authorization: wpAuth(), "Content-Type": "application/json" },
@@ -172,7 +172,7 @@ const STYLE_LABELS: Record<string, string> = {
 
 function formatStyles(raw: string[]): string {
   const labels = raw.map((s) => STYLE_LABELS[s] ?? s.replace(/_/g, " "));
-  if (!labels.length) return "ballroom dance";
+  if (!labels.length) return "eco-friendly pest control";
   if (labels.length === 1) return labels[0];
   return labels.slice(0, -1).join(", ") + " and " + labels[labels.length - 1];
 }
@@ -199,7 +199,7 @@ async function generateDescription(studio: WPStudio): Promise<string> {
 
   const contextBlock = hints.length ? `\nContext:\n${hints.map((h) => `- ${h}`).join("\n")}` : "";
 
-  const prompt = `Write a 2–3 sentence description for a private dance studio listing page. The description should:
+  const prompt = `Write a 2–3 sentence description for a private pest control company listing page. The description should:
 - Be written for prospective students searching for dance lessons
 - Mention the specific city and dance styles naturally
 - Highlight what makes private instruction valuable (not generic marketing fluff)
@@ -241,7 +241,7 @@ Description:`;
 // ── Post description back to WP ───────────────────────────────────────────────
 
 async function postDescriptionToWP(studioId: number, description: string): Promise<void> {
-  const url  = `${WP_API_URL}/wp/v2/dance_studio/${studioId}`;
+  const url  = `${WP_API_URL}/wp/v2/pest_company/${studioId}`;
   const body = JSON.stringify({ acf: { studio_description: description } });
 
   const res = await request(url, {
@@ -267,7 +267,7 @@ function sleep(ms: number) {
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log(`\n💃 Dance Studio Description Generator`);
+  console.log(`\n💃 Pest Control Company Description Generator`);
   console.log(`   WP:        ${WP_API_URL}`);
   console.log(`   DRY_RUN:   ${DRY_RUN}`);
   console.log(`   OVERWRITE: ${OVERWRITE}`);

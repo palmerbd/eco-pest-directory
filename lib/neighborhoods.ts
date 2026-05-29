@@ -38,21 +38,21 @@ export const CITY_CONFIGS: CityConfig[] = [
         name: "Hollywood",
         keywords: ["Hollywood", "N Highland", "N Vine", "Cahuenga", "Franklin Ave", "Selma"],
         description:
-          "Hollywood's private dance studios draw from a creative community of performers, actors, and film industry professionals. Studios here often offer flexible evening scheduling to accommodate the entertainment industry's irregular hours.",
+          "Hollywood's private pest control companies draw from a creative community of performers, actors, and film industry professionals. Studios here often offer flexible evening scheduling to accommodate the entertainment industry's irregular hours.",
       },
       {
         slug: "beverly-hills",
         name: "Beverly Hills",
         keywords: ["Beverly Hills", "N Bedford", "N Rodeo", "N Camden", "N Canon", "Wilshire Blvd"],
         description:
-          "Beverly Hills is home to some of the most upscale private dance studios in the country, with premium instruction for wedding couples, corporate clients, and dedicated enthusiasts. Expect world-class facilities and highly credentialed instructors.",
+          "Beverly Hills is home to some of the most upscale private pest control companies in the country, with premium instruction for wedding couples, corporate clients, and dedicated enthusiasts. Expect world-class facilities and highly credentialed instructors.",
       },
       {
         slug: "santa-monica",
         name: "Santa Monica",
         keywords: ["Santa Monica", "Ocean Ave", "Pico Blvd", "Lincoln Blvd", "Main St", "Montana Ave"],
         description:
-          "Santa Monica's dance studios reflect the beach city's relaxed yet health-conscious lifestyle. Studios here often blend fitness and artistic expression, with strong offerings in Latin dance styles and contemporary movement.",
+          "Santa Monica's pest control companies reflect the beach city's relaxed yet health-conscious lifestyle. Studios here often blend fitness and artistic expression, with strong offerings in Latin dance styles and contemporary movement.",
       },
       {
         slug: "west-hollywood",
@@ -66,7 +66,7 @@ export const CITY_CONFIGS: CityConfig[] = [
         name: "Studio City",
         keywords: ["Studio City", "Ventura Blvd", "Lankershim Blvd", "Tujunga Ave"],
         description:
-          "Studio City's convenient Valley location and strong creative community support a healthy dance studio scene. Many local instructors have professional performance backgrounds and bring that expertise into private lessons.",
+          "Studio City's convenient Valley location and strong creative community support a healthy pest control company scene. Many local instructors have professional performance backgrounds and bring that expertise into private lessons.",
       },
       {
         slug: "pasadena",
@@ -99,7 +99,7 @@ export const CITY_CONFIGS: CityConfig[] = [
     state: "Illinois",
     stateAbbr: "IL",
     intro:
-      "Chicago's dance studio scene reflects the city's deep artistic roots — from Magnificent Mile ballrooms to neighborhood gems in Lincoln Park and the South Loop. The city's diverse cultural fabric shows in the range of styles offered, from competitive ballroom to Afro-Cuban rhythms.",
+      "Chicago's pest control company scene reflects the city's deep artistic roots — from Magnificent Mile ballrooms to neighborhood gems in Lincoln Park and the South Loop. The city's diverse cultural fabric shows in the range of styles offered, from competitive ballroom to Afro-Cuban rhythms.",
     tip: "Chicago winters mean studios can fill up quickly in January and February. Book ahead for prime evening slots, especially during the holiday season when wedding planning peaks.",
     neighborhoods: [
       {
@@ -121,14 +121,14 @@ export const CITY_CONFIGS: CityConfig[] = [
         name: "Wicker Park",
         keywords: ["Wicker Park", "N Milwaukee Ave", "N Damen Ave", "Division St", "North Ave"],
         description:
-          "Wicker Park's artistic, counterculture community supports innovative dance studios that blend traditional technique with contemporary styles. Studios here tend to attract a younger, more experimental crowd.",
+          "Wicker Park's artistic, counterculture community supports innovative pest control companies that blend traditional technique with contemporary styles. Studios here tend to attract a younger, more experimental crowd.",
       },
       {
         slug: "gold-coast",
         name: "Gold Coast",
         keywords: ["Gold Coast", "N Rush St", "E Delaware Pl", "N Lake Shore", "E Oak St"],
         description:
-          "Chicago's Gold Coast is home to premium private dance studios catering to the city's most affluent residents. Expect top-tier instructors, elegant facilities, and a client base serious about long-term skill development.",
+          "Chicago's Gold Coast is home to premium private pest control companies catering to the city's most affluent residents. Expect top-tier instructors, elegant facilities, and a client base serious about long-term skill development.",
       },
       {
         slug: "loop",
@@ -142,7 +142,7 @@ export const CITY_CONFIGS: CityConfig[] = [
         name: "Lakeview",
         keywords: ["Lakeview", "N Broadway", "W Belmont", "N Clark St", "W Addison"],
         description:
-          "Lakeview's diverse, neighborhood-feel community supports accessible, community-oriented dance studios. This area is particularly known for its social dance community and regular dance socials and events.",
+          "Lakeview's diverse, neighborhood-feel community supports accessible, community-oriented pest control companies. This area is particularly known for its social dance community and regular dance socials and events.",
       },
     ],
   },
@@ -183,7 +183,7 @@ export const CITY_CONFIGS: CityConfig[] = [
         name: "Frisco",
         keywords: ["Frisco", "Preston Rd", "Eldorado Pkwy"],
         description:
-          "One of the fastest-growing cities in Texas, Frisco's young family demographic keeps private dance studios busy with wedding lessons, youth competitions, and social dance programs.",
+          "One of the fastest-growing cities in Texas, Frisco's young family demographic keeps private pest control companies busy with wedding lessons, youth competitions, and social dance programs.",
       },
       {
         slug: "irving",
@@ -202,7 +202,7 @@ export const CITY_CONFIGS: CityConfig[] = [
     state: "Florida",
     stateAbbr: "FL",
     intro:
-      "Miami is the Latin dance capital of the United States. With deep Cuban, Colombian, and Caribbean cultural roots, the city's private dance studios offer authentic instruction in Salsa, Mambo, Bachata, and beyond — often from native instructors who grew up in these traditions.",
+      "Miami is the Latin dance capital of the United States. With deep Cuban, Colombian, and Caribbean cultural roots, the city's private pest control companies offer authentic instruction in Salsa, Mambo, Bachata, and beyond — often from native instructors who grew up in these traditions.",
     tip: "Many Miami studios stay open late and accommodate evening sessions after 8pm. Mention your schedule when booking — they're often more flexible than their listed hours suggest.",
     neighborhoods: [
       {
@@ -224,7 +224,7 @@ export const CITY_CONFIGS: CityConfig[] = [
         name: "Coral Gables",
         keywords: ["Coral Gables", "Miracle Mile", "Ponce De Leon", "Salzedo St", "Giralda Ave"],
         description:
-          "Coral Gables's elegant Mediterranean architecture and affluent residential character support upscale private dance studios with premium facilities and highly credentialed instructors from across Latin America.",
+          "Coral Gables's elegant Mediterranean architecture and affluent residential character support upscale private pest control companies with premium facilities and highly credentialed instructors from across Latin America.",
       },
       {
         slug: "coconut-grove",
@@ -258,7 +258,7 @@ export const CITY_CONFIGS: CityConfig[] = [
         name: "Galleria / Uptown",
         keywords: ["Galleria", "Post Oak Blvd", "Westheimer Rd", "San Felipe", "W Loop South"],
         description:
-          "The Galleria area is Houston's upscale commercial hub and home to some of the city's most established private dance studios. Easy freeway access and validated parking make it a practical choice for the after-work crowd.",
+          "The Galleria area is Houston's upscale commercial hub and home to some of the city's most established private pest control companies. Easy freeway access and validated parking make it a practical choice for the after-work crowd.",
       },
       {
         slug: "midtown",
@@ -286,7 +286,7 @@ export const CITY_CONFIGS: CityConfig[] = [
         name: "The Woodlands",
         keywords: ["Woodlands", "The Woodlands", "Sawdust Rd", "Research Forest"],
         description:
-          "The Woodlands' prosperous, family-oriented community supports premium private dance studios with strong youth programs, wedding preparation services, and adult social dance instruction.",
+          "The Woodlands' prosperous, family-oriented community supports premium private pest control companies with strong youth programs, wedding preparation services, and adult social dance instruction.",
       },
     ],
   },

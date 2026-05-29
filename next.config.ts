@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
-const PROD_DOMAIN = "www.ballroomdancedirectory.com";
-const VERCEL_URL  = "ballroom-dance-directory.vercel.app";
+const PROD_DOMAIN = "www.greenpestdirectory.com";
+const VERCEL_URL  = "eco-pest-directory.vercel.app";
 
 const nextConfig: NextConfig = {
   typescript: {
@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
       // ── Non-www → www ─────────────────────────────────────────────────────
       {
         source: "/:path*",
-        has: [{ type: "host", value: "ballroomdancedirectory.com" }],
+        has: [{ type: "host", value: "greenpestdirectory.com" }],
         destination: `https://${PROD_DOMAIN}/:path*`,
         permanent: true,
       },

@@ -12,12 +12,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { Resend } from "resend";
 
-const WP_API_URL    = process.env.WP_API_URL || "http://5.78.144.42/wp-json";
+const WP_API_URL    = process.env.WP_API_URL || "http://178.156.197.177/wp-json";
 const WP_APP_USER   = process.env.WP_APP_USER!;
 const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD!;
-const SITE_URL      = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
+const SITE_URL      = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirectory.com";
 const ADMIN_EMAIL   = "bpalmer@abilenewebsitedesign.com";
-const FROM_EMAIL    = "leads@ballroomdancedirectory.com";
+const FROM_EMAIL    = "leads@greenpestdirectory.com";
 
 // GHL Workflow #1 — fires when a studio claim is submitted
 const GHL_CLAIM_WEBHOOK = "https://services.leadconnectorhq.com/hooks/gKAwJUdSQ6QMlAc0QXWb/webhook-trigger/77d77491-b7cf-463a-b228-c8876aaebb83";
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
     // Only attempt if WP Application Password is configured
     if (WP_APP_PASSWORD) {
       try {
-        const wpRes = await fetch(`${WP_API_URL}/wp/v2/dance_studio/${studio_id}`, {
+        const wpRes = await fetch(`${WP_API_URL}/wp/v2/pest_company/${studio_id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -193,7 +193,7 @@ export async function POST(req: NextRequest) {
 <table width="600" align="center" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;margin:0 auto;">
   <tr>
     <td style="background:linear-gradient(135deg,#0c1428,#1a2d5a);border-radius:12px 12px 0 0;padding:36px 40px;text-align:center;">
-      <p style="color:#b8922a;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin:0 0 10px;">Ballroom Dance Directory</p>
+      <p style="color:#b8922a;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin:0 0 10px;">Green Pest Control Directory</p>
       <h1 style="color:#fff;font-size:26px;font-weight:300;margin:0;line-height:1.3;">Your listing claim is confirmed.</h1>
       <p style="color:rgba(255,255,255,0.6);font-size:14px;margin:10px 0 0;">Here's what happens next.</p>
     </td>
@@ -201,7 +201,7 @@ export async function POST(req: NextRequest) {
   <tr>
     <td style="background:#fff;padding:40px 40px 32px;">
       <p style="color:#374151;font-size:16px;margin:0 0 20px;">Hi ${firstName},</p>
-      <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 20px;">Our team has received your claim for <strong>${studio_title}</strong> on Ballroom Dance Directory. Your email is verified — we're reviewing your ownership details now.</p>
+      <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 20px;">Our team has received your claim for <strong>${studio_title}</strong> on Green Pest Control Directory. Your email is verified — we're reviewing your ownership details now.</p>
       <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 28px;">Expect an approval email within 1 business day. Once approved, you'll have access to your listing dashboard and everything that comes with it.</p>
       <table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbf0;border:1.5px solid #e8c560;border-radius:12px;margin-bottom:28px;">
         <tr><td style="padding:24px 28px;">
@@ -244,12 +244,12 @@ export async function POST(req: NextRequest) {
       </table>
       <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 8px;">Questions? Just reply to this email — it comes straight to us.</p>
       <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 28px;">Looking forward to helping your studio stand out,</p>
-      <p style="color:#374151;font-size:15px;margin:0;font-weight:600;">The Ballroom Dance Directory Team</p>
+      <p style="color:#374151;font-size:15px;margin:0;font-weight:600;">The Green Pest Control Directory Team</p>
     </td>
   </tr>
   <tr>
     <td style="background:#f9fafb;border-radius:0 0 12px 12px;padding:20px 40px;border-top:1px solid #e5e7eb;">
-      <p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">Ballroom Dance Directory &middot; <a href="${SITE_URL}" style="color:#9ca3af;">www.ballroomdancedirectory.com</a><br>You're receiving this because you claimed a listing on our platform.</p>
+      <p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">Green Pest Control Directory &middot; <a href="${SITE_URL}" style="color:#9ca3af;">www.greenpestdirectory.com</a><br>You're receiving this because you claimed a listing on our platform.</p>
     </td>
   </tr>
 </table>

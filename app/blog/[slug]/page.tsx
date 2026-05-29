@@ -19,13 +19,13 @@ export async function generateMetadata({
   const post = await getBlogPost(slug);
   if (!post) return {
     title: "Post Not Found",
-    alternates: { canonical: `https://www.ballroomdancedirectory.com/blog` },
+    alternates: { canonical: `https://www.greenpestdirectory.com/blog` },
   };
 
   return {
-    title: `${post.title} | Ballroom Dance Directory`,
+    title: `${post.title} | Green Pest Control Directory`,
     description: post.excerpt,
-    alternates: { canonical: `https://www.ballroomdancedirectory.com/blog/${slug}` },
+    alternates: { canonical: `https://www.greenpestdirectory.com/blog/${slug}` },
     openGraph: {
       title: post.title,
       description: post.excerpt,
@@ -62,12 +62,12 @@ export default async function BlogPostPage({
     "dateModified": post.date,
     "publisher": {
       "@type": "Organization",
-      "name": "Ballroom Dance Directory",
-      "url": "https://www.ballroomdancedirectory.com",
+      "name": "Green Pest Control Directory",
+      "url": "https://www.greenpestdirectory.com",
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://www.ballroomdancedirectory.com/blog/${post.slug}`,
+      "@id": `https://www.greenpestdirectory.com/blog/${post.slug}`,
     },
   };
 
@@ -150,10 +150,10 @@ export default async function BlogPostPage({
       >
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-white mb-3">
-            Find a Dance Studio Near You
+            Find a Pest Control Company Near You
           </h2>
           <p className="text-white/60 mb-6">
-            Browse 4,000+ private dance studios across the US — filter by city,
+            Browse 4,000+ private pest control companies across the US — filter by city,
             style, and more.
           </p>
           <Link

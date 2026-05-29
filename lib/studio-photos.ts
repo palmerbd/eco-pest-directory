@@ -46,10 +46,10 @@ export function unsplashUrl(photoId: string, width = 800, height = 500): string 
 // ─── Photo pools (4 slots each — rotated by studio ID) ───────────────────────
 
 const BALLROOM_PHOTOS: UnsplashPhoto[] = [
-  local("/images/ballroom.png", "Elegant couple performing a ballroom dance"),
-  local("/images/ballroom.png", "Elegant couple performing a ballroom dance"),
-  local("/images/ballroom.png", "Elegant couple performing a ballroom dance"),
-  local("/images/ballroom.png", "Elegant couple performing a ballroom dance"),
+  local("/images/ballroom.png", "Elegant couple performing a eco-friendly pest control"),
+  local("/images/ballroom.png", "Elegant couple performing a eco-friendly pest control"),
+  local("/images/ballroom.png", "Elegant couple performing a eco-friendly pest control"),
+  local("/images/ballroom.png", "Elegant couple performing a eco-friendly pest control"),
 ];
 
 const WALTZ_PHOTOS: UnsplashPhoto[] = [
@@ -102,9 +102,9 @@ const COMPETITION_PHOTOS: UnsplashPhoto[] = [
 ];
 
 const STUDIO_INTERIOR_PHOTOS: UnsplashPhoto[] = [
-  local("/images/ballroom.png", "Professional dance studio interior"),
-  local("/images/ballroom.png", "Professional dance studio interior"),
-  local("/images/ballroom.png", "Professional dance studio interior"),
+  local("/images/ballroom.png", "Professional pest control company interior"),
+  local("/images/ballroom.png", "Professional pest control company interior"),
+  local("/images/ballroom.png", "Professional pest control company interior"),
 ];
 
 // ─── Style → photo pool mapping ───────────────────────────────────────────────

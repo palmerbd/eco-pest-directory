@@ -15,8 +15,8 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { Resend } from "resend";
 
 const resend     = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = "leads@ballroomdancedirectory.com";
-const SITE_URL   = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
+const FROM_EMAIL = "leads@greenpestdirectory.com";
+const SITE_URL   = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirectory.com";
 
 function isAuthorized(req: NextRequest): boolean {
   const auth  = req.headers.get("authorization") ?? "";
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
         <table width="600" align="center" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;margin:0 auto;">
           <tr>
             <td style="background:linear-gradient(135deg,#0c1428,#1a2d5a);border-radius:12px 12px 0 0;padding:36px 40px;text-align:center;">
-              <p style="color:#b8922a;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin:0 0 10px;">Ballroom Dance Directory</p>
+              <p style="color:#b8922a;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin:0 0 10px;">Green Pest Control Directory</p>
               <h1 style="color:#fff;font-size:24px;font-weight:300;margin:0;line-height:1.3;">Update on your listing claim</h1>
             </td>
           </tr>
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
               <p style="color:#374151;font-size:16px;margin:0 0 20px;">Hi ${firstName},</p>
               <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 16px;">
                 Thank you for submitting a claim for <strong>${claim.studio_title}</strong> on
-                the Ballroom Dance Directory. After reviewing your submission, we were unable to
+                the Green Pest Control Directory. After reviewing your submission, we were unable to
                 verify ownership at this time.
               </p>
               ${reasonHtml}
@@ -115,14 +115,14 @@ export async function POST(req: NextRequest) {
                   </td>
                 </tr>
               </table>
-              <p style="color:#374151;font-size:15px;margin:0;font-weight:600;">The Ballroom Dance Directory Team</p>
+              <p style="color:#374151;font-size:15px;margin:0;font-weight:600;">The Green Pest Control Directory Team</p>
             </td>
           </tr>
           <tr>
             <td style="background:#f9fafb;border-radius:0 0 12px 12px;padding:20px 40px;border-top:1px solid #e5e7eb;">
               <p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">
-                Ballroom Dance Directory ·
-                <a href="${SITE_URL}" style="color:#9ca3af;">www.ballroomdancedirectory.com</a>
+                Green Pest Control Directory ·
+                <a href="${SITE_URL}" style="color:#9ca3af;">www.greenpestdirectory.com</a>
               </p>
             </td>
           </tr>

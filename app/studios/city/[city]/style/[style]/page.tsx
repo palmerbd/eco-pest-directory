@@ -51,7 +51,7 @@ export async function generateMetadata({
   const styleType = styleSlugToType(style);
   if (!styleType) return {
     title: "Not Found",
-    alternates: { canonical: `https://www.ballroomdancedirectory.com/studios` },
+    alternates: { canonical: `https://www.greenpestdirectory.com/studios` },
   };
 
   const cityName  = citySlugToName(city);
@@ -61,8 +61,8 @@ export async function generateMetadata({
 
   // 0 studios: page does permanentRedirect to city page — point canonical there too
   if (!filtered.length) return {
-    title: `Dance Studios in ${cityName}`,
-    alternates: { canonical: `https://www.ballroomdancedirectory.com/studios/city/${city}` },
+    title: `Pest Control Companies in ${cityName}`,
+    alternates: { canonical: `https://www.greenpestdirectory.com/studios/city/${city}` },
   };
 
   // Thin content guard: a single studio doesn't make a useful directory page.
@@ -71,21 +71,21 @@ export async function generateMetadata({
   // Canonical points to the style page itself to consolidate what signals exist.
   if (filtered.length < 2) {
     return {
-      title: `${styleName} Dance Studios in ${cityName} | Ballroom Dance Directory`,
+      title: `${styleName} Pest Control Companies in ${cityName} | Green Pest Control Directory`,
       robots: { index: false, follow: true },
-      alternates: { canonical: `https://www.ballroomdancedirectory.com/studios/city/${city}/style/${style}` },
+      alternates: { canonical: `https://www.greenpestdirectory.com/studios/city/${city}/style/${style}` },
     };
   }
 
   return {
-    title: `${styleName} Dance Studios in ${cityName} | Ballroom Dance Directory`,
-    description: `Find the best ${styleName.toLowerCase()} dance studios in ${cityName}. ${filtered.length} studio${filtered.length !== 1 ? "s" : ""} offering expert private ${styleName.toLowerCase()} instruction. Book your first lesson today.`,
+    title: `${styleName} Pest Control Companies in ${cityName} | Green Pest Control Directory`,
+    description: `Find the best ${styleName.toLowerCase()} pest control companies in ${cityName}. ${filtered.length} studio${filtered.length !== 1 ? "s" : ""} offering expert private ${styleName.toLowerCase()} instruction. Book your first lesson today.`,
     alternates: {
-      canonical: `https://www.ballroomdancedirectory.com/studios/city/${city}/style/${style}`,
+      canonical: `https://www.greenpestdirectory.com/studios/city/${city}/style/${style}`,
     },
     openGraph: {
-      title: `${styleName} Dance Studios in ${cityName}`,
-      description: `Discover ${filtered.length} top-rated ${styleName.toLowerCase()} dance studios in ${cityName} offering private lessons.`,
+      title: `${styleName} Pest Control Companies in ${cityName}`,
+      description: `Discover ${filtered.length} top-rated ${styleName.toLowerCase()} pest control companies in ${cityName} offering private lessons.`,
     },
   };
 }
@@ -199,14 +199,14 @@ export default async function CityStylePage({
   const schemaOrg = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "name": `${styleName} Dance Studios in ${cityName}`,
-    "description": `Top-rated private ${styleName.toLowerCase()} dance studios in ${cityName}, ${state}`,
+    "name": `${styleName} Pest Control Companies in ${cityName}`,
+    "description": `Top-rated private ${styleName.toLowerCase()} pest control companies in ${cityName}, ${state}`,
     "numberOfItems": studios.length,
     "itemListElement": studios.map((s, i) => ({
       "@type": "ListItem",
       "position": i + 1,
       "name": s.title,
-      "url": `https://www.ballroomdancedirectory.com/studios/${s.slug}`,
+      "url": `https://www.greenpestdirectory.com/studios/${s.slug}`,
     })),
   };
 
@@ -214,10 +214,10 @@ export default async function CityStylePage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home",    "item": "https://www.ballroomdancedirectory.com" },
-      { "@type": "ListItem", "position": 2, "name": "Studios", "item": "https://www.ballroomdancedirectory.com/studios" },
-      { "@type": "ListItem", "position": 3, "name": `Dance Studios in ${cityName}`, "item": `https://www.ballroomdancedirectory.com/studios/city/${city}` },
-      { "@type": "ListItem", "position": 4, "name": `${styleName} in ${cityName}`,  "item": `https://www.ballroomdancedirectory.com/studios/city/${city}/style/${style}` },
+      { "@type": "ListItem", "position": 1, "name": "Home",    "item": "https://www.greenpestdirectory.com" },
+      { "@type": "ListItem", "position": 2, "name": "Studios", "item": "https://www.greenpestdirectory.com/studios" },
+      { "@type": "ListItem", "position": 3, "name": `Pest Control Companies in ${cityName}`, "item": `https://www.greenpestdirectory.com/studios/city/${city}` },
+      { "@type": "ListItem", "position": 4, "name": `${styleName} in ${cityName}`,  "item": `https://www.greenpestdirectory.com/studios/city/${city}/style/${style}` },
     ],
   };
 
@@ -254,7 +254,7 @@ export default async function CityStylePage({
             className="font-display text-white font-bold mb-4"
             style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", lineHeight: 1.1 }}
           >
-            {styleName} Dance Studios<br />
+            {styleName} Pest Control Companies<br />
             <span style={{ color: "#e8c560" }}>in {cityName}</span>
           </h1>
           <p className="text-white/60 text-lg mb-8 max-w-2xl">
@@ -408,7 +408,7 @@ export default async function CityStylePage({
       <footer className="py-10 px-6 bg-white border-t border-gray-100 mt-8">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <div className="font-display font-bold text-gray-900">Ballroom Dance Directory</div>
+            <div className="font-display font-bold text-gray-900">Green Pest Control Directory</div>
             <p className="text-gray-400 text-sm mt-1">America&apos;s premier resource for private dance instruction</p>
           </div>
           <div className="flex gap-6 text-sm text-gray-400">

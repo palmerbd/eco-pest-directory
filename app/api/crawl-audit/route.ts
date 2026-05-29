@@ -123,7 +123,7 @@ async function fetchPage(url: string, timeoutMs = 7000): Promise<FetchResult> {
     const res = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; BDD-Audit/1.0; +https://ballroomdancedirectory.com)",
+        "User-Agent": "Mozilla/5.0 (compatible; BDD-Audit/1.0; +https://greenpestdirectory.com)",
         "Accept": "text/html,application/xhtml+xml,*/*",
       },
       redirect: "follow",

@@ -129,7 +129,7 @@ export async function POST(
 
   // Revalidate studio page
   try {
-    const base = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
+    const base = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirectory.com";
     await fetch(`${base}/api/revalidate?path=/studios/${slug}`, { method: "POST" });
   } catch { /* non-fatal */ }
 

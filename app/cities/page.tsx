@@ -5,10 +5,10 @@ import { getAllCities } from "@/lib/wordpress";
 export const revalidate = 86400; // 24 hours
 
 export const metadata: Metadata = {
-  title: "Browse Dance Studios by City | Ballroom Dance Directory",
+  title: "Browse Pest Control Companies by City | Green Pest Control Directory",
   description:
-    "Find private ballroom dance studios in your city. Browse our directory of 4,000+ studios across hundreds of US cities — from New York to Los Angeles and everywhere in between.",
-  alternates: { canonical: "https://www.ballroomdancedirectory.com/cities" },
+    "Find private eco-friendly pest control studios in your city. Browse our directory of 4,000+ studios across hundreds of US cities — from New York to Los Angeles and everywhere in between.",
+  alternates: { canonical: "https://www.greenpestdirectory.com/cities" },
 };
 
 // US state name lookup
@@ -198,7 +198,7 @@ export default async function CitiesPage() {
       <footer className="py-10 px-6 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <div className="font-display font-bold text-gray-900">Ballroom Dance Directory</div>
+            <div className="font-display font-bold text-gray-900">Green Pest Control Directory</div>
             <p className="text-gray-400 text-sm mt-1">America&apos;s premier resource for private dance instruction</p>
           </div>
           <div className="flex gap-6 text-sm text-gray-400">

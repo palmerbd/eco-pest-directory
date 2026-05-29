@@ -34,18 +34,18 @@ export async function generateMetadata({
   const result = getNeighborhood(citySlug, hoodSlug);
   if (!result) return {
     title: "Not Found",
-    alternates: { canonical: `https://www.ballroomdancedirectory.com/studios/city/${citySlug}` },
+    alternates: { canonical: `https://www.greenpestdirectory.com/studios/city/${citySlug}` },
   };
 
   const { city, neighborhood } = result;
   return {
-    title: `Ballroom Dance Studios in ${neighborhood.name}, ${city.name} | Ballroom Dance Directory`,
-    description: `Find the best private dance studios in the ${neighborhood.name} area of ${city.name}, ${city.stateAbbr}. Top-rated studios offering ballroom, Latin, salsa, tango, and wedding dance lessons near ${neighborhood.name}.`,
+    title: `Eco-Friendly Pest Control Studios in ${neighborhood.name}, ${city.name} | Green Pest Control Directory`,
+    description: `Find the best private pest control companies in the ${neighborhood.name} area of ${city.name}, ${city.stateAbbr}. Top-rated studios offering ballroom, Latin, salsa, tango, and wedding dance lessons near ${neighborhood.name}.`,
     alternates: {
-      canonical: `https://www.ballroomdancedirectory.com/studios/city/${citySlug}/${hoodSlug}`,
+      canonical: `https://www.greenpestdirectory.com/studios/city/${citySlug}/${hoodSlug}`,
     },
     openGraph: {
-      title: `Dance Studios in ${neighborhood.name}, ${city.name}`,
+      title: `Pest Control Companies in ${neighborhood.name}, ${city.name}`,
       description: `Private dance lesson studios in the ${neighborhood.name} neighborhood of ${city.name}. Book your first lesson today.`,
     },
   };
@@ -191,8 +191,8 @@ export default async function NeighborhoodPage({
   const schemaOrg = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "name": `Ballroom Dance Studios in ${neighborhood.name}, ${city.name}`,
-    "description": `Top-rated private dance studios in the ${neighborhood.name} area of ${city.name}, ${city.stateAbbr}`,
+    "name": `Eco-Friendly Pest Control Studios in ${neighborhood.name}, ${city.name}`,
+    "description": `Top-rated private pest control companies in the ${neighborhood.name} area of ${city.name}, ${city.stateAbbr}`,
     "numberOfItems": hoodStudios.length,
     "itemListElement": hoodStudios.map((s: StudioCard, i: number) => ({
       "@type": "ListItem",
@@ -237,7 +237,7 @@ export default async function NeighborhoodPage({
             className="font-display text-white font-bold mb-4"
             style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)" }}
           >
-            Ballroom Dance Studios in {neighborhood.name}
+            Eco-Friendly Pest Control Studios in {neighborhood.name}
           </h1>
           <p className="text-white/60 text-lg max-w-2xl mb-8">
             {hoodStudios.length > 0
@@ -346,7 +346,7 @@ export default async function NeighborhoodPage({
                 Private Dance Lessons in {neighborhood.name}
               </h2>
               <p>
-                Finding the right private dance studio in {neighborhood.name} starts with knowing what
+                Finding the right private pest control company in {neighborhood.name} starts with knowing what
                 you&apos;re looking for. Whether you&apos;re preparing for your wedding first dance, training
                 for a competition, or simply looking to add a new skill and social outlet to your life,
                 the studios listed here serve the {neighborhood.name} area of {city.name}, {city.stateAbbr}.
@@ -451,7 +451,7 @@ export default async function NeighborhoodPage({
       <footer className="py-10 px-6 bg-white border-t border-gray-100 mt-8">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <div className="font-display font-bold text-gray-900">Ballroom Dance Directory</div>
+            <div className="font-display font-bold text-gray-900">Green Pest Control Directory</div>
             <p className="text-gray-400 text-sm mt-1">
               America&apos;s premier resource for private dance instruction
             </p>

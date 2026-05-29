@@ -1,7 +1,7 @@
 # NICHE SWAP GUIDE
 > Every file and string that must change when cloning BDD for a new niche.
 > Work through each section in order. Search-and-replace where noted.
-> "BDD value" = what it says in the ballroom dance codebase.
+> "BDD value" = what it says in the eco-friendly pest control codebase.
 > "Your value" = what it should say in your new niche directory.
 
 ---
@@ -13,20 +13,20 @@ Use VS Code "Replace in Files" or a script.
 
 | Find | Replace with | Notes |
 |---|---|---|
-| `ballroomdancedirectory.com` | `[your-domain.com]` | All metadata, schema, canonical URLs |
-| `www.ballroomdancedirectory.com` | `www.[your-domain.com]` | Canonical enforcement |
-| `ballroom-dance-directory.vercel.app` | `[your-project].vercel.app` | Vercel URL in headers config |
-| `Ballroom Dance Directory` | `[Your Niche] Directory` | Site name in metadata, footer, nav |
-| `ballroom dance` | `[your niche]` | Lowercase body copy |
-| `Ballroom Dance` | `[Your Niche]` | Title case headings |
-| `dance studio` | `[niche listing type]` | e.g. "yoga studio", "BJJ gym" |
-| `Dance Studio` | `[Niche Listing Type]` | Title case |
-| `dance studios` | `[niche listing types]` | Plural |
-| `Dance Studios` | `[Niche Listing Types]` | Title case plural |
-| `dance_studio` | `[niche_slug]` | WP CPT slug — ALL occurrences |
-| `DanceSchool` | `[Schema.org type]` | schema.org type (see list below) |
-| `5.78.144.42` | `[new Hetzner IP]` | WP API URL fallback |
-| `5.78.218.239` | `[new Hetzner IP]` | Current WP server IP |
+| `greenpestdirectory.com` | `[your-domain.com]` | All metadata, schema, canonical URLs |
+| `www.greenpestdirectory.com` | `www.[your-domain.com]` | Canonical enforcement |
+| `eco-pest-directory.vercel.app` | `[your-project].vercel.app` | Vercel URL in headers config |
+| `Green Pest Control Directory` | `[Your Niche] Directory` | Site name in metadata, footer, nav |
+| `eco-friendly pest control` | `[your niche]` | Lowercase body copy |
+| `Eco-Friendly Pest Control` | `[Your Niche]` | Title case headings |
+| `pest control company` | `[niche listing type]` | e.g. "yoga studio", "BJJ gym" |
+| `Pest Control Company` | `[Niche Listing Type]` | Title case |
+| `pest control companies` | `[niche listing types]` | Plural |
+| `Pest Control Companies` | `[Niche Listing Types]` | Title case plural |
+| `pest_company` | `[niche_slug]` | WP CPT slug — ALL occurrences |
+| `ProfessionalService` | `[Schema.org type]` | schema.org type (see list below) |
+| `178.156.197.177` | `[new Hetzner IP]` | WP API URL fallback |
+| `178.156.197.177` | `[new Hetzner IP]` | Current WP server IP |
 
 **schema.org types by niche:**
 - Yoga / Pilates / Dance → `HealthAndBeautyBusiness` or `SportsActivityLocation`
@@ -35,7 +35,7 @@ Use VS Code "Replace in Files" or a script.
 - Art studios → `ArtGallery` or `VisualArtsevent`
 - Fitness / Personal training → `HealthClub`
 - Tutoring / Education → `EducationalOrganization`
-- (BDD uses `DanceSchool`)
+- (BDD uses `ProfessionalService`)
 
 ---
 
@@ -176,10 +176,10 @@ kidsClasses?:           boolean;
 
 **1. Change the CPT endpoint:**
 ```ts
-// BDD uses: /wp/v2/dance_studio
+// BDD uses: /wp/v2/pest_company
 // Yoga example: /wp/v2/yoga_studio
 // BJJ example: /wp/v2/bjj_gym
-// Search for "dance_studio" and replace with your CPT slug
+// Search for "pest_company" and replace with your CPT slug
 ```
 
 **2. Update detectChain() for your franchise chains:**
@@ -234,7 +234,7 @@ const styles = Array.isArray(acf.[niche]_specialties)
 ### `app/studios/[slug]/page.tsx`
 
 **Key copy changes:**
-1. `"DanceSchool"` → your schema.org type
+1. `"ProfessionalService"` → your schema.org type
 2. `"Private dance lessons"` → `"[Your niche] sessions"` (in default description)
 3. FAQ question templates — update to match niche terminology:
    - "What dance styles does X offer?" → "What [specialty] does X offer?"
@@ -244,7 +244,7 @@ const styles = Array.isArray(acf.[niche]_specialties)
 5. `"Private Lessons"` label in pricing → match niche (e.g. "Sessions", "Classes")
 6. `"America's premier resource for private dance instruction"` footer tagline → update
 
-**Schema.org type:** Change `"@type": "DanceSchool"` to your schema.org type.
+**Schema.org type:** Change `"@type": "ProfessionalService"` to your schema.org type.
 
 ---
 
@@ -259,7 +259,7 @@ description: "Browse [N]+ [listing types] across America. Filter by city, [speci
 
 ### `app/page.tsx` (Homepage)
 
-The homepage hero, search form, and feature sections all reference "dance studios", "ballroom", etc. Update all copy to match niche. Check for:
+The homepage hero, search form, and feature sections all reference "pest control companies", "ballroom", etc. Update all copy to match niche. Check for:
 - Hero headline and subheading
 - Search placeholder text
 - Feature section bullets
@@ -366,10 +366,10 @@ To change the palette, run a global find-and-replace across all `.tsx` and `.css
 ## QUICK SANITY CHECKLIST (after making all changes)
 
 - [ ] `grep -r "ballroomdancedirectory" .` returns 0 results
-- [ ] `grep -r "dance_studio" . --include="*.ts" --include="*.tsx"` returns 0 results
-- [ ] `grep -r "DanceSchool" .` returns 0 results
+- [ ] `grep -r "pest_company" . --include="*.ts" --include="*.tsx"` returns 0 results
+- [ ] `grep -r "ProfessionalService" .` returns 0 results
 - [ ] Homepage loads without errors (`npm run dev`)
 - [ ] TypeScript compiles (`npm run build`) — check for type errors from renamed types
 - [ ] `/studios` page renders listing cards
 - [ ] Single listing page renders without crashing
-- [ ] No "Ballroom Dance Directory" text visible anywhere on the site
+- [ ] No "Green Pest Control Directory" text visible anywhere on the site

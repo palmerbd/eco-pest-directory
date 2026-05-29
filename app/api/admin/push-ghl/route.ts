@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing owner_email or studio_slug" }, { status: 400 });
   }
 
-  const listingUrl = `https://www.ballroomdancedirectory.com/studios/${studio_slug}`;
+  const listingUrl = `https://www.greenpestdirectory.com/studios/${studio_slug}`;
   const [firstName, ...rest] = (owner_name ?? "Studio Owner").split(" ");
   const lastName = rest.join(" ") || "Owner";
   const tag = tier === "paid" ? "bdd-featured" : "bdd-claimed";
@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
         lastName,
         email: owner_email,
         phone: owner_phone ?? "",
-        source: "Ballroom Dance Directory",
+        source: "Green Pest Control Directory",
         tags: [tag, "ballroom-dance-directory"],
         customFields: [
           { key: "studio_name",  field_value: studio_title },

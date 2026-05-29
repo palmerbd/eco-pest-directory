@@ -412,14 +412,14 @@ Target: 3,000–5,000 listings minimum before launch. Run in batches of 20–50 
 |---|---|---|
 | GitHub | palmerbd/[bdd-repo] | palmerbd/[new-repo] |
 | Vercel | ballroom-dance-directory | [new-project] |
-| Live domain | ballroomdancedirectory.com | [new domain] |
-| Hetzner server | 5.78.218.239 | [new IP] |
-| WP subdomain | wp.ballroomdancedirectory.com | wp.[new-domain.com] |
-| WP Admin URL | https://wp.ballroomdancedirectory.com/wp-admin | https://wp.[new-domain.com]/wp-admin |
-| WP REST API | https://wp.ballroomdancedirectory.com/wp-json | https://wp.[new-domain.com]/wp-json |
+| Live domain | greenpestdirectory.com | [new domain] |
+| Hetzner server | 178.156.197.177 | [new IP] |
+| WP subdomain | wp.greenpestdirectory.com | wp.[new-domain.com] |
+| WP Admin URL | https://wp.greenpestdirectory.com/wp-admin | https://wp.[new-domain.com]/wp-admin |
+| WP REST API | https://wp.greenpestdirectory.com/wp-json | https://wp.[new-domain.com]/wp-json |
 | WP user | danceadmin / DanceAdmin2026!BDD | danceadmin / DanceAdmin2026! |
 | DB name | dance_directory_wp | [niche]_directory_wp |
 | DB user/pass | wp_user / wppass2024 | wp_user / wppass2024 |
-| CPT slug | dance_studio | [niche_slug] |
+| CPT slug | pest_company | [niche_slug] |
 | Supabase | [bdd ref] | [new ref] |
 | SSL | Self-signed + Cloudflare Full | Self-signed + Cloudflare Full |

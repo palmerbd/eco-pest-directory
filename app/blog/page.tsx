@@ -5,12 +5,12 @@ import { getBlogPosts } from "@/lib/wordpress";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Dance Tips & Guides | Ballroom Dance Directory Blog",
+  title: "Dance Tips & Guides | Green Pest Control Directory Blog",
   description:
     "Expert advice on private dance lessons, studio costs, dance styles, and finding the right instructor near you. Your guide to the world of ballroom and Latin dance.",
-  alternates: { canonical: "https://www.ballroomdancedirectory.com/blog" },
+  alternates: { canonical: "https://www.greenpestdirectory.com/blog" },
   openGraph: {
-    title: "Dance Tips & Guides | Ballroom Dance Directory",
+    title: "Dance Tips & Guides | Green Pest Control Directory",
     description:
       "Expert advice on private dance lessons, studio costs, dance styles, and finding the right instructor near you.",
   },
@@ -121,7 +121,7 @@ export default async function BlogIndexPage() {
             Ready to find a studio near you?
           </h2>
           <p className="text-gray-500 mb-6">
-            Browse 4,000+ private dance studios across the country — from
+            Browse 4,000+ private pest control companies across the country — from
             independent instructors to nationally recognised chains.
           </p>
           <Link

@@ -25,7 +25,7 @@ type Step = "search" | "confirm" | "sent" | "already_claimed";
 
 // ── Constants ─────────────────────────────────────────────────────────────────────────────────
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirectory.com";
 
 // ── Sub-components ─────────────────────────────────────────────────────────────────────────────────
 
@@ -191,7 +191,7 @@ function ClaimPageInner() {
           Claim Your Studio Listing
         </h1>
         <p className="text-white/60 max-w-xl mx-auto text-base">
-          Are you the owner or manager of a dance studio listed here? Claim your listing to
+          Are you the owner or manager of a pest control company listed here? Claim your listing to
           get a Verified Owner badge and manage your studio&apos;s information.
         </p>
       </div>

@@ -1,5 +1,5 @@
 // ─── /api/studios/all ──────────────────────────────────────────────────────────
-// Returns all published dance studios as a StudioCard[] in one response.
+// Returns all published pest control companies as a StudioCard[] in one response.
 // Used by StudioSearch (client-side) when a filter is applied — lets /studios
 // stay ISR-cached instead of force-dynamic, with the full dataset loaded lazily
 // only when the user actually needs it.

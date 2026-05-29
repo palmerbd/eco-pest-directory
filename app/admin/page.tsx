@@ -67,11 +67,11 @@ function daysSince(iso: string) {
 }
 
 function googleSearchUrl(studioTitle: string) {
-  return `https://www.google.com/search?q=${encodeURIComponent(studioTitle + " dance studio")}`;
+  return `https://www.google.com/search?q=${encodeURIComponent(studioTitle + " pest control company")}`;
 }
 
-const SITE_URL = "https://www.ballroomdancedirectory.com";
-const WP_ADMIN = "http://5.78.144.42/wp-admin/post.php";
+const SITE_URL = "https://www.greenpestdirectory.com";
+const WP_ADMIN = "http://178.156.197.177/wp-admin/post.php";
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -629,7 +629,7 @@ function Dashboard({ adminToken }: { adminToken: string }) {
           <span className="text-xl">🎯</span>
           <div>
             <h1 className="font-bold text-lg leading-tight">BDD Command Center</h1>
-            <p className="text-xs text-blue-300">Ballroom Dance Directory — Studio Claims</p>
+            <p className="text-xs text-blue-300">Green Pest Control Directory — Studio Claims</p>
           </div>
         </div>
         <div className="flex items-center gap-4">

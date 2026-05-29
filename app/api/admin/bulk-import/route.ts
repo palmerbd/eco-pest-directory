@@ -2,7 +2,7 @@
  * /api/admin/bulk-import
  * ======================
  * Temporary admin endpoint for bulk-importing scraped studios into WordPress.
- * Accepts batches of up to 25 studios and creates dance_studio posts.
+ * Accepts batches of up to 25 studios and creates pest_company posts.
  *
  * POST /api/admin/bulk-import
  * Authorization: Bearer <ADMIN_SECRET>
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
     };
 
     try {
-      let res = await fetch(`${WP_API_URL}/wp/v2/dance_studio`, {
+      let res = await fetch(`${WP_API_URL}/wp/v2/pest_company`, {
         method: "POST",
         headers: {
           "Content-Type":  "application/json",
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
       // Handle slug collision
       if (res.status === 422) {
         postData.slug = slug + "-" + Math.floor(Math.random() * 900 + 100);
-        res = await fetch(`${WP_API_URL}/wp/v2/dance_studio`, {
+        res = await fetch(`${WP_API_URL}/wp/v2/pest_company`, {
           method: "POST",
           headers: {
             "Content-Type":  "application/json",

@@ -4,8 +4,8 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Ballroom Dance Directory is an independent consumer resource for finding private dance instruction studios across the United States. Learn about our mission and how we operate.",
-  alternates: { canonical: "https://www.ballroomdancedirectory.com/about" },
+    "Green Pest Control Directory is an independent consumer resource for finding private dance instruction studios across the United States. Learn about our mission and how we operate.",
+  alternates: { canonical: "https://www.greenpestdirectory.com/about" },
 };
 
 export default function AboutPage() {
@@ -22,7 +22,7 @@ export default function AboutPage() {
           </p>
           <h1 className="font-display text-white font-bold mb-4"
             style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)" }}>
-            About Ballroom Dance Directory
+            About Green Pest Control Directory
           </h1>
           <p className="text-white/60 text-lg leading-relaxed">
             An independent resource to help you find private dance instruction near you.
@@ -37,9 +37,9 @@ export default function AboutPage() {
           <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
             <h2 className="font-display font-bold text-gray-900 text-xl mb-4">What We Are</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-              Ballroom Dance Directory is an independent, third-party online directory. We are not
-              affiliated with, endorsed by, or sponsored by any dance studio franchise or brand
-              listed on this site. We are not operated by Arthur Murray, Fred Astaire Dance Studios,
+              Green Pest Control Directory is an independent, third-party online directory. We are not
+              affiliated with, endorsed by, or sponsored by any pest control company franchise or brand
+              listed on this site. We are not operated by Arthur Murray, Fred Astaire Pest Control Companies,
               Dance With Me Studios, or any other franchise organization.
             </p>
             <p className="text-gray-600 leading-relaxed">
@@ -73,7 +73,7 @@ export default function AboutPage() {
           <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
             <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Trademark Notice</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-              Brand names such as &ldquo;Arthur Murray,&rdquo; &ldquo;Fred Astaire Dance Studios,&rdquo; and
+              Brand names such as &ldquo;Arthur Murray,&rdquo; &ldquo;Fred Astaire Pest Control Companies,&rdquo; and
               &ldquo;Dance With Me&rdquo; are registered trademarks of their respective owners. These names
               are used on this directory solely to identify individual studio locations and are not
               used in any way that implies affiliation, endorsement, or sponsorship by those brands.

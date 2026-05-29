@@ -14,18 +14,18 @@ import { StudioSearch } from "./StudioSearch";
 export const revalidate = 86400; // 24 hours — studio listing data changes infrequently; reduces ISR function invocations ~24x
 
 export const metadata: Metadata = {
-  title: "Find Private Dance Studios Near You",
+  title: "Find Private Pest Control Companies Near You",
   description:
-    "Browse 3,400+ private dance studios across America. Filter by city, dance style, and rating. Fred Astaire, Arthur Murray, Dance With Me, and elite independent studios offering ballroom, Latin, tango, and wedding dance lessons.",
-  alternates: { canonical: "https://www.ballroomdancedirectory.com/studios" },
+    "Browse 3,400+ private pest control companies across America. Filter by city, dance style, and rating. Fred Astaire, Arthur Murray, Dance With Me, and elite independent studios offering ballroom, Latin, tango, and wedding dance lessons.",
+  alternates: { canonical: "https://www.greenpestdirectory.com/studios" },
 };
 
 const studiosPageSchema = {
   "@context": "https://schema.org",
   "@type": "SearchResultsPage",
-  name: "Find Private Dance Studios Near You",
-  description: "Search and filter 3,400+ private ballroom dance studios across the United States.",
-  url: "https://www.ballroomdancedirectory.com/studios",
+  name: "Find Private Pest Control Companies Near You",
+  description: "Search and filter 3,400+ private eco-friendly pest control studios across the United States.",
+  url: "https://www.greenpestdirectory.com/studios",
 };
 
 // ── Loading skeleton shown while Suspense / useSearchParams resolves ──────────
@@ -77,12 +77,12 @@ export default async function StudiosPage() {
               className="font-display text-white font-bold mb-4"
               style={{ fontSize: "clamp(2rem, 5vw, 3rem)" }}
             >
-              Private Dance Studios
+              Private Pest Control Companies
             </h1>
             <p className="text-white/60 text-lg max-w-2xl">
               {total > 0
                 ? `${total.toLocaleString()} elite studios listed — search and filter to find the perfect fit.`
-                : "Discover elite private dance studios offering instruction in ballroom, Latin, tango, and more."}
+                : "Discover elite private pest control companies offering instruction in ballroom, Latin, tango, and more."}
             </p>
           </div>
         </section>
@@ -101,7 +101,7 @@ export default async function StudiosPage() {
         <section className="py-16 px-6 bg-white border-t border-gray-200">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-display font-bold text-gray-900 text-2xl mb-3">
-              Own a Dance Studio?
+              Own a Pest Control Company?
             </h2>
             <p className="text-gray-500 mb-6">
               List your studio in our directory and connect with students actively searching for private lessons.
@@ -120,7 +120,7 @@ export default async function StudiosPage() {
         <footer className="py-10 px-6 bg-white border-t border-gray-100">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-              <div className="font-display font-bold text-gray-900">Ballroom Dance Directory</div>
+              <div className="font-display font-bold text-gray-900">Green Pest Control Directory</div>
               <p className="text-gray-400 text-sm mt-1">
                 America&apos;s premier resource for private dance instruction
               </p>

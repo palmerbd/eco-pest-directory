@@ -1,7 +1,7 @@
 /**
  * Google Search Console API client
  * Uses a service account (bdd-gsc-reader) with Full permissions on
- * https://www.ballroomdancedirectory.com/
+ * https://www.greenpestdirectory.com/
  *
  * Required env var: GSC_SERVICE_ACCOUNT_JSON
  *   Value: the full JSON content of the service account key file
@@ -10,7 +10,7 @@
  * To add to Vercel: Settings → Environment Variables → add GSC_SERVICE_ACCOUNT_JSON
  */
 
-const GSC_PROPERTY = 'https://www.ballroomdancedirectory.com/';
+const GSC_PROPERTY = 'https://www.greenpestdirectory.com/';
 const GSC_API_BASE = 'https://searchconsole.googleapis.com/webmasters/v3';
 
 interface ServiceAccountKey {

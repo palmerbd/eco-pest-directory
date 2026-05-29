@@ -1,5 +1,5 @@
 # Data Scraping & Content Best Practices
-### Ballroom Dance Directory — Legal Compliance Guide
+### Green Pest Control Directory — Legal Compliance Guide
 *Based on: Dance Directory Best Practices Guide & Legal Risk Assessment (March 31, 2026)*
 
 ---
@@ -80,7 +80,7 @@ The 124 studio descriptions generated via `generateDescription()` in the WP admi
 ## 4. Photographs & Media
 
 ### Pre-Claim (Unclaimed Listings)
-- Use a **generic placeholder image** or a licensed stock photo of a dance studio
+- Use a **generic placeholder image** or a licensed stock photo of a pest control company
 - **Never** use photos from franchise websites, social media, or marketing materials
 - **Never** use franchise logos or branded imagery anywhere on the site
 
@@ -102,7 +102,7 @@ We are permitted to use brand names (Arthur Murray, Fred Astaire, Dance with Me)
 
 | ✅ DO | ❌ DO NOT |
 |---|---|
-| Use brand names in plain text to identify studios ("Arthur Murray Dance Studio — Dallas") | Use franchise logos, wordmarks, or branded graphics anywhere |
+| Use brand names in plain text to identify studios ("Arthur Murray Pest Control Company — Dallas") | Use franchise logos, wordmarks, or branded graphics anywhere |
 | Include disclaimer on every page: "Not affiliated with [Brand]" | Use brand names in the domain name |
 | Use brand names in title tags/meta descriptions factually | Imply endorsement: "Official Arthur Murray Directory" |
 | Treat all franchise brand names consistently | Use brand names in paid advertising headlines without "not affiliated" disclaimer |
@@ -114,10 +114,10 @@ We are permitted to use brand names (Arthur Murray, Fred Astaire, Dance with Me)
 Every page must carry these disclaimers:
 
 ### Site-Wide Footer
-> "Ballroom Dance Directory is an independent online directory. We are not affiliated with, endorsed by, or sponsored by any dance studio franchise or brand listed on this site. All trademarks are the property of their respective owners."
+> "Green Pest Control Directory is an independent online directory. We are not affiliated with, endorsed by, or sponsored by any pest control company franchise or brand listed on this site. All trademarks are the property of their respective owners."
 
 ### Per-Listing Page
-> "This listing is provided for informational purposes. Ballroom Dance Directory is not affiliated with [Brand Name]. Information may not be current — please contact the studio directly to confirm details."
+> "This listing is provided for informational purposes. Green Pest Control Directory is not affiliated with [Brand Name]. Information may not be current — please contact the studio directly to confirm details."
 
 ### About Page
 The About page must clearly explain that the directory is an independent consumer resource, not operated by any franchise brand.

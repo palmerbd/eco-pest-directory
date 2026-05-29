@@ -8,10 +8,10 @@ This document captures the full history of how we approached importing real stud
 
 Replace placeholder/dummy studios in WordPress with real business data (name, address, phone, website, hours, rating, review count, dance styles) pulled from Google Places.
 
-**WordPress backend:** Hetzner VPS at `5.78.144.42`
-**Custom post type:** `dance_studio`
-**ACF field group:** "Dance Studio Details"
-**Target endpoint:** `POST /wp-json/wp/v2/dance_studio`
+**WordPress backend:** Hetzner VPS at `178.156.197.177`
+**Custom post type:** `pest_company`
+**ACF field group:** "Pest Control Company Details"
+**Target endpoint:** `POST /wp-json/wp/v2/pest_company`
 
 ---
 
@@ -32,7 +32,7 @@ Attempted to add a `POST /wp-json/pipeline/v1/import` endpoint with a shared sec
 - Plugin File Editor textarea content was flagged as blocked by the browser tool, making the file unreadable/unwritable.
 
 ### 5. SSH to Hetzner
-The VM's network allowlist blocks outbound SSH to `5.78.144.42`.
+The VM's network allowlist blocks outbound SSH to `178.156.197.177`.
 
 ---
 

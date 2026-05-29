@@ -2,7 +2,7 @@
 /**
  * GSC Weekly Review Script
  * ========================
- * Pulls real Search Console data for https://www.ballroomdancedirectory.com/
+ * Pulls real Search Console data for https://www.greenpestdirectory.com/
  * and outputs a prioritized 3–5 item SEO action plan.
  *
  * Run manually:  npx tsx scripts/gsc-weekly-review.ts
@@ -89,7 +89,7 @@ function generateActionPlan(report: Awaited<ReturnType<typeof getGscReport>>): A
       priority: 5,
       category: 'Link Building',
       action: `Build 3–5 backlinks from local dance blogs or event sites this week`,
-      rationale: `Average position is ${avgPos.toFixed(1)} — site authority needs a boost. Target local dance studios, event calendars, and dance association directories for easy, relevant links.`,
+      rationale: `Average position is ${avgPos.toFixed(1)} — site authority needs a boost. Target local pest control companies, event calendars, and dance association directories for easy, relevant links.`,
       effort: 'High',
       impact: 'High',
     });
@@ -136,7 +136,7 @@ async function main() {
   // ── Top Pages ────────────────────────────────────────────────────────────
   console.log('\n🏆 TOP 5 PAGES BY CLICKS');
   report.topPages.slice(0, 5).forEach((p, i) => {
-    const shortPage = p.page.replace('https://www.ballroomdancedirectory.com', '') || '/';
+    const shortPage = p.page.replace('https://www.greenpestdirectory.com', '') || '/';
     console.log(`   ${i + 1}. ${shortPage}`);
     console.log(`      ${p.clicks} clicks · ${p.impressions} impr · ${pct(p.ctr)} CTR · pos ${p.position.toFixed(1)}`);
   });

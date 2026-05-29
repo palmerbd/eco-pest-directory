@@ -4,7 +4,7 @@ import { COMPETITIONS } from "@/lib/competitions-data";
 import { COMP_REGION_LABELS, COMP_STYLE_LABELS } from "@/types/competition";
 import { DANCE_STYLES } from "@/types/studio";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirectory.com";
 
 const CITIES = [
   "los-angeles", "new-york-city", "chicago", "houston", "dallas",

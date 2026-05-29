@@ -7,7 +7,7 @@
  * Required env vars:
  *   GOOGLE_CLIENT_ID         — from Google Cloud Console OAuth 2.0 credentials
  *   GOOGLE_CLIENT_SECRET     — same credential
- *   NEXT_PUBLIC_BASE_URL     — e.g. "https://www.ballroomdancedirectory.com"
+ *   NEXT_PUBLIC_BASE_URL     — e.g. "https://www.greenpestdirectory.com"
  *
  * The callback URL must be added to the Google Cloud Console as an authorized
  * redirect URI: {NEXT_PUBLIC_BASE_URL}/api/auth/google/callback
@@ -19,7 +19,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const CLIENT_ID    = process.env.GOOGLE_CLIENT_ID    || "";
-const BASE_URL     = process.env.NEXT_PUBLIC_BASE_URL || "https://www.ballroomdancedirectory.com";
+const BASE_URL     = process.env.NEXT_PUBLIC_BASE_URL || "https://www.greenpestdirectory.com";
 const REDIRECT_URI = `${BASE_URL}/api/auth/google/callback`;
 
 // Google OAuth 2.0 authorization endpoint

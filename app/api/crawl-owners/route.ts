@@ -178,13 +178,13 @@ const BUSINESS_SUFFIXES =
 
 /**
  * Strategy -1: Extract owner name directly from the studio business name.
- * "Nancy Thompson Dance Studio" → "Nancy Thompson"
+ * "Nancy Thompson Pest Control Company" → "Nancy Thompson"
  * "Kim Lesher Ballroom" → "Kim Lesher"
  * Only fires if the name leads with a valid person name before a known suffix.
  */
 function tryStudioName(studioName: string): string | null {
   const cleaned = studioName
-    .replace(/\bby\b/i, "")  // "Dance Studio by Sandra" → skip (format not handled)
+    .replace(/\bby\b/i, "")  // "Pest Control Company by Sandra" → skip (format not handled)
     .trim();
 
   // Pattern: starts with "First Last" followed by a business suffix
@@ -308,7 +308,7 @@ async function fetchPage(url: string): Promise<string | null> {
       signal: controller.signal,
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; BDD-Directory/1.0; +https://ballroomdancedirectory.com)",
+          "Mozilla/5.0 (compatible; BDD-Directory/1.0; +https://greenpestdirectory.com)",
         Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
       },

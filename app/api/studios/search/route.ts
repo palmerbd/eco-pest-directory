@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-const WP_API = process.env.NEXT_PUBLIC_WP_API_URL || "http://5.78.144.42/wp-json";
+const WP_API = process.env.NEXT_PUBLIC_WP_API_URL || "http://178.156.197.177/wp-json";
 
 // WordPress REST API returns titles with HTML entities (e.g. &#8217; for ’). Decode
 // them server-side so the claim form (and anywhere else we use the title) shows
@@ -48,9 +48,9 @@ export async function GET(req: NextRequest) {
 
   let wpUrl: string;
   if (slug) {
-    wpUrl = `${WP_API}/wp/v2/dance_studio?slug=${encodeURIComponent(slug)}&_fields=id,slug,title,acf&status=publish`;
+    wpUrl = `${WP_API}/wp/v2/pest_company?slug=${encodeURIComponent(slug)}&_fields=id,slug,title,acf&status=publish`;
   } else {
-    wpUrl = `${WP_API}/wp/v2/dance_studio?search=${encodeURIComponent(q!)}&per_page=8&_fields=id,slug,title,acf&status=publish`;
+    wpUrl = `${WP_API}/wp/v2/pest_company?search=${encodeURIComponent(q!)}&per_page=8&_fields=id,slug,title,acf&status=publish`;
   }
 
   try {

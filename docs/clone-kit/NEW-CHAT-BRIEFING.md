@@ -20,7 +20,7 @@ Experienced web developer and designer. Business owner building a portfolio of n
 
 ## THE PLATFORM — WHAT YOU'RE BUILDING
 
-A **niche online business directory** — the same architecture used for `ballroomdancedirectory.com`. Every directory in this portfolio uses the identical stack, just swapped for a different niche.
+A **niche online business directory** — the same architecture used for `greenpestdirectory.com`. Every directory in this portfolio uses the identical stack, just swapped for a different niche.
 
 **Business model:**
 1. Scrape 3,000–5,000 businesses in the niche from Google Maps API → import to WordPress → serve as free listings
@@ -38,9 +38,9 @@ A **niche online business directory** — the same architecture used for `ballro
 
 **The source repository** (BDD — the original, fully built directory):
 - GitHub: `github.com/palmerbd/[bdd-repo-name]`
-- Live: `ballroomdancedirectory.com`
-- Vercel project: `ballroom-dance-directory.vercel.app`
-- WP backend: `http://5.78.218.239/wp-json` (IP direct, no domain on WP)
+- Live: `greenpestdirectory.com`
+- Vercel project: `eco-pest-directory.vercel.app`
+- WP backend: `http://178.156.197.177/wp-json` (IP direct, no domain on WP)
 
 **This new directory** being built in this chat:
 - Niche: **[FILL IN WHEN STARTING CHAT]**

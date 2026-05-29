@@ -275,7 +275,7 @@ Rate limit: 1 call per 2 seconds to avoid hammering Vercel and getting rate-limi
 ### Stage 1 — Extract from studio name (free, no network)
 
 Many owner-operated studios use the owner's name in the business name:
-- "Janet Smith Dance Studio" → owner_first: "Janet", owner_last: "Smith"
+- "Janet Smith Pest Control Company" → owner_first: "Janet", owner_last: "Smith"
 
 Run a regex against the `name` column before doing any web scraping.
 
@@ -549,7 +549,7 @@ console.log(`Deduped: ${rows.length} → ${deduped.length}`);
 
 | Directory | Niche | Domain | WP IP | CPT Slug | GitHub |
 |---|---|---|---|---|---|
-| BDD (original) | Ballroom dance | ballroomdancedirectory.com | 5.78.218.239 | dance_studio | palmerbd/ballroom-dance-directory |
+| BDD (original) | Ballroom dance | greenpestdirectory.com | 178.156.197.177 | pest_company | palmerbd/ballroom-dance-directory |
 | Hoopz | Youth basketball | hoopzconnect.com | 5.78.203.79 | team / player / ... | palmerbd/hoops-directory |
 | [Next] | [niche] | [domain] | [IP] | [slug] | palmerbd/[repo] |
 
@@ -567,5 +567,5 @@ console.log(`Deduped: ${rows.length} → ${deduped.length}`);
 | WP REST 403 Forbidden | ACF Pro not active or field group not assigned to CPT | Check WP Admin → ACF → Field Groups |
 | Vercel build fails after niche swap | TypeScript type errors from renamed types | Run `npm run build` locally and fix type errors before pushing |
 | Vercel env vars show old domain | Vercel caches env vars — redeploy required | Vercel → Deployments → Redeploy (not from cache) |
-| `grep -r "dance_studio"` still finds hits | Missed a file in NICHE-SWAP-GUIDE.md | Check `lib/`, `app/api/`, `components/` manually |
+| `grep -r "pest_company"` still finds hits | Missed a file in NICHE-SWAP-GUIDE.md | Check `lib/`, `app/api/`, `components/` manually |
 | Desktop Commander bat file does nothing | Path variable expansion failed in cmd | Verify bat uses `pushd` pattern, not `SET WD=...` |

@@ -1,12 +1,12 @@
 // ─── WordPress Headless API Client ───────────────────────────────────────────
-// Fetches data from WordPress REST API on the Hetzner server (5.78.144.42).
-// ACF field names match the "Dance Studio Details" field group (imported 2026-03-30).
+// Fetches data from WordPress REST API on the Hetzner server (178.156.197.177).
+// ACF field names match the "Pest Control Company Details" field group (imported 2026-03-30).
 
 import { Studio, StudioCard, DanceStyle, StudioChain, ListingTier } from "@/types/studio";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 const WP_API_URL =
-  process.env.NEXT_PUBLIC_WP_API_URL || "http://5.78.144.42/wp-json";
+  process.env.NEXT_PUBLIC_WP_API_URL || "http://178.156.197.177/wp-json";
 
 // ── Fetch helper ─────────────────────────────────────────────────────────────
 
@@ -180,7 +180,7 @@ const FIELDS = "_fields=id,slug,title,excerpt,acf";
 export async function getAllStudios(perPage = 100): Promise<StudioCard[]> {
   try {
     // First page — also tells us how many total pages exist
-    const url = new URL(`${WP_API_URL}/wp/v2/dance_studio?${FIELDS}`);
+    const url = new URL(`${WP_API_URL}/wp/v2/pest_company?${FIELDS}`);
     url.searchParams.set("per_page", String(perPage));
     url.searchParams.set("status", "publish");
     url.searchParams.set("page", "1");
@@ -231,7 +231,7 @@ export async function getStudiosPage(
   perPage = 48
 ): Promise<StudiosPageResult> {
   try {
-    const url = new URL(`${WP_API_URL}/wp/v2/dance_studio?${FIELDS}`);
+    const url = new URL(`${WP_API_URL}/wp/v2/pest_company?${FIELDS}`);
     url.searchParams.set("per_page", String(perPage));
     url.searchParams.set("status", "publish");
     url.searchParams.set("page", String(Math.max(1, page)));
@@ -258,7 +258,7 @@ export async function getStudiosPage(
 export async function getStudio(slug: string): Promise<Studio | null> {
   try {
     const posts = await fetchWP<Record<string, unknown>[]>(
-      `/wp/v2/dance_studio?${FIELDS}`,
+      `/wp/v2/pest_company?${FIELDS}`,
       { slug, status: "publish" }
     );
     if (!posts.length) return null;

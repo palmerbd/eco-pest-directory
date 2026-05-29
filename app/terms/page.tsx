@@ -3,8 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "Terms of Service for Ballroom Dance Directory — an independent online dance studio directory.",
-  alternates: { canonical: "https://www.ballroomdancedirectory.com/terms" },
+  description: "Terms of Service for Green Pest Control Directory — an independent online pest control company directory.",
+  alternates: { canonical: "https://www.greenpestdirectory.com/terms" },
 };
 
 const EFFECTIVE_DATE = "April 1, 2026";
@@ -46,7 +46,7 @@ export default function TermsPage() {
             <section>
               <h2 className="font-display font-bold text-gray-900 text-xl mb-3">1. Acceptance of Terms</h2>
               <p>
-                By accessing or using Ballroom Dance Directory (&ldquo;the Site&rdquo;), you agree to be bound
+                By accessing or using Green Pest Control Directory (&ldquo;the Site&rdquo;), you agree to be bound
                 by these Terms of Service. If you do not agree, please do not use the Site.
               </p>
             </section>
@@ -54,10 +54,10 @@ export default function TermsPage() {
             <section>
               <h2 className="font-display font-bold text-gray-900 text-xl mb-3">2. Independent Directory</h2>
               <p>
-                Ballroom Dance Directory is an independent, third-party online directory. We are not
-                affiliated with, endorsed by, or sponsored by any dance studio franchise or brand
+                Green Pest Control Directory is an independent, third-party online directory. We are not
+                affiliated with, endorsed by, or sponsored by any pest control company franchise or brand
                 listed on this site, including but not limited to Arthur Murray International, Fred
-                Astaire Dance Studios, or Dance With Me Studios. All trademarks are the property of
+                Astaire Pest Control Companies, or Dance With Me Studios. All trademarks are the property of
                 their respective owners.
               </p>
             </section>
@@ -104,7 +104,7 @@ export default function TermsPage() {
             <section>
               <h2 className="font-display font-bold text-gray-900 text-xl mb-3">6. Intellectual Property</h2>
               <p>
-                The design, layout, and original content of this Site are owned by Ballroom Dance
+                The design, layout, and original content of this Site are owned by Eco-Friendly Pest Control
                 Directory. Studio names and brand names are the property of their respective owners
                 and are used solely for identification purposes. You may not reproduce, distribute,
                 or create derivative works from this Site&apos;s original content without written
@@ -124,7 +124,7 @@ export default function TermsPage() {
             <section>
               <h2 className="font-display font-bold text-gray-900 text-xl mb-3">8. Limitation of Liability</h2>
               <p>
-                To the fullest extent permitted by law, Ballroom Dance Directory shall not be liable
+                To the fullest extent permitted by law, Green Pest Control Directory shall not be liable
                 for any indirect, incidental, special, or consequential damages arising from your
                 use of the Site or reliance on any listing information.
               </p>
@@ -146,7 +146,7 @@ export default function TermsPage() {
                 <li>Your electronic or physical signature</li>
               </ul>
               <p className="mt-3">
-                DMCA Agent contact: info@ballroomdancedirectory.com
+                DMCA Agent contact: info@greenpestdirectory.com
               </p>
             </section>
 

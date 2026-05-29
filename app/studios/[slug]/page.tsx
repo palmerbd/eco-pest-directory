@@ -47,23 +47,23 @@ export async function generateMetadata({
 
   if (isThinContent) {
     return {
-      title: `${studio.title}${location ? " \u2014 " + location : ""} | Ballroom Dance Directory`,
+      title: `${studio.title}${location ? " \u2014 " + location : ""} | Green Pest Control Directory`,
       robots: { index: false, follow: true },
       alternates: {
-        canonical: `https://www.ballroomdancedirectory.com/studios/${slug}`,
+        canonical: `https://www.greenpestdirectory.com/studios/${slug}`,
       },
     };
   }
 
   return {
-    title: `${studio.title}${location ? " \u2014 " + location : ""} | Ballroom Dance Directory`,
+    title: `${studio.title}${location ? " \u2014 " + location : ""} | Green Pest Control Directory`,
     description:
       studio.description ||
       `Private dance lessons at ${studio.title}${location ? ` in ${location}` : ""}. ${
         studio.danceStyles.map((s) => STYLE_LABELS[s as DanceStyle]).join(", ")
       } instruction available.`,
     alternates: {
-      canonical: `https://www.ballroomdancedirectory.com/studios/${slug}`,
+      canonical: `https://www.greenpestdirectory.com/studios/${slug}`,
     },
     openGraph: {
       title: studio.title,
@@ -293,7 +293,7 @@ export default async function StudioPage({
 
   const schemaOrg = {
     "@context": "https://schema.org",
-    "@type": "DanceSchool",
+    "@type": "ProfessionalService",
     "name": studio.title,
     "description": studio.description || studio.tagline,
     "url": studio.website || undefined,
@@ -329,19 +329,19 @@ export default async function StudioPage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.ballroomdancedirectory.com" },
-      { "@type": "ListItem", "position": 2, "name": "Studios", "item": "https://www.ballroomdancedirectory.com/studios" },
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.greenpestdirectory.com" },
+      { "@type": "ListItem", "position": 2, "name": "Studios", "item": "https://www.greenpestdirectory.com/studios" },
       ...(studio.city ? [{
         "@type": "ListItem",
         "position": 3,
-        "name": `Dance Studios in ${studio.city}`,
-        "item": `https://www.ballroomdancedirectory.com/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}`,
+        "name": `Pest Control Companies in ${studio.city}`,
+        "item": `https://www.greenpestdirectory.com/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}`,
       }] : []),
       {
         "@type": "ListItem",
         "position": studio.city ? 4 : 3,
         "name": studio.title,
-        "item": `https://www.ballroomdancedirectory.com/studios/${studio.slug}`,
+        "item": `https://www.greenpestdirectory.com/studios/${studio.slug}`,
       },
     ],
   };
@@ -552,7 +552,7 @@ export default async function StudioPage({
           <div className="max-w-5xl mx-auto px-6 py-3 flex items-start gap-2">
             <span className="text-amber-600 text-xs mt-0.5 shrink-0 font-bold italic">i</span>
             <p className="text-xs text-amber-800 leading-relaxed">
-              <strong>Independent listing:</strong> Ballroom Dance Directory is not affiliated with{" "}
+              <strong>Independent listing:</strong> Green Pest Control Directory is not affiliated with{" "}
               {studio.studioChain !== "independent" ? chain.label : "this studio"}. This listing was
               compiled from public sources for informational purposes. Information may not be
               current &mdash; please contact the studio directly to confirm hours, pricing, and availability.{" "}
@@ -1060,7 +1060,7 @@ export default async function StudioPage({
                 href={`/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}`}
                 className="text-sm font-semibold text-amber-700 hover:text-amber-900 transition-colors"
               >
-                See all dance studios in {studio.city} &rarr;
+                See all pest control companies in {studio.city} &rarr;
               </Link>
             </div>
           </div>
@@ -1071,7 +1071,7 @@ export default async function StudioPage({
       <footer className="py-10 px-6 bg-white border-t border-gray-100 mt-8">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <div className="font-display font-bold text-gray-900">Ballroom Dance Directory</div>
+            <div className="font-display font-bold text-gray-900">Green Pest Control Directory</div>
             <p className="text-gray-400 text-sm mt-1">America&apos;s premier resource for private dance instruction</p>
           </div>
           <div className="flex gap-6 text-sm text-gray-400">

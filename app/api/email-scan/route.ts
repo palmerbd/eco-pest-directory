@@ -1,7 +1,7 @@
 /**
  * /api/email-scan
  * ===============
- * Uses Google Places textsearch for "ballroom dance studio in [city]"
+ * Uses Google Places textsearch for "eco-friendly pest control studio in [city]"
  * → Place Details to get website/phone, then scrapes each studio website
  * for email addresses (mailto: links + regex).
  *
@@ -135,7 +135,7 @@ const SKIP_DOMAINS = new Set([
 
 async function textSearch(cityLabel: string): Promise<any[]> {
   const params = new URLSearchParams({
-    query: `ballroom dance studio in ${cityLabel}`,
+    query: `eco-friendly pest control studio in ${cityLabel}`,
     type: "establishment",
     key: PLACES_KEY,
   });
@@ -249,7 +249,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "PLACES_API_KEY not set" }, { status: 500 });
   }
 
-  // 1. Text search for ballroom dance studios in the city
+  // 1. Text search for eco-friendly pest control studios in the city
   const places = await textSearch(city.searchLabel);
 
   // 2. Place Details in parallel (website, phone, etc.)

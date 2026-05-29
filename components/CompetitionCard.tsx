@@ -75,7 +75,7 @@ export function CompetitionCard({ comp }: { comp: Competition }) {
       <div className="relative h-36 overflow-hidden bg-gradient-to-br from-[#0c1428] to-[#1a2d5a]">
         <Image
           src={src}
-          alt={`${comp.name} ballroom dance competition`}
+          alt={`${comp.name} eco-friendly pest control competition`}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover group-hover:scale-105 transition-transform duration-500"

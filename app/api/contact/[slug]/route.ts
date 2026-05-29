@@ -9,8 +9,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
-const WP_API_URL = process.env.WP_API_URL || "http://5.78.144.42/wp-json";
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "leads@ballroomdancedirectory.com";
+const WP_API_URL = process.env.WP_API_URL || "http://178.156.197.177/wp-json";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "leads@greenpestdirectory.com";
 const RESEND_API_KEY = process.env.RESEND_API_KEY!;
 
 // Rate-limit: simple in-memory map — good enough for a low-traffic directory.
@@ -64,7 +64,7 @@ export async function POST(
   if (!claim) {
     // Graceful fallback — try to get studio email from WP directly
     // (e.g. if the Supabase claim row hasn't been updated yet)
-    const wpRes = await fetch(`${WP_API_URL}/wp/v2/dance_studio?slug=${slug}&_fields=acf`).catch(() => null);
+    const wpRes = await fetch(`${WP_API_URL}/wp/v2/pest_company?slug=${slug}&_fields=acf`).catch(() => null);
     if (!wpRes?.ok) {
       return NextResponse.json(
         { error: "This studio is not currently accepting messages." },
@@ -133,13 +133,13 @@ async function sendEmail({
 }): Promise<NextResponse> {
   const resend = new Resend(RESEND_API_KEY);
 
-  const subject = `New inquiry for ${studioTitle} — Ballroom Dance Directory`;
+  const subject = `New inquiry for ${studioTitle} — Green Pest Control Directory`;
 
   const html = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#1a1a1a">
       <div style="background:linear-gradient(135deg,#0c1428,#1a2d5a);padding:24px 32px;border-radius:12px 12px 0 0">
         <div style="color:#e8c560;font-size:12px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">
-          ⭐ New Lead — Ballroom Dance Directory
+          ⭐ New Lead — Green Pest Control Directory
         </div>
         <h1 style="color:#fff;margin:0;font-size:20px">${studioTitle}</h1>
       </div>
@@ -178,8 +178,8 @@ async function sendEmail({
 
         <p style="margin-top:24px;font-size:11px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:16px">
           This message was sent via your Featured listing at
-          <a href="https://www.ballroomdancedirectory.com/studios/${slug}"
-            style="color:#b8922a;text-decoration:none">ballroomdancedirectory.com</a>.
+          <a href="https://www.greenpestdirectory.com/studios/${slug}"
+            style="color:#b8922a;text-decoration:none">greenpestdirectory.com</a>.
           IP: ${ip}
         </p>
       </div>

@@ -2,7 +2,7 @@
 /**
  * generate-taglines.ts
  * ────────────────────
- * Fetches all published dance studios from WordPress, finds those without a
+ * Fetches all published pest control companies from WordPress, finds those without a
  * tagline (studio_tagline ACF field), generates a punchy one-liner via the
  * Anthropic API, and POSTs it back to WordPress via the REST API.
  *
@@ -12,7 +12,7 @@
  *   npx tsx scripts/generate-taglines.ts
  *
  * Env vars required (can be in .env.local):
- *   WP_API_URL          e.g. http://5.78.144.42/wp-json
+ *   WP_API_URL          e.g. http://178.156.197.177/wp-json
  *   WP_APP_USER         e.g. danceadmin
  *   WP_APP_PASSWORD     e.g. KxIp Xqlw Q1ae cryw 3jb1 0fhO
  *   ANTHROPIC_API_KEY   your Anthropic API key
@@ -49,7 +49,7 @@ loadEnv();
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const WP_API_URL     = process.env.WP_API_URL     || "http://5.78.144.42/wp-json";
+const WP_API_URL     = process.env.WP_API_URL     || "http://178.156.197.177/wp-json";
 const WP_APP_USER    = process.env.WP_APP_USER    || "";
 const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD || "";
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
@@ -120,7 +120,7 @@ async function fetchAllStudios(): Promise<WPStudio[]> {
   let totalPages = 1;
 
   do {
-    const url = `${WP_API_URL}/wp/v2/dance_studio?per_page=100&status=publish&page=${page}&_fields=id,slug,title,acf`;
+    const url = `${WP_API_URL}/wp/v2/pest_company?per_page=100&status=publish&page=${page}&_fields=id,slug,title,acf`;
     const res = await request(url, {
       method: "GET",
       headers: { Authorization: wpAuth(), "Content-Type": "application/json" },
@@ -154,10 +154,10 @@ async function generateTagline(studio: WPStudio): Promise<string> {
   const title  = studio.title.rendered.replace(/&#\d+;|&[a-z]+;/g, "'");
   const city   = studio.acf.studio_address_city   || "";
   const state  = studio.acf.studio_address_state  || "";
-  const styles = (studio.acf.studio_dance_styles  || []).join(", ") || "ballroom dance";
+  const styles = (studio.acf.studio_dance_styles  || []).join(", ") || "eco-friendly pest control";
   const location = [city, state].filter(Boolean).join(", ");
 
-  const prompt = `Write a single punchy tagline (under 12 words) for a private dance studio. Be specific and aspirational. No quotes, no period at the end.
+  const prompt = `Write a single punchy tagline (under 12 words) for a private pest control company. Be specific and aspirational. No quotes, no period at the end.
 
 Studio: ${title}
 Location: ${location || "United States"}
@@ -200,7 +200,7 @@ Tagline:`;
 // ── Post tagline back to WP ───────────────────────────────────────────────────
 
 async function postTaglineToWP(studioId: number, tagline: string): Promise<void> {
-  const url  = `${WP_API_URL}/wp/v2/dance_studio/${studioId}`;
+  const url  = `${WP_API_URL}/wp/v2/pest_company/${studioId}`;
   const body = JSON.stringify({ acf: { studio_tagline: tagline } });
 
   const res = await request(url, {
@@ -226,7 +226,7 @@ function sleep(ms: number) {
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log(`\n🎵 Dance Studio Tagline Generator`);
+  console.log(`\n🎵 Pest Control Company Tagline Generator`);
   console.log(`   WP: ${WP_API_URL}`);
   console.log(`   DRY_RUN: ${DRY_RUN}`);
   console.log(`   LIMIT: ${LIMIT}\n`);

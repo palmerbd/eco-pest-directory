@@ -11,7 +11,7 @@ import { createClient }              from "@supabase/supabase-js";
 import { stripe, COMP_FEATURED_PRICE_ID } from "@/lib/stripe";
 import { supabaseAdmin }             from "@/lib/supabase-admin";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirectory.com";
 
 export async function POST(req: NextRequest) {
   try {

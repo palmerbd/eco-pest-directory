@@ -30,7 +30,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 
 const CLIENT_ID     = process.env.GOOGLE_CLIENT_ID     || "";
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
-const BASE_URL      = process.env.NEXT_PUBLIC_BASE_URL || "https://www.ballroomdancedirectory.com";
+const BASE_URL      = process.env.NEXT_PUBLIC_BASE_URL || "https://www.greenpestdirectory.com";
 const REDIRECT_URI  = `${BASE_URL}/api/auth/google/callback`;
 
 export async function GET(req: NextRequest) {

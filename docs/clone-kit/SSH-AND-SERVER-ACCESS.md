@@ -11,7 +11,7 @@
 |---|---|
 | Provider | Hetzner Cloud |
 | Server name | BallroomDance2 |
-| IP | 5.78.218.239 |
+| IP | 178.156.197.177 |
 | **SSH port** | **2222** (changed from 22 during hardening — Task #25) |
 | SSH user | root |
 | SSH key | Ed25519 key, comment: `dance-directory-agent` |
@@ -60,7 +60,7 @@ icacls "C:\Users\fxtra\.ssh\dance_directory_key" /inheritance:r /grant:r "%USERN
 @echo off
 set KEY=C:\Users\fxtra\.ssh\dance_directory_key
 set PORT=2222
-set SERVER=root@5.78.218.239
+set SERVER=root@178.156.197.177
 
 ssh -i "%KEY%" -p %PORT% -o StrictHostKeyChecking=no %SERVER% "your-command-here" 2>&1
 ```
@@ -70,7 +70,7 @@ Run it: `cmd /c C:\Users\fxtra\your-bat-file.bat` via `mcp__Desktop_Commander__s
 ### Step 4 — SCP a file to the server
 
 ```batch
-scp -i "%KEY%" -P 2222 -o StrictHostKeyChecking=no "C:\local\file.php" "root@5.78.218.239:/remote/path/"
+scp -i "%KEY%" -P 2222 -o StrictHostKeyChecking=no "C:\local\file.php" "root@178.156.197.177:/remote/path/"
 ```
 
 **Note: `scp` uses `-P` (capital P) for port, unlike `ssh` which uses `-p`.**
@@ -96,7 +96,7 @@ const fs = require('fs');
 
 const conn = new Client();
 conn.connect({
-  host: '5.78.218.239',
+  host: '178.156.197.177',
   port: 2222,
   username: 'root',
   privateKey: fs.readFileSync('C:\\Users\\fxtra\\.ssh\\dance_directory_key'),
@@ -119,7 +119,7 @@ conn.exec('ls /var/www/ballroomdancedirectory/wp-content/mu-plugins/', (err, str
 
 ## Known Issue: SSH Key Mismatch After Server Migration
 
-The BallroomDance2 server (5.78.218.239) was rebuilt after the ranbyus trojan infection in May 2026.
+The BallroomDance2 server (178.156.197.177) was rebuilt after the ranbyus trojan infection in May 2026.
 The SSH key in `~/.ssh/dance_directory_key` is the key that was generated for that new server — but it
 was added to the server's `authorized_keys` via Hetzner console during the migration, not by a Cowork session.
 
@@ -135,7 +135,7 @@ For many server tasks, WP Admin + Theme Editor is faster than SSH.
 
 | Field | Value |
 |---|---|
-| WP Admin URL | https://wp.ballroomdancedirectory.com/wp-admin |
+| WP Admin URL | https://wp.greenpestdirectory.com/wp-admin |
 | Username | danceadmin |
 | Password | DanceAdmin2026!BDD |
 | Theme Editor | WP Admin → Tools → Theme File Editor |
@@ -165,7 +165,7 @@ Node.js ssh2 auth also failed — key mismatch (key may not have been in new ser
    }
    ```
 3. Saved functions.php via the hidden submit button
-4. Triggered execution by loading `https://wp.ballroomdancedirectory.com/wp-json/wp/v2/dance_studio?per_page=1`
+4. Triggered execution by loading `https://wp.greenpestdirectory.com/wp-json/wp/v2/pest_company?per_page=1`
 5. Verified at WP Admin → Plugins → Must-Use: **"BDD Application Passwords Enable"** appeared ✅
 6. Removed the bootstrap block from functions.php (cleanup)
 

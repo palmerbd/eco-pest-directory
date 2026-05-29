@@ -101,7 +101,7 @@ export async function POST(
 
   // Revalidate the studio detail page so changes show immediately
   try {
-    const base = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
+    const base = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirectory.com";
     await fetch(`${base}/api/revalidate?path=/studios/${slug}`, { method: "POST" });
   } catch {
     // Non-fatal — ISR will catch up on next request

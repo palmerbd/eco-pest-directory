@@ -1,300 +1,338 @@
-import { Metadata } from "next";
 import Link from "next/link";
-import { DANCE_STYLES, STYLE_LABELS } from "@/types/studio";
 import { getAllStudios } from "@/lib/wordpress";
-import styles from "./hero-search.module.css";
-
-export const revalidate = 86400;
-
-export const metadata: Metadata = {
-  title: "Private Dance Lessons Directory — Find Elite Studios Near You",
-  description:
-    "Discover the finest private dance instruction studios across the United States. Fred Astaire, Arthur Murray, Dance With Me, and elite independent studios.",
-  alternates: {
-    canonical: "https://www.ballroomdancedirectory.com",
-  },
-};
-
-const FEATURED_STYLES = [
-  { key: "ballroom",    href: "/ballroom-dance-lessons",    label: "Ballroom",      desc: "Classic elegance, refined technique" },
-  { key: "latin",       href: "/latin-dance-lessons",       label: "Latin",          desc: "Salsa, Rumba, Cha-Cha & more" },
-  { key: "tango",       href: "/tango-dance-lessons",       label: "Tango",          desc: "Passion and precision" },
-  { key: "wedding",     href: "/wedding-dance-lessons",     label: "Wedding Dance",  desc: "Your perfect first dance" },
-  { key: "swing",       href: "/swing-dance-lessons",       label: "Swing",          desc: "Jive, East Coast, West Coast" },
-  { key: "competition", href: "/competition-dance-lessons", label: "Competition",    desc: "Train to compete and win" },
-];
 
 export default async function HomePage() {
   const studios = await getAllStudios();
-  const studioCount = studios.length;
-  const countLabel = studioCount > 0 ? `${studioCount.toLocaleString()}+` : "900+";
+  const featured = studios.slice(0, 8);
 
   return (
-    <main>
-      {/* Hero */}
-      <section
-        className="relative min-h-[85vh] flex items-center justify-center"
-        style={{ background: "linear-gradient(135deg, #0c1428 0%, #1a2d5a 60%, #2d1f0e 100%)" }}
-      >
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          <p className="text-xs font-bold tracking-[0.2em] uppercase mb-4"
-            style={{ color: "#e8c560" }}>
-            The Premier Dance Studio Directory
-          </p>
-          <h1 className="font-display text-white mb-6"
-            style={{ fontSize: "clamp(2.5rem, 6vw, 4rem)", lineHeight: 1.15, fontWeight: 800 }}>
-            Find Private Dance Lessons
-            <span className="block" style={{ color: "#e8c560" }}>Near You</span>
-          </h1>
-          <p className="text-white/70 max-w-xl mx-auto mb-12"
-            style={{ fontSize: "1.1rem", lineHeight: 1.75 }}>
-            Browse Fred Astaire, Arthur Murray, Dance With Me, and elite independent
-            studios offering private instruction across the United States.
-          </p>
-          {/* Mobile: 1 col stacked → sm: 2×2 grid → lg: 3 inputs row + full-width button below */}
-          <form action="/studios" method="GET"
-            className={`${styles.form} grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl lg:w-3/4 mx-auto`}>
-            <input type="text" name="q" placeholder="City or studio name…"
-              className="px-5 py-4 rounded-lg text-gray-900 text-base bg-white
-                         border-2 border-transparent focus:outline-none focus:border-yellow-400
-                         placeholder:text-gray-400" />
-            <input type="text" name="state" placeholder="State (e.g. TX)"
-              className="px-5 py-4 rounded-lg text-gray-900 text-base bg-white
-                         border-2 border-transparent focus:outline-none focus:border-yellow-400
-                         placeholder:text-gray-400" />
-            <select name="style"
-              className="px-5 py-4 rounded-lg text-base bg-white text-gray-900
-                         border-2 border-transparent focus:outline-none focus:border-yellow-400">
-              <option value="">All Dance Styles</option>
-              {DANCE_STYLES.map((s) => (
-                <option key={s} value={s}>{STYLE_LABELS[s]}</option>
-              ))}
-            </select>
-            <button type="submit"
-              className={`${styles.button} px-8 py-4 rounded-lg font-bold text-gray-900 text-base
-                         transition-all duration-200 hover:brightness-110 sm:col-span-2`}
-              style={{ background: "linear-gradient(135deg, #b8922a, #e8c560)" }}>
-              Find Studios
-            </button>
-          </form>
-          <p className="mt-6 text-white/40 text-sm">{countLabel} elite studios listed across the United States</p>
-        </div>
-      </section>
-
-      {/* Browse by Style */}
-      <section className="py-20 px-6" style={{ background: "#f9f6f0" }}>
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-xs font-bold tracking-[0.15em] uppercase mb-3" style={{ color: "#b8922a" }}>
-              Browse by Style
-            </p>
-            <h2 className="font-display text-gray-900 font-bold"
-              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}>
-              What Would You Like to Learn?
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {FEATURED_STYLES.map((style) => (
-              <Link key={style.key} href={style.href}
-                className="group p-6 bg-white rounded-xl border border-gray-200
-                           hover:border-yellow-400 hover:shadow-lg transition-all duration-200">
-                <h3 className="font-display font-bold text-gray-900 text-xl mb-1
-                               group-hover:text-yellow-700 transition-colors">
-                  {style.label}
-                </h3>
-                <p className="text-gray-500 text-sm">{style.desc}</p>
-                <p className="mt-3 text-xs font-bold tracking-wide uppercase" style={{ color: "#b8922a" }}>
-                  Find Studios →
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Studio Chains */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-xs font-bold tracking-[0.15em] uppercase mb-3" style={{ color: "#b8922a" }}>
-              Featured Studio Networks
-            </p>
-            <h2 className="font-display text-gray-900 font-bold"
-              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}>
-              America&apos;s Premier Dance Studio Brands
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { name: "Fred Astaire Dance Studios", count: "200+", desc: "The gold standard in American ballroom dance education since 1947." },
-              { name: "Arthur Murray Dance Studios", count: "280+", desc: "The world's most recognized name in dance instruction for over 100 years." },
-              { name: "Dance With Me Studios",       count: "20+",  desc: "As seen on Dancing with the Stars. Premium instruction on the East Coast." },
-            ].map((chain) => (
-              <div key={chain.name} className="p-8 rounded-xl border border-gray-200" style={{ background: "#f9f6f0" }}>
-                <div className="text-3xl font-display font-bold mb-1" style={{ color: "#b8922a" }}>{chain.count}</div>
-                <div className="text-xs font-bold tracking-wide uppercase text-gray-400 mb-3">Locations</div>
-                <h3 className="font-display font-bold text-gray-900 text-lg mb-2">{chain.name}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{chain.desc}</p>
+    <>
+      {/* ===================== HERO ===================== */}
+      <section className="hero">
+        <div className="wrap">
+          <div className="hero-grid">
+            <div className="hero-copy">
+              <span className="hero-pill">
+                🛡️ America&apos;s first eco-only pest control directory
+              </span>
+              <h1>
+                Find <span className="hl">Eco-Friendly</span> Pest Control Near
+                You
+              </h1>
+              <p className="sub">
+                Browse thousands of pest control companies offering green,
+                organic, and pet-safe treatments. Compare eco-certified
+                providers nationwide.
+              </p>
+              <form className="search" action="/companies" method="get">
+                <div className="field">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#15803d"
+                    strokeWidth="2.2"
+                  >
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-3-3" />
+                  </svg>
+                  <input
+                    type="text"
+                    name="q"
+                    placeholder="Enter city or ZIP code"
+                    aria-label="City or ZIP"
+                  />
+                </div>
+                <button className="btn btn-primary" type="submit">
+                  Search
+                </button>
+              </form>
+              <div className="trust">
+                <span className="item">
+                  <span className="dot"></span>
+                  <b>14,000+</b> Companies
+                </span>
+                <span className="item">
+                  <span className="dot"></span>
+                  <b>Eco-Verified</b> Listings
+                </span>
+                <span className="item">
+                  <span className="dot"></span>
+                  <b>Free</b> to Search
+                </span>
               </div>
-            ))}
+            </div>
+
+            <div className="hero-art">
+              <svg
+                viewBox="0 0 480 460"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Illustration of an eco-protected home with a green leaf shield"
+              >
+                <circle cx="250" cy="210" r="195" fill="#4ade80" opacity="0.12"/>
+                <circle cx="250" cy="210" r="150" fill="#4ade80" opacity="0.10"/>
+                <circle cx="92" cy="96" r="40" fill="#bef264"/>
+                <path d="M20 372 Q240 312 460 372 L460 460 L20 460 Z" fill="#15803d"/>
+                <path d="M20 392 Q240 344 460 392 L460 460 L20 460 Z" fill="#166534"/>
+                <g transform="rotate(18 360 200)">
+                  <path d="M360 70 C 452 92 470 250 360 312 C 300 250 296 150 360 70 Z" fill="#4ade80"/>
+                  <path d="M360 84 C 430 110 446 232 360 296" fill="none" stroke="#15803d" strokeWidth="3" opacity="0.55"/>
+                  <path d="M360 96 L390 132 M360 150 L398 178 M360 206 L392 226" stroke="#15803d" strokeWidth="3" strokeLinecap="round" opacity="0.5"/>
+                </g>
+                <g>
+                  <rect x="118" y="330" width="7" height="48" rx="3" fill="#166534"/>
+                  <circle cx="121" cy="322" r="26" fill="#4ade80"/>
+                  <circle cx="103" cy="338" r="18" fill="#22c55e"/>
+                  <circle cx="140" cy="338" r="18" fill="#22c55e"/>
+                </g>
+                <g>
+                  <rect x="158" y="232" width="168" height="148" rx="12" fill="#ffffff"/>
+                  <rect x="158" y="232" width="168" height="148" rx="12" fill="#f0fdf4" opacity="0.5"/>
+                  <path d="M146 240 L242 158 L338 240 Z" fill="#052e16"/>
+                  <path d="M242 158 L338 240 L320 240 L242 176 Z" fill="#0a3d1f"/>
+                  <rect x="296" y="176" width="22" height="46" rx="4" fill="#0a3d1f"/>
+                  <rect x="184" y="312" width="46" height="68" rx="8" fill="#15803d"/>
+                  <circle cx="221" cy="348" r="4" fill="#bef264"/>
+                  <rect x="256" y="300" width="52" height="52" rx="8" fill="#dcfce7" stroke="#15803d" strokeWidth="3"/>
+                  <path d="M282 300 L282 352 M256 326 L308 326" stroke="#15803d" strokeWidth="3"/>
+                </g>
+                <g transform="translate(300 120)">
+                  <path d="M40 4 L74 16 V44 C74 70 58 84 40 92 C22 84 6 70 6 44 V16 Z" fill="#ffffff"/>
+                  <path d="M40 12 L67 22 V44 C67 65 53 77 40 84 C27 77 13 65 13 44 V22 Z" fill="#16a34a"/>
+                  <path d="M28 46 L37 56 L54 34" fill="none" stroke="#ffffff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round"/>
+                </g>
+                <g transform="translate(150 150)">
+                  <ellipse cx="0" cy="0" rx="16" ry="11" fill="#facc15"/>
+                  <path d="M-6 -10 A16 11 0 0 1 -6 10 Z" fill="#052e16" opacity="0.85"/>
+                  <path d="M6 -10 A16 11 0 0 1 6 10 Z" fill="#052e16" opacity="0.85"/>
+                  <ellipse cx="-4" cy="-12" rx="11" ry="7" fill="#ffffff" opacity="0.85" transform="rotate(-25 -4 -12)"/>
+                  <ellipse cx="6" cy="-12" rx="11" ry="7" fill="#ffffff" opacity="0.85" transform="rotate(25 6 -12)"/>
+                </g>
+                <path d="M408 300 q14 -10 26 2 q-14 10 -26 -2 Z" fill="#bef264" opacity="0.9"/>
+                <path d="M70 250 q12 -9 22 2 q-12 9 -22 -2 Z" fill="#4ade80" opacity="0.8"/>
+              </svg>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Studio Spotlights — internal links for SEO + discovery */}
-      <section className="py-20 px-6" style={{ background: "#f9f6f0" }}>
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-xs font-bold tracking-[0.15em] uppercase mb-3" style={{ color: "#b8922a" }}>
-              Studio Spotlights
+      {/* ===================== TWO-TIER EXPLAINER ===================== */}
+      <section className="block" id="tiers">
+        <div className="wrap">
+          <div className="head">
+            <span className="eyebrow">Our Classification System</span>
+            <h2>Two ways we verify green pest control</h2>
+            <p>
+              Every company is classified so you know exactly how committed they
+              are to eco-friendly methods — before you ever pick up the phone.
             </p>
-            <h2 className="font-display text-gray-900 font-bold"
-              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}>
-              Highly Rated Independent Dance Studios
-            </h2>
-            <p className="text-gray-500 mt-3 max-w-2xl mx-auto">
-              A sample of top-rated, independently owned studios from across the directory.
+          </div>
+          <div className="tiers">
+            <div className="tier t1">
+              <div className="topbar"></div>
+              <span className="badge t1">✓ Eco-Certified</span>
+              <h3>Tier 1 — Eco-Certified</h3>
+              <p>
+                Companies whose entire brand and business model centers on eco,
+                green, and organic pest control. Green methods are the default,
+                not an upsell.
+              </p>
+            </div>
+            <div className="tier t2">
+              <div className="topbar"></div>
+              <span className="badge t2">◆ Eco Options Available</span>
+              <h3>Tier 2 — Eco Options Available</h3>
+              <p>
+                Established conventional companies that offer dedicated
+                eco-friendly service lines — organic treatments, IPM, and
+                pet-safe options on request.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===================== LISTING GRID ===================== */}
+      <section
+        className="block"
+        id="companies"
+        style={{ background: "linear-gradient(180deg,#fff,#f7faf8)" }}
+      >
+        <div className="wrap">
+          <div className="head">
+            <span className="eyebrow">Featured Listings</span>
+            <h2>Eco-friendly providers near you</h2>
+            <p>
+              Filter by certification level and service type. Eco-Certified
+              companies always surface first.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                slug: "frequency-dance-boulder",
-                title: "Frequency Dance",
-                city:  "Boulder, Colorado",
-                rating: "4.6\u2605 (54 reviews)",
-                blurb: "Private ballroom, Latin, tango, waltz, and foxtrot instruction for adults along Colorado's Front Range.",
-              },
-              {
-                slug: "accolades-movement-project-bellevue",
-                title: "Accolades Movement Project",
-                city:  "Bellevue, Washington",
-                rating: "5.0\u2605",
-                blurb: "Personalized private dance lessons across the Seattle Eastside \u2014 Bellevue, Redmond, Kirkland, and Sammamish.",
-              },
-              {
-                slug: "absolute-danz-ballroom-and-latin-menasha",
-                title: "Absolute Danz Ballroom and Latin",
-                city:  "Menasha, Wisconsin",
-                rating: "5.0\u2605 (18 reviews)",
-                blurb: "Private ballroom and Latin instruction serving Menasha, Appleton, Neenah, and the greater Fox Valley.",
-              },
-            ].map((s) => (
-              <Link key={s.slug} href={`/studios/${s.slug}`}
-                className="group p-7 bg-white rounded-xl border border-gray-200
-                           hover:border-yellow-400 hover:shadow-lg transition-all duration-200 block">
-                <p className="text-xs font-bold tracking-wide uppercase text-gray-400 mb-2">{s.city}</p>
-                <h3 className="font-display font-bold text-gray-900 text-xl mb-2
-                               group-hover:text-yellow-700 transition-colors">
-                  {s.title}
-                </h3>
-                <p className="text-sm font-semibold mb-3" style={{ color: "#b8922a" }}>{s.rating}</p>
-                <p className="text-gray-600 text-sm leading-relaxed">{s.blurb}</p>
-                <p className="mt-4 text-xs font-bold tracking-wide uppercase" style={{ color: "#b8922a" }}>
-                  View Studio &rarr;
-                </p>
-              </Link>
-            ))}
+
+          <div className="filterbar">
+            <div className="seg">
+              <button className="active">All</button>
+              <button>Eco-Certified Only</button>
+              <button>Eco Options</button>
+            </div>
+            <div className="selects">
+              <select aria-label="Service">
+                <option>All Services</option>
+                <option>Termite</option>
+                <option>Bed Bug</option>
+                <option>Mosquito</option>
+                <option>Rodent</option>
+                <option>General Pest</option>
+              </select>
+              <select aria-label="Sort">
+                <option>Eco-Friendly First</option>
+                <option>Rating</option>
+                <option>Name (A–Z)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
+            {featured.length > 0
+              ? featured.map((s: any) => (
+                  <article className="lcard" key={s.slug}>
+                    <div className="rowtop">
+                      <div>
+                        <h3>{s.title}</h3>
+                        <div className="loc">
+                          📍 {s.city}, {s.state}
+                        </div>
+                      </div>
+                      <span className={`badge ${s.ecoTier === "tier_1" ? "t1" : "t2"}`}>
+                        {s.ecoTier === "tier_1" ? "✓ Eco-Certified" : "◆ Eco Options"}
+                      </span>
+                    </div>
+                    <div className="stars">
+                      <span className="s">{"★".repeat(Math.round(s.rating))}{"☆".repeat(5 - Math.round(s.rating))}</span>
+                      <b>{s.rating}</b>
+                      <span>({s.reviewCount})</span>
+                    </div>
+                    <div className="chips">
+                      {(s.serviceSpecialties || []).slice(0, 3).map((svc: string) => (
+                        <span className="chip" key={svc}>{svc}</span>
+                      ))}
+                    </div>
+                    <div className="meta">
+                      <span className="chainbadge">{s.chain || "Independent"}</span>
+                      <Link className="btn btn-primary" href={`/companies/${s.slug}`}>
+                        View Details
+                      </Link>
+                    </div>
+                  </article>
+                ))
+              : /* Static placeholder cards when no data yet */
+                [
+                  { name: "Green Shield Pest Solutions", loc: "Austin, TX", tier: "t1", rating: "4.9", reviews: "213", services: ["General Pest", "Termite"], eco: ["🌱 Organic", "Pet-Safe", "IPM"], chain: "Independent" },
+                  { name: "EcoGuard Pest Management", loc: "Portland, OR", tier: "t1", rating: "4.8", reviews: "341", services: ["Mosquito", "Rodent"], eco: ["🌱 Botanical", "Organic Treatments", "Pet-Safe"], chain: "Independent" },
+                  { name: "Natural Defense Pest Co.", loc: "Denver, CO", tier: "t1", rating: "4.7", reviews: "128", services: ["Bed Bug", "Ant"], eco: ["🌱 IPM", "Botanical Products"], chain: "Independent" },
+                  { name: "EcoShield (Phoenix)", loc: "Phoenix, AZ", tier: "t1", rating: "4.6", reviews: "902", services: ["General Pest", "Scorpion"], eco: ["🌱 Pet-Safe", "IPM"], chain: "EcoShield" },
+                  { name: "Nature's Way Exterminators", loc: "Asheville, NC", tier: "t1", rating: "4.9", reviews: "176", services: ["Termite", "Wildlife"], eco: ["🌱 Organic", "Botanical Products", "Pet-Safe"], chain: "Independent" },
+                  { name: "Aptive Environmental", loc: "Sacramento, CA", tier: "t2", rating: "4.4", reviews: "1.2k", services: ["General Pest", "Mosquito"], eco: ["🌱 IPM", "Eco Service Line"], chain: "Aptive" },
+                  { name: "Orkin (Denver)", loc: "Denver, CO", tier: "t2", rating: "4.3", reviews: "2.1k", services: ["Termite", "Rodent"], eco: ["🌱 Pet-Safe", "Organic Treatments"], chain: "Orkin" },
+                  { name: "ABC Home & Commercial", loc: "San Antonio, TX", tier: "t2", rating: "4.2", reviews: "688", services: ["General Pest", "Bed Bug"], eco: ["🌱 IPM", "Pet-Safe"], chain: "Independent" },
+                ].map((c, i) => (
+                  <article className="lcard" key={i}>
+                    <div className="rowtop">
+                      <div>
+                        <h3>{c.name}</h3>
+                        <div className="loc">📍 {c.loc}</div>
+                      </div>
+                      <span className={`badge ${c.tier}`}>
+                        {c.tier === "t1" ? "✓ Eco-Certified" : "◆ Eco Options"}
+                      </span>
+                    </div>
+                    <div className="stars">
+                      <span className="s">{"★".repeat(Math.round(Number(c.rating)))}{"☆".repeat(5 - Math.round(Number(c.rating)))}</span>
+                      <b>{c.rating}</b>
+                      <span>({c.reviews})</span>
+                    </div>
+                    <div className="chips">
+                      {c.services.map((s) => (
+                        <span className="chip" key={s}>{s}</span>
+                      ))}
+                      {c.eco.slice(0, 1).map((e) => (
+                        <span className="chip eco" key={e}>{e}</span>
+                      ))}
+                    </div>
+                    <div className="chips">
+                      {c.eco.slice(1).map((e) => (
+                        <span className="chip eco" key={e}>{e}</span>
+                      ))}
+                    </div>
+                    <div className="meta">
+                      <span className="chainbadge">{c.chain}</span>
+                      <Link className="btn btn-primary" href="/companies">
+                        View Details
+                      </Link>
+                    </div>
+                  </article>
+                ))}
           </div>
         </div>
       </section>
 
-
-      {/* Trending This Week - additional internal links for SEO targets */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-xs font-bold tracking-[0.15em] uppercase mb-3" style={{ color: "#b8922a" }}>
-              Trending This Week
+      {/* ===================== HUB TEASER ===================== */}
+      <section className="block">
+        <div className="wrap">
+          <div className="head">
+            <span className="eyebrow">Browse By Specialty</span>
+            <h2>Explore green pest control hubs</h2>
+            <p>
+              Curated collections of providers grouped by the eco methods
+              homeowners search for most.
             </p>
-            <h2 className="font-display text-gray-900 font-bold"
-              style={{ fontSize: "clamp(1.5rem, 3.5vw, 2rem)" }}>
-              Studios and Competitions Worth a Closer Look
-            </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link href="/competitions/houston-dancesport"
-              className="group p-6 bg-gray-50 rounded-xl border border-gray-200
-                         hover:border-yellow-400 hover:shadow-md transition-all duration-200 block">
-              <p className="text-xs font-bold tracking-wide uppercase text-gray-400 mb-2">Competition - Houston, TX</p>
-              <h3 className="font-display font-bold text-gray-900 text-lg mb-2
-                             group-hover:text-yellow-700 transition-colors">
-                Texas Challenge DanceSport
-              </h3>
-              <p className="text-sm font-semibold mb-3" style={{ color: "#b8922a" }}>NDCA Premier - May</p>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                The Southwest&apos;s premier NDCA-sanctioned ballroom competition - Standard, Latin, Smooth, and Rhythm divisions for Amateur and Pro/Am competitors.
-              </p>
+          <div className="hubs">
+            <Link className="hub" href="/organic-pest-control">
+              <span className="ic">🌱</span>
+              <h3>Organic Pest Control</h3>
+              <span className="go">Explore →</span>
             </Link>
-            <Link href="/studios/arthur-murray-dance-studio-of-williston-park-williston-park"
-              className="group p-6 bg-gray-50 rounded-xl border border-gray-200
-                         hover:border-yellow-400 hover:shadow-md transition-all duration-200 block">
-              <p className="text-xs font-bold tracking-wide uppercase text-gray-400 mb-2">Studio - Williston Park, NY</p>
-              <h3 className="font-display font-bold text-gray-900 text-lg mb-2
-                             group-hover:text-yellow-700 transition-colors">
-                Arthur Murray Dance Studio of Williston Park
-              </h3>
-              <p className="text-sm font-semibold mb-3" style={{ color: "#b8922a" }}>4.9 stars (31 reviews)</p>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Arthur Murray franchise serving Nassau County and Long Island - ballroom, Latin, tango, waltz, and wedding-dance instruction.
-              </p>
+            <Link className="hub" href="/pet-safe-pest-control">
+              <span className="ic">🐾</span>
+              <h3>Pet-Safe Pest Control</h3>
+              <span className="go">Explore →</span>
             </Link>
-            <Link href="/studios/art-dance-education-child-care-madison"
-              className="group p-6 bg-gray-50 rounded-xl border border-gray-200
-                         hover:border-yellow-400 hover:shadow-md transition-all duration-200 block">
-              <p className="text-xs font-bold tracking-wide uppercase text-gray-400 mb-2">Studio - Madison, WI</p>
-              <h3 className="font-display font-bold text-gray-900 text-lg mb-2
-                             group-hover:text-yellow-700 transition-colors">
-                ART DANCE EDUCATION Child Care
-              </h3>
-              <p className="text-sm font-semibold mb-3" style={{ color: "#b8922a" }}>5.0 stars (10 reviews)</p>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Madison ballroom dance education with child-care-friendly scheduling - serving Dane County, including Sun Prairie, Middleton, and Fitchburg.
-              </p>
+            <Link className="hub" href="/ipm-pest-control">
+              <span className="ic">♻️</span>
+              <h3>IPM Companies</h3>
+              <span className="go">Explore →</span>
+            </Link>
+            <Link className="hub" href="/termite-control">
+              <span className="ic">🪵</span>
+              <h3>Eco Termite Control</h3>
+              <span className="go">Explore →</span>
+            </Link>
+            <Link className="hub" href="/mosquito-control">
+              <span className="ic">🦟</span>
+              <h3>Natural Mosquito Control</h3>
+              <span className="go">Explore →</span>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Why Private Lessons */}
-      <section className="py-20 px-6" style={{ background: "#0c1428" }}>
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-xs font-bold tracking-[0.15em] uppercase mb-4" style={{ color: "#e8c560" }}>
-            Why Private Instruction
-          </p>
-          <h2 className="font-display text-white font-bold mb-6"
-            style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}>
-            The Difference Private Lessons Make
-          </h2>
-          <p className="text-white/60 text-lg leading-relaxed max-w-2xl mx-auto mb-12">
-            Private dance instruction offers personalized attention, accelerated progress,
-            and the flexibility to learn at your own pace — all with an instructor focused
-            entirely on your technique and goals.
-          </p>
-          <Link href="/ballroom-dance-lessons"
-            className="inline-block px-8 py-4 rounded-lg font-bold text-gray-900 transition-all hover:brightness-110"
-            style={{ background: "linear-gradient(135deg, #b8922a, #e8c560)" }}>
-            Browse All Studios
-          </Link>
+      {/* ===================== CTA STRIP ===================== */}
+      <section className="block" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="ctastrip">
+            <h2>Run a green pest control company?</h2>
+            <p>
+              Get found by homeowners actively searching for eco-friendly
+              providers. Claim your free listing in minutes.
+            </p>
+            <Link className="btn btn-light" href="/claim">
+              List Your Company →
+            </Link>
+          </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-12 px-6 bg-white border-t border-gray-200">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div>
-            <div className="font-display font-bold text-gray-900 text-lg">Ballroom Dance Directory</div>
-            <p className="text-gray-400 text-sm mt-1">America&apos;s premier resource for private dance instruction</p>
-          </div>
-          <div className="flex flex-wrap gap-6 text-sm text-gray-400">
-            <Link href="/dance-lessons-near-me"  className="hover:text-gray-900 transition-colors">Lessons Near Me</Link>
-            <Link href="/ballroom-dance-lessons" className="hover:text-gray-900 transition-colors">Ballroom</Link>
-            <Link href="/latin-dance-lessons"    className="hover:text-gray-900 transition-colors">Latin</Link>
-            <Link href="/tango-dance-lessons"    className="hover:text-gray-900 transition-colors">Tango</Link>
-            <Link href="/wedding-dance-lessons"  className="hover:text-gray-900 transition-colors">Wedding Dance</Link>
-          </div>
-        </div>
-      </footer>
-    </main>
+    </>
   );
 }

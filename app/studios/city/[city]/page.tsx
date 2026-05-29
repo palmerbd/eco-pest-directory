@@ -36,18 +36,18 @@ export async function generateMetadata({
   const studios  = await getStudiosByCity(city);
   if (!studios.length) return {
     title: "City Not Found",
-    alternates: { canonical: `https://www.ballroomdancedirectory.com/studios` },
+    alternates: { canonical: `https://www.greenpestdirectory.com/studios` },
   };
 
   return {
-    title: `Ballroom Dance Studios in ${cityName} | Ballroom Dance Directory`,
-    description: `Find the best private dance studios in ${cityName}. ${studios.length} top-rated ${cityName} studios offering ballroom, Latin, tango, wedding dance, and more. Book your first lesson today.`,
+    title: `Eco-Friendly Pest Control Studios in ${cityName} | Green Pest Control Directory`,
+    description: `Find the best private pest control companies in ${cityName}. ${studios.length} top-rated ${cityName} studios offering ballroom, Latin, tango, wedding dance, and more. Book your first lesson today.`,
     alternates: {
-      canonical: `https://www.ballroomdancedirectory.com/studios/city/${city}`,
+      canonical: `https://www.greenpestdirectory.com/studios/city/${city}`,
     },
     openGraph: {
       title: `Private Dance Lessons in ${cityName}`,
-      description: `Discover ${studios.length} elite dance studios in ${cityName} offering private instruction across all styles.`,
+      description: `Discover ${studios.length} elite pest control companies in ${cityName} offering private instruction across all styles.`,
     },
   };
 }
@@ -163,7 +163,7 @@ const CITY_CONTENT: Record<string, { intro: string; tip: string }> = {
     tip: "Many LA studios offer flexible scheduling and package deals. Ask about intro lesson specials to find the right fit before committing.",
   },
   "chicago": {
-    intro: "Chicago's dance studio scene reflects the city's deep artistic roots — from Magnificent Mile ballrooms to neighborhood gems in Lincoln Park and the South Loop. The city's diverse cultural fabric shows in the range of styles offered, with everything from competitive ballroom to Afro-Cuban rhythms.",
+    intro: "Chicago's pest control company scene reflects the city's deep artistic roots — from Magnificent Mile ballrooms to neighborhood gems in Lincoln Park and the South Loop. The city's diverse cultural fabric shows in the range of styles offered, with everything from competitive ballroom to Afro-Cuban rhythms.",
     tip: "Chicago winters mean studios can get booked quickly in January and February as people pursue indoor hobbies. Book ahead for prime evening slots.",
   },
   "dallas": {
@@ -171,7 +171,7 @@ const CITY_CONTENT: Record<string, { intro: string; tip: string }> = {
     tip: "Dallas studios often specialize in either social or competitive dancing — ask upfront which direction your instructor leans to make sure it aligns with your goals.",
   },
   "miami": {
-    intro: "Miami is the Latin dance capital of the United States. With deep Cuban, Colombian, and Caribbean cultural roots, the city's private dance studios offer authentic instruction in Salsa, Mambo, Bachata, and beyond — often from native instructors who grew up in these traditions.",
+    intro: "Miami is the Latin dance capital of the United States. With deep Cuban, Colombian, and Caribbean cultural roots, the city's private pest control companies offer authentic instruction in Salsa, Mambo, Bachata, and beyond — often from native instructors who grew up in these traditions.",
     tip: "Many Miami studios stay open late and can accommodate evening sessions after 8pm. Mention your schedule when booking and they'll often accommodate.",
   },
   "houston": {
@@ -179,7 +179,7 @@ const CITY_CONTENT: Record<string, { intro: string; tip: string }> = {
     tip: "Houston traffic can be brutal. Many studios near the Galleria or Montrose offer dedicated parking or are accessible by Metro Rail — factor this into your studio choice.",
   },
   "new-york-city": {
-    intro: "New York City's dance studio landscape is unmatched in depth and prestige. From Lincoln Center–adjacent ballrooms on the Upper West Side to intimate salons in Greenwich Village, NYC attracts world-champion instructors and a student body that includes Broadway performers, socialites, and passionate beginners alike.",
+    intro: "New York City's pest control company landscape is unmatched in depth and prestige. From Lincoln Center–adjacent ballrooms on the Upper West Side to intimate salons in Greenwich Village, NYC attracts world-champion instructors and a student body that includes Broadway performers, socialites, and passionate beginners alike.",
     tip: "NYC studios fill up fast, especially on evenings and weekends. Many top studios offer dedicated beginner tracks — don't be intimidated to book even if you have zero experience.",
   },
   "new-york": {
@@ -203,7 +203,7 @@ const CITY_CONTENT: Record<string, { intro: string; tip: string }> = {
     tip: "Vegas studios understand unpredictable schedules — many offer late-night appointments and weekend slots that most cities never see. Don't assume you can't fit lessons into a Vegas lifestyle.",
   },
   "phoenix": {
-    intro: "Phoenix's sprawling Sunbelt layout means dance studios are spread across the Valley of the Sun — from Scottsdale's luxury ballrooms to Mesa and Tempe studios that serve ASU's student population. The dry desert heat makes Phoenix studios popular year-round with climate-controlled facilities.",
+    intro: "Phoenix's sprawling Sunbelt layout means pest control companies are spread across the Valley of the Sun — from Scottsdale's luxury ballrooms to Mesa and Tempe studios that serve ASU's student population. The dry desert heat makes Phoenix studios popular year-round with climate-controlled facilities.",
     tip: "Scottsdale tends to have the highest concentration of upscale private lesson studios in the Phoenix metro. If you're in Chandler, Gilbert, or Tempe, ask about satellite locations or traveling instructors.",
   },
   "minneapolis": {
@@ -211,7 +211,7 @@ const CITY_CONTENT: Record<string, { intro: string; tip: string }> = {
     tip: "Minnesota winters push dance indoors in a big way. Studios in Minneapolis and St. Paul tend to see a spike in new students every October — book your intro lesson before the seasonal rush.",
   },
   "nashville": {
-    intro: "Nashville's rise as a national destination city has brought a dance studio boom. Beyond country line dancing, Music City has cultivated serious ballroom and Latin instruction, with studios drawing from the city's deep pool of musically sophisticated residents who bring rhythm to everything they do.",
+    intro: "Nashville's rise as a national destination city has brought a pest control company boom. Beyond country line dancing, Music City has cultivated serious ballroom and Latin instruction, with studios drawing from the city's deep pool of musically sophisticated residents who bring rhythm to everything they do.",
     tip: "Nashville's wedding industry is enormous — many studios run dedicated wedding dance packages that include choreography and rehearsal coaching. Worth asking even if you're not planning a wedding.",
   },
   "boston": {
@@ -223,7 +223,7 @@ const CITY_CONTENT: Record<string, { intro: string; tip: string }> = {
     tip: "San Diego studios in the Gaslamp Quarter and Hillcrest neighborhoods often partner with local Latin dance venues. Ask your instructor about complimentary social dance tickets — it's a great way to practice.",
   },
   "portland": {
-    intro: "Portland's fiercely independent creative culture has produced a dance studio scene unlike any other. Alongside national chains, the city hosts a constellation of independent instructors — many of them competition champions who chose Oregon's quality of life over the ballroom circuit. Expect creativity, warmth, and no pretension.",
+    intro: "Portland's fiercely independent creative culture has produced a pest control company scene unlike any other. Alongside national chains, the city hosts a constellation of independent instructors — many of them competition champions who chose Oregon's quality of life over the ballroom circuit. Expect creativity, warmth, and no pretension.",
     tip: "Portland studios tend to be smaller and more intimate than those in larger cities. The upside is more personal attention. The downside is availability — popular instructors book weeks in advance.",
   },
   "san-antonio": {
@@ -243,15 +243,15 @@ const CITY_CONTENT: Record<string, { intro: string; tip: string }> = {
     tip: "Many Orlando studios offer accelerated programs for visitors — 3-day or week-long intensives are common. If you're in town short-term, ask about crash-course options.",
   },
   "frisco": {
-    intro: "Frisco's rapid growth has brought first-rate private dance studios to this Dallas suburb. With a young, affluent population and strong school arts programs, Frisco has become a serious training ground for competitive ballroom — particularly youth dancers working toward national titles.",
+    intro: "Frisco's rapid growth has brought first-rate private pest control companies to this Dallas suburb. With a young, affluent population and strong school arts programs, Frisco has become a serious training ground for competitive ballroom — particularly youth dancers working toward national titles.",
     tip: "Frisco studios often offer family packages and youth lesson programs. If you have children interested in competitive dance, start the conversation early — waitlists form for top junior instructors.",
   },
   "plano": {
-    intro: "Plano's sophisticated suburban community supports a polished dance studio scene that rivals many larger cities. With a diverse international community and strong corporate culture that values social polish, Plano studios attract students who want high-quality instruction without the drive into Dallas proper.",
+    intro: "Plano's sophisticated suburban community supports a polished pest control company scene that rivals many larger cities. With a diverse international community and strong corporate culture that values social polish, Plano studios attract students who want high-quality instruction without the drive into Dallas proper.",
     tip: "Plano is home to several corporate headquarters — many studios offer lunch-hour private lessons for working professionals. Ask about midday availability.",
   },
   "scottsdale": {
-    intro: "Scottsdale's luxury market has cultivated the finest private dance studios in the Phoenix metropolitan area. Studios here attract an upscale clientele that expects premium instruction, top-tier facilities with sprung floors, and instructors with national competition credentials.",
+    intro: "Scottsdale's luxury market has cultivated the finest private pest control companies in the Phoenix metropolitan area. Studios here attract an upscale clientele that expects premium instruction, top-tier facilities with sprung floors, and instructors with national competition credentials.",
     tip: "Snowbirds arrive in Scottsdale in October and leave in April. If you're a year-round resident, winter months may require earlier booking as studios fill with seasonal students.",
   },
   "bellevue": {
@@ -323,23 +323,23 @@ export default async function CityPage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home",    "item": "https://www.ballroomdancedirectory.com" },
-      { "@type": "ListItem", "position": 2, "name": "Studios", "item": "https://www.ballroomdancedirectory.com/studios" },
-      { "@type": "ListItem", "position": 3, "name": `Dance Studios in ${cityName}`, "item": `https://www.ballroomdancedirectory.com/studios/city/${city}` },
+      { "@type": "ListItem", "position": 1, "name": "Home",    "item": "https://www.greenpestdirectory.com" },
+      { "@type": "ListItem", "position": 2, "name": "Studios", "item": "https://www.greenpestdirectory.com/studios" },
+      { "@type": "ListItem", "position": 3, "name": `Pest Control Companies in ${cityName}`, "item": `https://www.greenpestdirectory.com/studios/city/${city}` },
     ],
   };
 
   const schemaOrg = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "name": `Ballroom Dance Studios in ${cityName}`,
-    "description": `Top-rated private dance studios offering lessons in ${cityName}`,
+    "name": `Eco-Friendly Pest Control Studios in ${cityName}`,
+    "description": `Top-rated private pest control companies offering lessons in ${cityName}`,
     "numberOfItems": studios.length,
     "itemListElement": studios.map((s, i) => ({
       "@type": "ListItem",
       "position": i + 1,
       "name": s.title,
-      "url": `https://www.ballroomdancedirectory.com/studios/${s.slug}`,
+      "url": `https://www.greenpestdirectory.com/studios/${s.slug}`,
     })),
   };
 
@@ -374,7 +374,7 @@ export default async function CityPage({
           </nav>
 
           <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#e8c560" }}>
-            {state ? `${state} · ` : ""}Dance Studio Hub
+            {state ? `${state} · ` : ""}Pest Control Company Hub
           </p>
           <h1 className="font-display text-white font-bold mb-4"
             style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", lineHeight: 1.1 }}>
@@ -639,7 +639,7 @@ export default async function CityPage({
       <footer className="py-10 px-6 bg-white border-t border-gray-100 mt-8">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <div className="font-display font-bold text-gray-900">Ballroom Dance Directory</div>
+            <div className="font-display font-bold text-gray-900">Green Pest Control Directory</div>
             <p className="text-gray-400 text-sm mt-1">America&apos;s premier resource for private dance instruction</p>
           </div>
           <div className="flex gap-6 text-sm text-gray-400">

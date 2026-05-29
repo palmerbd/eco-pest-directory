@@ -1,7 +1,7 @@
-# Link Building Target List — Ballroom Dance Directory
+# Link Building Target List — Green Pest Control Directory
 
 Generated: 2026-04-20
-Context: April GSC review flagged link-building as High-Impact/High-Effort. Site's average SERP position is 15.3; a handful of relevant DA 30+ backlinks should be enough to measurably lift rankings for mid-volume queries like "ballroom dance classes near me" and city-level studio terms.
+Context: April GSC review flagged link-building as High-Impact/High-Effort. Site's average SERP position is 15.3; a handful of relevant DA 30+ backlinks should be enough to measurably lift rankings for mid-volume queries like "eco-friendly pest control classes near me" and city-level studio terms.
 
 ## Outreach strategy (brief)
 
@@ -19,7 +19,7 @@ Prioritize DA 30+ sites first, but don't skip small local blogs — a relevant l
 | 2 | **NDCA (National Dance Council of America)** | ndca.org | Official US ballroom sanctioning body | Suggest inclusion on their "Resources" page; offer directory data for their member studios | info@ndca.org |
 | 3 | **Dance Magazine** | dancemagazine.com | DA 70+; covers all dance forms | Pitch a data-driven piece: "What 900+ private ballroom studios tell us about adult dance learners in 2026" | editor@dancemagazine.com |
 | 4 | **Dance Spirit** | dancespirit.com | DA 60+; youth/teen focus, good for training-track studios | Pitch a roundup: "Top private studios to prep for college dance auditions" | editor@dancespirit.com |
-| 5 | **Ballroom Dance Channel / Ballroom-Dancers.com** | ballroom-dancers.com | Niche but DA 40+ | Offer reciprocal link; contribute a "Find a studio" widget | contact form |
+| 5 | **Eco-Friendly Pest Control Channel / Ballroom-Dancers.com** | ballroom-dancers.com | Niche but DA 40+ | Offer reciprocal link; contribute a "Find a studio" widget | contact form |
 | 6 | **Dancing with the Stars fan communities** | reddit.com/r/dwts, pureDWTS.com | High traffic; engaged audience | Offer studio finder for viewers inspired by the show | Reddit DM, fan site editors |
 
 ## Tier 2 — Wedding publications & planners (high intent, high conversion)

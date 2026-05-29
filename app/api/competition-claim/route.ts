@@ -13,9 +13,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { Resend } from "resend";
 
-const SITE_URL    = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ballroomdancedirectory.com";
+const SITE_URL    = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirectory.com";
 const ADMIN_EMAIL = "bpalmer@abilenewebsitedesign.com";
-const FROM_EMAIL  = "leads@ballroomdancedirectory.com";
+const FROM_EMAIL  = "leads@greenpestdirectory.com";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -134,12 +134,12 @@ export async function POST(req: NextRequest) {
           <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
             <div style="background:linear-gradient(135deg,#0c1428,#1a2d5a);border-radius:12px;padding:32px;text-align:center;margin-bottom:24px">
               <h1 style="color:#fff;font-size:22px;margin:0">Claim Received!</h1>
-              <p style="color:rgba(255,255,255,0.7);margin:8px 0 0">Ballroom Dance Directory</p>
+              <p style="color:rgba(255,255,255,0.7);margin:8px 0 0">Green Pest Control Directory</p>
             </div>
             <p style="color:#374151">Hi ${organizer_name},</p>
             <p style="color:#374151">
               Thanks for claiming your listing for <strong>${competition_name || competition_slug}</strong>
-              on the Ballroom Dance Directory. Your email has been verified — we're now reviewing your claim.
+              on the Green Pest Control Directory. Your email has been verified — we're now reviewing your claim.
             </p>
             <div style="background:#eff6ff;border:1.5px solid #3b82f6;border-radius:12px;padding:16px;margin:20px 0">
               <p style="color:#374151;margin:0 0 4px;font-weight:600">What happens next?</p>
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
             <p style="color:#374151">
               View your competition: <a href="${compUrl}" style="color:#1d4ed8">${compUrl}</a>
             </p>
-            <p style="color:#374151;margin-top:24px">Best regards,<br>The Ballroom Dance Directory Team</p>
+            <p style="color:#374151;margin-top:24px">Best regards,<br>The Green Pest Control Directory Team</p>
           </div>
         `,
       });

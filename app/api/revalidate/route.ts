@@ -1,15 +1,15 @@
 // ─── ISR Revalidation Webhook ─────────────────────────────────────────────────
-// WordPress fires this when a dance_studio post is published or updated.
+// WordPress fires this when a pest_company post is published or updated.
 // Next.js regenerates affected pages within seconds — no full rebuild needed.
 //
 // ── WordPress setup ──────────────────────────────────────────────────────────
 // Add to WP functions.php (or a mu-plugin):
 //
 //   define('WP_REVALIDATE_SECRET', 'your-secret-here'); // match Vercel env var
-//   define('WP_REVALIDATE_URL', 'https://ballroomdancedirectory.com/api/revalidate');
+//   define('WP_REVALIDATE_URL', 'https://greenpestdirectory.com/api/revalidate');
 //
 //   function bdd_revalidate_on_save($post_id, $post, $update) {
-//     if ($post->post_type !== 'dance_studio' || $post->post_status !== 'publish') return;
+//     if ($post->post_type !== 'pest_company' || $post->post_status !== 'publish') return;
 //     $slug = $post->post_name;
 //     $city = strtolower(str_replace(' ', '-', get_field('studio_address_city', $post_id) ?? ''));
 //     $styles = get_field('studio_dance_styles', $post_id) ?? [];
@@ -27,7 +27,7 @@
 //   WP_REVALIDATE_SECRET = <generate a random 32-char string>
 //
 // ── Test from terminal ───────────────────────────────────────────────────────
-//   curl -X POST https://ballroomdancedirectory.com/api/revalidate \
+//   curl -X POST https://greenpestdirectory.com/api/revalidate \
 //     -H "Content-Type: application/json" \
 //     -d '{"secret":"your-secret","slug":"fred-astaire-dance-studio-dallas-tx"}'
 

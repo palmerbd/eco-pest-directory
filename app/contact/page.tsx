@@ -4,8 +4,8 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Contact Ballroom Dance Directory — listing corrections, removal requests, claiming your studio, or partnership inquiries.",
-  alternates: { canonical: "https://www.ballroomdancedirectory.com/contact" },
+    "Contact Green Pest Control Directory — listing corrections, removal requests, claiming your studio, or partnership inquiries.",
+  alternates: { canonical: "https://www.greenpestdirectory.com/contact" },
 };
 
 export default function ContactPage() {
@@ -72,11 +72,11 @@ export default function ContactPage() {
               We respond to all inquiries within 2 business days.
             </p>
             <a
-              href="mailto:info@ballroomdancedirectory.com"
+              href="mailto:info@greenpestdirectory.com"
               className="inline-block px-8 py-4 rounded-lg font-bold text-gray-900 transition-all hover:brightness-110"
               style={{ background: "linear-gradient(135deg, #b8922a, #e8c560)" }}
             >
-              info@ballroomdancedirectory.com
+              info@greenpestdirectory.com
             </a>
             <p className="mt-6 text-sm text-gray-400">
               For DMCA takedown notices, please include all required information as specified in our{" "}

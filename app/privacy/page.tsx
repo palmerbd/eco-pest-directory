@@ -3,8 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Privacy Policy for Ballroom Dance Directory — how we collect, use, and protect your information.",
-  alternates: { canonical: "https://www.ballroomdancedirectory.com/privacy" },
+  description: "Privacy Policy for Green Pest Control Directory — how we collect, use, and protect your information.",
+  alternates: { canonical: "https://www.greenpestdirectory.com/privacy" },
 };
 
 const EFFECTIVE_DATE = "April 1, 2026";
@@ -46,7 +46,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="font-display font-bold text-gray-900 text-xl mb-3">1. Overview</h2>
               <p>
-                Ballroom Dance Directory (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) is committed to protecting
+                Green Pest Control Directory (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) is committed to protecting
                 your privacy. This Privacy Policy explains what information we collect, how we use
                 it, and your rights with respect to that information.
               </p>

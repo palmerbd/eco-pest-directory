@@ -1,4 +1,4 @@
-# SEO Action Log — Ballroom Dance Directory
+# SEO Action Log — Green Pest Control Directory
 
 Weekly Google Search Console review log. Each entry is appended from the scheduled `gsc-weekly-review` task.
 
@@ -25,7 +25,7 @@ Weekly Google Search Console review log. Each entry is appended from the schedul
 1. **[Content & Internal Linking]** — Effort: Medium | Impact: High
    Add internal links and expand content for pages ranking positions 4–15 ("frequency dance boulder", "absolute dance", "accolades movement project"). A content depth increase plus 2–3 internal links from high-traffic pages can push these to page 1.
 2. **[Link Building]** — Effort: High | Impact: High
-   Build 3–5 backlinks from local dance blogs or event sites this week. Average position is 15.3 — site authority needs a boost. Target local dance studios, event calendars, and dance association directories for easy, relevant links.
+   Build 3–5 backlinks from local dance blogs or event sites this week. Average position is 15.3 — site authority needs a boost. Target local pest control companies, event calendars, and dance association directories for easy, relevant links.
 
 ### Work Completed 2026-04-20
 - **Content rewrite**: Expanded the WP excerpts for all three target studios via REST API (application password auth).
@@ -69,14 +69,14 @@ Weekly Google Search Console review log. Each entry is appended from the schedul
 
 ### Close-to-Page-1 Opportunities (pos 4–15)
 - "texas challenge dancesport" — pos 7.1, 47 impr
-- "arthur murray dance studio of williston park" — pos 10.7, 40 impr
+- "arthur murray pest control company of williston park" — pos 10.7, 40 impr
 - "art dance education child care" madison wi — pos 8.1, 20 impr
 
 ### Action Items
 1. **[Title & Meta Optimization]** — Effort: Low | Impact: High
    Investigate why "dancereverienyc.com" has 52 impressions with 0% CTR. This is a competitor-domain branded query — likely our /studios/dance-reverie page is ranking but the title/meta doesn't clearly identify itself as the right result. Rewrite the page title and meta description so users searching for "dancereverienyc.com" recognize this page as the destination.
 2. **[Content & Internal Linking]** — Effort: Medium | Impact: High
-   Push three close-to-page-1 queries onto page 1. Add internal links and expand content for: "texas challenge dancesport" (currently pos 7.1 on /competitions/houston-dancesport), "arthur murray dance studio of williston park" (pos 10.7), and "art dance education child care" madison wi (pos 8.1). Target 2–3 internal links each from high-authority pages.
+   Push three close-to-page-1 queries onto page 1. Add internal links and expand content for: "texas challenge dancesport" (currently pos 7.1 on /competitions/houston-dancesport), "arthur murray pest control company of williston park" (pos 10.7), and "art dance education child care" madison wi (pos 8.1). Target 2–3 internal links each from high-authority pages.
 3. **[Momentum Watch]** — Effort: Low | Impact: Medium
    Click count up 67% week-over-week (24 → 40). Several "near me" long-tail queries (tap, bachata, banda, dance exercise) now ranking at position 1. Continue the city/style hub strategy — these long-tails are converting at 100% CTR but each only has 1–3 impressions. Need more impression volume on these terms via expanded city/style page coverage.
 
@@ -87,8 +87,8 @@ Weekly Google Search Console review log. Each entry is appended from the schedul
 ### Work Completed 2026-05-12 (Action Plan Items 1–3)
 
 **Action 1: Dance Reverie NYC title/meta — DONE**
-- Studio ID 516 (`dance-reverie-dance-studio-dumbo-brooklyn`): updated WP title from "Dance Reverie Dance Studio Dumbo" → **"Dance Reverie NYC"**.
-- Excerpt rewritten to lead with "Dance Reverie NYC (formerly Dance Reverie Dance Studio Dumbo)" + explicit mention of `dancereverienyc.com` + 4.9★/70 reviews + Dumbo Brooklyn + service area (Manhattan/Brooklyn/Queens).
+- Studio ID 516 (`dance-reverie-dance-studio-dumbo-brooklyn`): updated WP title from "Dance Reverie Pest Control Company Dumbo" → **"Dance Reverie NYC"**.
+- Excerpt rewritten to lead with "Dance Reverie NYC (formerly Dance Reverie Pest Control Company Dumbo)" + explicit mention of `dancereverienyc.com` + 4.9★/70 reviews + Dumbo Brooklyn + service area (Manhattan/Brooklyn/Queens).
 - Rationale: brand-query searches for "dancereverienyc.com" were seeing our listing but not clicking — the new title/excerpt makes the page recognizable as the right destination.
 
 **Action 2: Three close-to-page-1 queries — DONE**
@@ -131,10 +131,10 @@ Weekly Google Search Console review log. Each entry is appended from the schedul
 - `79d24cd` — Fix: restored truncated helpers section + stripped bad UTF-8 byte from `lib/competitions-data.ts` (Turbopack rejected `\xe2\x94` incomplete 3-byte sequence at byte offset 39188; fix confirmed clean build)
 
 **Vercel deploy:** Successful. All 4 new/updated URLs verified live:
-- `https://www.ballroomdancedirectory.com/dance-lessons-near-me` ✅
-- `https://www.ballroomdancedirectory.com/studios/dance-reverie-dance-studio-dumbo-brooklyn` ✅
-- `https://www.ballroomdancedirectory.com/studios/arthur-murray-dance-studio-of-williston-park-williston-park` ✅
-- `https://www.ballroomdancedirectory.com/competitions/houston-dancesport` ✅
+- `https://www.greenpestdirectory.com/dance-lessons-near-me` ✅
+- `https://www.greenpestdirectory.com/studios/dance-reverie-dance-studio-dumbo-brooklyn` ✅
+- `https://www.greenpestdirectory.com/studios/arthur-murray-dance-studio-of-williston-park-williston-park` ✅
+- `https://www.greenpestdirectory.com/competitions/houston-dancesport` ✅
 
 **GSC post-deploy steps completed:**
 1. Sitemap resubmitted via GSC → Sitemaps (sitemap.xml) ✅
@@ -162,16 +162,16 @@ Weekly Google Search Console review log. Each entry is appended from the schedul
 5. `/studios/the-dance-company-odessa` — 3 clicks, 36 impr, 8.3% CTR, pos 4.1
 
 ### Action Items
-1. **[Title & Meta Optimization — Low effort / High impact]** Rewrite page title + meta description for `arthur murray dance studio of williston park` page (79 impr, 0.0% CTR). High visibility, zero clicks — pure CTR play.
-2. **[Content & Internal Linking — Medium effort / High impact]** Expand content + add 2–3 internal links from high-traffic pages to queries ranking positions 4–15: `arthur murray dance studio of williston park` (pos 11.0), `texas challenge dancesport` (pos 7.3), `art dance education child care madison wi` (pos 7.9). All sit just off page 1.
+1. **[Title & Meta Optimization — Low effort / High impact]** Rewrite page title + meta description for `arthur murray pest control company of williston park` page (79 impr, 0.0% CTR). High visibility, zero clicks — pure CTR play.
+2. **[Content & Internal Linking — Medium effort / High impact]** Expand content + add 2–3 internal links from high-traffic pages to queries ranking positions 4–15: `arthur murray pest control company of williston park` (pos 11.0), `texas challenge dancesport` (pos 7.3), `art dance education child care madison wi` (pos 7.9). All sit just off page 1.
 3. **[On-Page SEO — Medium effort / Medium impact]** Improve H1/H2 structure and add FAQ schema to `/competitions/houston-dancesport` (181 impr, pos 7.3, 2.2% CTR). Highest-impression page underperforming on CTR.
 4. **[Structured Data — Medium effort / Medium impact]** Add breadcrumb + review schema to all studio listing pages. Site CTR (3.0%) is below 4% target; rich-result eligibility typically lifts CTR 20–30%.
 
 ### Low-CTR Opportunities
-- `arthur murray dance studio of williston park` — 79 impr, 0.0% CTR (pos 11.0)
+- `arthur murray pest control company of williston park` — 79 impr, 0.0% CTR (pos 11.0)
 
 ### Close to Page 1 (pos 4–15)
-- `arthur murray dance studio of williston park` — pos 11.0, 79 impr
+- `arthur murray pest control company of williston park` — pos 11.0, 79 impr
 - `texas challenge dancesport` — pos 7.3, 66 impr
 - `art dance education child care madison wi` — pos 7.9, 40 impr
 - `dance with me franchise ballroom` — pos 6.4, 27 impr
