@@ -1,14 +1,13 @@
-// ─── Stripe Client (server-side only) ────────────────────────────────────────────
+// ─── Stripe Client (server-side only) ────────────────────────────────────────
 // Never import this in client components — STRIPE_SECRET_KEY is server-only.
 
 import Stripe from "stripe";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27.acacia",
-});
+const stripeKey = process.env.STRIPE_SECRET_KEY || "";
 
-// Shared price ID for the $49/mo promotional Featured Listing plan (studios — reg. $99/mo)
-export const FEATURED_PRICE_ID = process.env.STRIPE_PRICE_ID!;
+export const stripe = stripeKey
+  ? new Stripe(stripeKey, { apiVersion: "2025-01-27.acacia" })
+  : (null as any);
 
-// Price ID for the $199/yr Featured Competition plan
-export const COMP_FEATURED_PRICE_ID = process.env.STRIPE_COMP_PRICE_ID!;
+export const FEATURED_PRICE_ID = process.env.STRIPE_PRICE_ID || "";
+export const COMP_FEATURED_PRICE_ID = process.env.STRIPE_COMP_PRICE_ID || "";

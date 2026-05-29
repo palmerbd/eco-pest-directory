@@ -1,20 +1,18 @@
 // ─── Supabase Client ──────────────────────────────────────────────────────────
 // Browser-side client — safe to use in Client Components and API routes.
-// For server-side (API routes that need elevated privileges), use the
-// service-role client in lib/supabase-admin.ts.
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl     = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl     = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-// Singleton pattern — reuse across the app
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase: SupabaseClient | null = supabaseUrl && supabaseAnonKey
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type ClaimStatus = "pending" | "verified" | "approved" | "rejected";
-
 export type ClaimTier = "claimed" | "paid";
 
 export interface Claim {
@@ -35,7 +33,6 @@ export interface Claim {
   created_at:             string;
 }
 
-// ── Competition Claim ──────────────────────────────────────────────────────────
 export type CompetitionClaimStatus = "pending" | "verified" | "approved" | "rejected";
 export type CompetitionClaimTier   = "free" | "featured";
 
@@ -55,7 +52,6 @@ export interface CompetitionClaim {
   updated_at:             string;
 }
 
-// ── Studio Profile (owner-editable Featured content) ──────────────────────────
 export interface StudioProfile {
   id?:                  string;
   studio_slug:          string;
