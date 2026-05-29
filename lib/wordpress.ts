@@ -1,8 +1,8 @@
 // ─── WordPress Headless API Client ───────────────────────────────────────────
 // Fetches data from WordPress REST API on the Hetzner server (178.156.197.177).
-// ACF field names match the "Pest Control Company Details" field group (imported 2026-03-30).
+// ACF field names use studio_* prefix (kept from BDD for backward compat) field group (imported 2026-03-30).
 
-import { Studio, StudioCard, DanceStyle, StudioChain, ListingTier } from "@/types/studio";
+import { Studio, StudioCard, ServiceType, CompanyChain, EcoTier, EcoService, ListingTier } from "@/types/studio";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 const WP_API_URL =
@@ -49,28 +49,35 @@ function decodeHtmlEntities(str: string): string {
 
 // ── Chain detection ───────────────────────────────────────────────────────────
 
-function detectChain(title: string): StudioChain {
+function detectChain(title: string): CompanyChain {
   const t = title.toLowerCase();
-  if (t.includes("fred astaire"))  return "fred_astaire";
-  if (t.includes("arthur murray")) return "arthur_murray";
-  if (t.includes("dance with me")) return "dance_with_me";
+  if (t.includes("orkin"))       return "orkin";
+  if (t.includes("terminix"))    return "terminix";
+  if (t.includes("truly nolen")) return "truly_nolen";
+  if (t.includes("aptive"))      return "aptive";
+  if (t.includes("abc home"))    return "abc_home";
+  if (t.includes("hometeam"))    return "hometeam";
+  if (t.includes("massey"))      return "massey";
+  if (t.includes("turner pest")) return "turner";
+  if (t.includes("ecoshield"))   return "ecoshield";
   return "independent";
 }
 
 // ── ACF dance style → our DanceStyle union ───────────────────────────────────
 
-const STYLE_MAP: Record<string, DanceStyle> = {
-  ballroom:    "ballroom",
-  latin:       "latin",
-  swing:       "swing",
-  wedding:     "wedding_dance",
-  social:      "ballroom",
-  competitive: "competition",
-  salsa:       "salsa",
-  tango:       "tango",
-  waltz:       "waltz",
-  foxtrot:     "foxtrot",
-  // Note: cha_cha and rumba are not valid ACF checkbox values in WP
+const SERVICE_MAP: Record<string, ServiceType> = {
+  general_pest: "general_pest",
+  termite:      "termite",
+  rodent:       "rodent",
+  bed_bug:      "bed_bug",
+  mosquito:     "mosquito",
+  wildlife:     "wildlife",
+  cockroach:    "cockroach",
+  ant:          "ant",
+  fumigation:   "fumigation",
+  commercial:   "commercial",
+  organic:      "organic",
+  lawn_pest:    "lawn_pest",
 };
 
 // ── Raw WP REST post → Studio ─────────────────────────────────────────────────
@@ -82,12 +89,16 @@ function mapWPPost(post: Record<string, unknown>): Studio {
   const city  = (acf.studio_address_city  as string) || "";
   const state = (acf.studio_address_state as string) || "";
 
-  const rawStyles  = (acf.studio_dance_styles as string[]) || [];
-  const danceStyles: DanceStyle[] = [
-    ...new Set(rawStyles.map((s) => STYLE_MAP[s]).filter(Boolean) as DanceStyle[]),
+  const rawStyles  = (acf.service_specialties as string[]) || (acf.studio_dance_styles as string[]) || [];
+  const danceStyles: ServiceType[] = [
+    ...new Set(rawStyles.map((s) => SERVICE_MAP[s]).filter(Boolean) as ServiceType[]),
   ];
 
   const amenities = (acf.studio_amenities as string[]) || [];
+  const ecoTier = (acf.eco_tier as EcoTier) || "unclassified";
+  const ecoServices = (acf.eco_services as EcoService[]) || [];
+  const ecoVerified = (acf.eco_verified as boolean) || false;
+  const ecoSource = (acf.eco_source as string) || "";
   const priceDropin  = acf.studio_price_dropin  as number | undefined;
   const priceMonthly = acf.studio_price_monthly as number | undefined;
   const priceIntro   = acf.studio_price_intro   as number | undefined;
@@ -123,13 +134,26 @@ function mapWPPost(post: Record<string, unknown>): Studio {
     facebookUrl:           (acf.studio_facebook_url    as string) || undefined,
     instagramUrl:          (acf.studio_instagram_url   as string) || undefined,
     amenities,
-    hasParking:            amenities.includes("parking"),
-    hasPrivateLessons:     amenities.includes("private_lessons"),
-    hasGroupClasses:       amenities.includes("group_classes"),
-    hasSprungFloor:        amenities.includes("sprung_floor"),
-    competitionTraining:   danceStyles.includes("competition"),
-    weddingDanceSpecialty: danceStyles.includes("wedding_dance"),
-    medalProgram:          false,
+    
+    
+    
+    
+    
+    
+    
+    ecoTier,
+    ecoServices,
+    ecoVerified,
+    ecoSource,
+    serviceSpecialties: danceStyles,
+    freeInspection:        amenities.includes("free_inspections"),
+    emergencyService:      amenities.includes("emergency_service"),
+    ecoFriendly:           ecoTier !== "unclassified",
+    commercialService:     danceStyles.includes("commercial"),
+    residentialService:    true,
+    licensedBonded:        amenities.includes("licensed_bonded"),
+    satisfactionGuarantee: amenities.includes("satisfaction_guarantee"),
+    serviceStartingPrice:  (acf.service_starting_price as string) || undefined,
     hours: {
       monday:    (acf.studio_hours_mon as string) || undefined,
       tuesday:   (acf.studio_hours_tue as string) || undefined,
@@ -166,7 +190,10 @@ function toCard(s: Studio): StudioCard {
     tagline:          s.tagline,
     phone:            s.phone,
     address:          s.address,
-    privateLessonRate: s.privateLessonRate,
+    serviceStartingPrice: s.serviceStartingPrice,
+    serviceSpecialties: s.serviceSpecialties,
+    ecoTier: s.ecoTier,
+    ecoServices: s.ecoServices,
   };
 }
 
