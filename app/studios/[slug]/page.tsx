@@ -1,28 +1,15 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStudio, getAllStudioSlugs, getStudiosByCity } from "@/lib/wordpress";
-import { Studio, StudioCard, CHAIN_CONFIG, STYLE_LABELS, AMENITY_LABELS, DanceStyle } from "@/types/studio";
-import ClaimBadge from "@/components/ClaimBadge";
+import { getStudio, getAllStudioSlugs } from "@/lib/wordpress";
+import { Studio, CHAIN_CONFIG, AMENITY_LABELS } from "@/types/studio";
 import LeadCaptureForm from "@/components/LeadCaptureForm";
-import StudioGallery, { type UploadedPhoto } from "@/components/StudioGallery";
-import PromoBar from "@/components/PromoBar";
-import SocialLinks from "@/components/SocialLinks";
-import ReviewsSection, { type GoogleReview } from "@/components/ReviewsSection";
-import { supabaseAdmin } from "@/lib/supabase-admin";
-import { type StudioProfile } from "@/lib/supabase";
 
-export const revalidate = 86400; // 24 hours — studio data changes infrequently; 1hr was burning Vercel ISR quota
+export const revalidate = 86400;
 
-// Static params
-
-// Return empty array — 4,000+ pages are generated on-demand via ISR (revalidate=86400).
-// Pre-rendering all slugs at build time exceeded Vercel's build resources.
 export async function generateStaticParams() {
   return [];
 }
-
-// Metadata
 
 export async function generateMetadata({
   params,
@@ -31,1055 +18,305 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const studio = await getStudio(slug);
-  if (!studio) return { title: "Studio Not Found" };
+  if (!studio) return { title: "Company Not Found" };
 
   const location = [studio.city, studio.state].filter(Boolean).join(", ");
+  const isTier1 = (studio as any).ecoTier === "tier_1";
+  const tierLabel = isTier1 ? "Eco-Certified" : "Eco Options Available";
 
-  // Thin-content guard: studios with no phone, no website, and no reviews
-  // are too sparse for Google to consider indexable. Mark them noindex so
-  // they land in "Excluded by noindex" rather than "Crawled - currently not
-  // indexed", which is a cleaner signal and concentrates crawl budget.
   const isThinContent =
-    !studio.phone &&
-    !studio.website &&
+    !studio.phone && !studio.website &&
     (!studio.rating || studio.rating < 0.1) &&
     (!studio.reviewCount || studio.reviewCount === 0);
 
   if (isThinContent) {
     return {
-      title: `${studio.title}${location ? " \u2014 " + location : ""} | Green Pest Control Directory`,
+      title: `${studio.title}${location ? " — " + location : ""} | Green Pest Directory`,
       robots: { index: false, follow: true },
-      alternates: {
-        canonical: `https://www.greenpestdirectory.com/studios/${slug}`,
-      },
+      alternates: { canonical: `https://www.greenpestdirectory.com/studios/${slug}` },
     };
   }
 
   return {
-    title: `${studio.title}${location ? " \u2014 " + location : ""} | Green Pest Control Directory`,
-    description:
-      studio.description ||
-      `Private dance lessons at ${studio.title}${location ? ` in ${location}` : ""}. ${
-        studio.danceStyles.map((s) => STYLE_LABELS[s as DanceStyle]).join(", ")
-      } instruction available.`,
-    alternates: {
-      canonical: `https://www.greenpestdirectory.com/studios/${slug}`,
-    },
-    openGraph: {
-      title: studio.title,
-      description: studio.tagline || studio.description,
-    },
+    title: `${studio.title} — ${tierLabel} Pest Control in ${location} | Green Pest Directory`,
+    description: studio.description ||
+      `${studio.title} is ${isTier1 ? "an Eco-Certified" : "a"} pest control company in ${location}. Read reviews, hours, and request a free quote.`,
+    alternates: { canonical: `https://www.greenpestdirectory.com/studios/${slug}` },
   };
 }
 
-// Sub-components
-
-function StarRating({ rating, count }: { rating: number; count?: number }) {
-  const full  = Math.floor(rating);
-  const half  = rating % 1 >= 0.5;
-  const empty = 5 - full - (half ? 1 : 0);
-  return (
-    <div className="flex items-center gap-2">
-      <span className="flex gap-0.5">
-        {Array.from({ length: full  }).map((_, i) => (
-          <span key={`f${i}`} className="text-xl" style={{ color: "#e8c560" }}>&#9733;</span>
-        ))}
-        {half && <span className="text-xl" style={{ color: "#e8c560" }}>&#9733;</span>}
-        {Array.from({ length: empty }).map((_, i) => (
-          <span key={`e${i}`} className="text-xl text-gray-300">&#9733;</span>
-        ))}
-      </span>
-      <span className="font-bold text-gray-900">{rating.toFixed(1)}</span>
-      {count && <span className="text-gray-400 text-sm">({count} reviews)</span>}
-    </div>
-  );
-}
-
-function InfoRow({ icon, label, value, href }: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  href?: string;
-}) {
-  const content = (
-    <div className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
-      <span className="mt-0.5 shrink-0 text-gray-400">{icon}</span>
-      <div>
-        <div className="text-xs font-bold uppercase tracking-wide text-gray-400 mb-0.5">{label}</div>
-        <div className="text-gray-800 font-medium">{value}</div>
-      </div>
-    </div>
-  );
-  return href ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="block hover:bg-gray-50 -mx-1 px-1 rounded transition-colors">
-      {content}
-    </a>
-  ) : (
-    <div>{content}</div>
-  );
-}
-
-// SVG icon helpers
-const PhoneIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 7V5z" />
-  </svg>
-);
-const MapIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-  </svg>
-);
-const GlobeIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-  </svg>
-);
-const MailIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-  </svg>
-);
-const CalendarIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-  </svg>
-);
-
-// Page
-
-export default async function StudioPage({
+export default async function CompanyDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [studio, cityStudiosRaw] = await Promise.all([
-    getStudio(slug),
-    // We resolve city studios after we know the studio; handled below
-    Promise.resolve([] as StudioCard[]),
-  ]);
+  const studio = await getStudio(slug);
   if (!studio) notFound();
 
-  // Fetch related studios in the same city (excluding current)
-  const cityStudios = studio.city
-    ? (await getStudiosByCity(
-        studio.city.toLowerCase().replace(/\s+/g, "-")
-      )).filter((s) => s.slug !== studio.slug)
-    : [];
+  const s = studio as any;
+  const location = [s.city, s.state].filter(Boolean).join(", ");
+  const isTier1 = s.ecoTier === "tier_1";
+  const chain = s.studioChain ? CHAIN_CONFIG[s.studioChain as keyof typeof CHAIN_CONFIG] : null;
+  const citySlug = s.city?.toLowerCase().replace(/\s+/g, "-") || "";
 
-  // Style-matched related: same city, shares at least one dance style — prioritise paid
-  const primaryStyle = studio.danceStyles[0] ?? null;
-  const styleRelated = primaryStyle
-    ? cityStudios
-        .filter((s) => s.danceStyles.includes(primaryStyle))
-        .sort((a, b) => {
-          if (a.tier === "paid" && b.tier !== "paid") return -1;
-          if (b.tier === "paid" && a.tier !== "paid") return 1;
-          return (b.rating ?? 0) - (a.rating ?? 0);
-        })
-        .slice(0, 3)
-    : [];
+  const stars = "★".repeat(Math.round(s.rating || 0)) + "☆".repeat(5 - Math.round(s.rating || 0));
 
-  // General city-related: top-rated studios in same city not already in styleRelated
-  const styleRelatedSlugs = new Set(styleRelated.map((s) => s.slug));
-  const relatedStudios = cityStudios
-    .filter((s) => !styleRelatedSlugs.has(s.slug))
-    .sort((a, b) => {
-      if (a.tier === "paid" && b.tier !== "paid") return -1;
-      if (b.tier === "paid" && a.tier !== "paid") return 1;
-      return (b.rating ?? 0) - (a.rating ?? 0);
-    })
-    .slice(0, 3);
+  // Hours
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const today = new Date().getDay(); // 0=Sun, 1=Mon...
+  const todayIdx = today === 0 ? 6 : today - 1;
 
-  // Fetch live GBP rating for paid-tier studios (non-fatal)
-  let gbpRating:      number | null = null;
-  let gbpReviewCount: number | null = null;
-  let gbpConnected                  = false;
-  if (studio.tier === "paid") {
-    try {
-      const { data: gbp } = await supabaseAdmin
-        .from("gbp_connections")
-        .select("rating, review_count, gbp_location_id")
-        .eq("studio_slug", slug)
-        .maybeSingle();
-      if (gbp) {
-        gbpConnected  = !!gbp.gbp_location_id;
-        gbpRating      = gbp.rating     ? Number(gbp.rating)     : null;
-        gbpReviewCount = gbp.review_count ? Number(gbp.review_count) : null;
-        // Override WP-sourced rating with live GBP data when available
-        if (gbpRating) {
-          studio.rating      = gbpRating;
-          studio.reviewCount = gbpReviewCount ?? studio.reviewCount;
-        }
-      }
-    } catch { /* non-fatal */ }
-  }
+  // Eco methods (from eco_services or amenities)
+  const ecoMethods = [
+    { key: "organic_treatments", icon: "🌱", label: "Organic Treatments", desc: "Plant-derived, EPA minimum-risk formulations." },
+    { key: "ipm", icon: "♻️", label: "Integrated Pest Management", desc: "Prevention-first approach that reduces chemical use." },
+    { key: "pet_safe", icon: "🐾", label: "Pet-Safe Application", desc: "Treatments safe for dogs, cats, and backyard pets." },
+    { key: "botanical_products", icon: "🌼", label: "Botanical Products", desc: "Essential-oil based barriers that protect pollinators." },
+    { key: "child_safe", icon: "👶", label: "Child-Safe Treatments", desc: "Low-toxicity solutions safe for children." },
+    { key: "low_toxicity", icon: "🛡️", label: "Low-Toxicity Solutions", desc: "EPA reduced-risk products with minimal environmental impact." },
+  ];
 
-  // Fetch uploaded photos for paid-tier studios (non-fatal if table doesn't exist yet)
-  let studioPhotos: UploadedPhoto[] = [];
-  if (studio.tier === "paid") {
-    try {
-      const { data } = await supabaseAdmin
-        .from("studio_photos")
-        .select("id, url")
-        .eq("studio_slug", slug)
-        .order("created_at", { ascending: true })
-        .limit(6);
-      studioPhotos = data ?? [];
-    } catch {
-      // Table may not exist yet — fall back to Unsplash placeholders silently
-    }
-  }
+  const activeEcoMethods = ecoMethods.filter((m) =>
+    (s.ecoServices || []).includes(m.key) ||
+    (s.amenities || []).includes(m.key)
+  );
 
-  // Fetch studio profile (custom description, social links, promo) — paid tier only
-  let studioProfile: StudioProfile | null = null;
-  let googleReviews: GoogleReview[]       = [];
-  if (studio.tier === "paid") {
-    try {
-      const { data: prof } = await supabaseAdmin
-        .from("studio_profiles")
-        .select("*")
-        .eq("studio_slug", slug)
-        .maybeSingle();
-      studioProfile = prof ?? null;
-
-      // Fetch cached Google reviews if owner has enabled them
-      if (prof?.show_google_reviews) {
-        const { data: revs } = await supabaseAdmin
-          .from("studio_reviews")
-          .select("*")
-          .eq("studio_slug", slug)
-          .order("fetched_at", { ascending: false })
-          .limit(5);
-        googleReviews = revs ?? [];
-      }
-
-      // Override scraped description with owner-written one if present
-      if (prof?.custom_description) {
-        studio.description = prof.custom_description;
-      }
-    } catch { /* non-fatal */ }
-  }
-
-  const chain    = CHAIN_CONFIG[studio.studioChain];
-  const location = [studio.address, studio.city, studio.state, studio.zip]
-    .filter(Boolean).join(", ");
-  const cityState = studio.cityState;
-
-  // Map embed query — prefer full address, fall back to city+state
-  const mapQuery = location || [studio.city, studio.state].filter(Boolean).join(", ");
-  const mapEmbedUrl = mapQuery
-    ? `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed&zoom=15`
-    : null;
-
-  const hours = studio.hours;
-  const hoursRows = [
-    { day: "Monday",    val: hours?.monday    },
-    { day: "Tuesday",   val: hours?.tuesday   },
-    { day: "Wednesday", val: hours?.wednesday },
-    { day: "Thursday",  val: hours?.thursday  },
-    { day: "Friday",    val: hours?.friday    },
-    { day: "Saturday",  val: hours?.saturday  },
-    { day: "Sunday",    val: hours?.sunday    },
-  ].filter((r) => r.val);
-
-  const schemaOrg = {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    "name": studio.title,
-    "description": studio.description || studio.tagline,
-    "url": studio.website || undefined,
-    "telephone": studio.phone || undefined,
-    "email": studio.email || undefined,
-    ...(studio.address || studio.city ? {
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": studio.address || undefined,
-        "addressLocality": studio.city || undefined,
-        "addressRegion": studio.state || undefined,
-        "postalCode": studio.zip || undefined,
-        "addressCountry": "US",
-      }
-    } : {}),
-    ...(studio.rating ? {
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": studio.rating.toFixed(1),
-        "reviewCount": studio.reviewCount || 1,
-        "bestRating": "5",
-        "worstRating": "1",
-      }
-    } : {}),
-    ...(studio.privateLessonRate ? {
-      "priceRange": studio.privateLessonRate,
-    } : {}),
-    "currenciesAccepted": "USD",
-    "paymentAccepted": "Cash, Credit Card",
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.greenpestdirectory.com" },
-      { "@type": "ListItem", "position": 2, "name": "Studios", "item": "https://www.greenpestdirectory.com/studios" },
-      ...(studio.city ? [{
-        "@type": "ListItem",
-        "position": 3,
-        "name": `Pest Control Companies in ${studio.city}`,
-        "item": `https://www.greenpestdirectory.com/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}`,
-      }] : []),
-      {
-        "@type": "ListItem",
-        "position": studio.city ? 4 : 3,
-        "name": studio.title,
-        "item": `https://www.greenpestdirectory.com/studios/${studio.slug}`,
-      },
-    ],
-  };
-
-  const styleList = studio.danceStyles
-    .map((s) => STYLE_LABELS[s as DanceStyle])
-    .join(", ");
-
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      ...(studio.danceStyles.length > 0 ? [{
-        "@type": "Question",
-        "name": `What dance styles does ${studio.title} offer?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `${studio.title} offers ${styleList} instruction.`,
-        },
-      }] : []),
-      ...(studio.city || studio.address ? [{
-        "@type": "Question",
-        "name": `Where is ${studio.title} located?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": location || `${studio.city}${studio.state ? ", " + studio.state : ""}`,
-        },
-      }] : []),
-      ...(studio.privateLessonRate || studio.introLessonRate ? [{
-        "@type": "Question",
-        "name": `How much do lessons cost at ${studio.title}?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": [
-            studio.introLessonRate ? `Intro lesson: ${studio.introLessonRate}` : null,
-            studio.privateLessonRate ? `Private lesson rate: ${studio.privateLessonRate}` : null,
-            studio.monthlyRate ? `Monthly membership: ${studio.monthlyRate}` : null,
-          ].filter(Boolean).join(". ") + ".",
-        },
-      }] : []),
-      // Beginner-friendly question — addresses high-intent "near me" / "classes near me" queries
-      ...(studio.danceStyles.length > 0 ? [{
-        "@type": "Question" as const,
-        "name": `Does ${studio.title} teach beginners?`,
-        "acceptedAnswer": {
-          "@type": "Answer" as const,
-          "text": `Yes. ${studio.title} works with dancers at every level, from complete beginners to advanced students. Private lessons let instructors tailor the pace and curriculum to each student's experience and goals.`,
-        },
-      }] : []),
-      // Wedding-dance question — only when studio offers wedding instruction (high-converting query)
-      ...(studio.danceStyles.includes("wedding_dance") ? [{
-        "@type": "Question" as const,
-        "name": `Does ${studio.title} offer wedding dance lessons?`,
-        "acceptedAnswer": {
-          "@type": "Answer" as const,
-          "text": `Yes. ${studio.title} offers wedding first-dance choreography and preparation packages${studio.city ? ` for couples in ${studio.city}` : ""}. Lessons cover song selection, choreography, and rehearsal technique to help couples feel confident on their wedding day.`,
-        },
-      }] : []),
-      // Lesson format — clarifies private vs group, an extremely common pre-booking question
-      {
-        "@type": "Question" as const,
-        "name": `Are lessons at ${studio.title} private or group?`,
-        "acceptedAnswer": {
-          "@type": "Answer" as const,
-          "text": `${studio.title} primarily offers one-on-one private lessons${studio.amenities && studio.amenities.includes("group_classes") ? ", with group classes also available" : ""}. Private lessons are scheduled by appointment to fit each student's availability.`,
-        },
-      },
-      ...(studio.phone || studio.email || studio.website ? [{
-        "@type": "Question" as const,
-        "name": `How can I contact ${studio.title}?`,
-        "acceptedAnswer": {
-          "@type": "Answer" as const,
-          "text": [
-            studio.phone ? `Call ${studio.phone}` : null,
-            studio.email ? `Email ${studio.email}` : null,
-            studio.website ? `Visit ${studio.website}` : null,
-          ].filter(Boolean).join(". ") + ".",
-        },
-      }] : []),
-    ],
-  };
+  // If no eco data yet, show defaults for Tier 1
+  const displayMethods = activeEcoMethods.length > 0
+    ? activeEcoMethods
+    : isTier1
+    ? ecoMethods.slice(0, 4)
+    : ecoMethods.slice(0, 2);
 
   return (
-    <main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      {faqSchema.mainEntity.length > 0 && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      )}
-
-      {/* Hero / Title Bar */}
-      <section
-        className="py-14 px-6"
-        style={{ background: "linear-gradient(135deg, #0c1428 0%, #1a2d5a 100%)" }}
-      >
-        <div className="max-w-5xl mx-auto">
-          {/* Breadcrumb */}
-          <nav className="text-sm mb-6">
-            <Link href="/" className="text-white/50 hover:text-white transition-colors">Home</Link>
-            <span className="text-white/30 mx-2">/</span>
-            <Link href="/studios" className="text-white/50 hover:text-white transition-colors">Studios</Link>
-            <span className="text-white/30 mx-2">/</span>
-            <span className="text-white/80">{studio.title}</span>
-          </nav>
-
-          {/* Badges row */}
-          <div className="flex items-center gap-2 mb-4 flex-wrap">
-            <span
-              className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
-              style={{ color: chain.color, background: chain.bg }}
-            >
-              {chain.label}
-            </span>
-            {studio.tier === "paid" && (
-              <span
-                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold"
-                style={{ background: "#b8922a22", color: "#e8c560", border: "1px solid #b8922a" }}
-              >
-                Featured
-              </span>
-            )}
-          </div>
-
-          <h1 className="font-display text-white font-bold mb-3"
-            style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)" }}>
-            {studio.title}
-            {studio.city && (
-              <span className="text-white/70 font-normal">
-                {" — "}
-                {studio.city}
-                {studio.state ? `, ${studio.state}` : ""}
-              </span>
-            )}
-          </h1>
-
-          {studio.tagline ? (
-            <p className="text-white/60 text-lg italic mb-4">{studio.tagline}</p>
-          ) : studio.city ? (
-            <p className="text-white/60 text-lg mb-4">
-              Private dance lessons in {studio.city}
-              {styleList ? ` — ${styleList.toLowerCase()} instruction` : ""}.
-            </p>
-          ) : null}
-
-          {/* Rating */}
-          {studio.rating && (
-            <div className="mb-4">
-              <StarRating rating={studio.rating} count={studio.reviewCount} />
-            </div>
-          )}
-
-          {/* Location pill */}
-          {(studio.city || studio.state) && (
-            <div className="flex items-center gap-2 text-white/60 text-sm">
-              <MapIcon />
-              <span>{studio.city}{studio.city && studio.state ? ", " : ""}{studio.state}</span>
-              {studio.foundedYear && (
-                <>
-                  <span className="text-white/20">&middot;</span>
-                  <span>Est. {studio.foundedYear}</span>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* Social media links — Featured studios */}
-          {studioProfile && (studioProfile.facebook_url || studioProfile.instagram_url || studioProfile.tiktok_url) && (
-            <div className="mt-3">
-              <SocialLinks
-                facebookUrl={studioProfile.facebook_url}
-                instagramUrl={studioProfile.instagram_url}
-                tiktokUrl={studioProfile.tiktok_url}
-              />
-            </div>
-          )}
-
-          {/* Verified Owner badge */}
-          <div className="mt-4">
-            <ClaimBadge slug={studio.slug} />
-          </div>
-
-          {/* Promo banner — Featured studios with active promotion */}
-          {studioProfile?.promo_text && (
-            <div className="mt-5">
-              <PromoBar
-                promoText={studioProfile.promo_text}
-                promoType={studioProfile.promo_type}
-                promoSavings={studioProfile.promo_savings}
-                promoEndDate={studioProfile.promo_end_date}
-              />
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Per-listing disclaimer */}
-      {studio.tier !== "claimed" && studio.tier !== "paid" && (
-        <div className="bg-amber-50 border-b border-amber-200">
-          <div className="max-w-5xl mx-auto px-6 py-3 flex items-start gap-2">
-            <span className="text-amber-600 text-xs mt-0.5 shrink-0 font-bold italic">i</span>
-            <p className="text-xs text-amber-800 leading-relaxed">
-              <strong>Independent listing:</strong> Green Pest Control Directory is not affiliated with{" "}
-              {studio.studioChain !== "independent" ? chain.label : "this studio"}. This listing was
-              compiled from public sources for informational purposes. Information may not be
-              current &mdash; please contact the studio directly to confirm hours, pricing, and availability.{" "}
-              <a
-                href={`/claim?slug=${encodeURIComponent(studio.slug)}`}
-                className="underline font-medium hover:text-amber-900"
-              >
-                Own this studio? Claim your listing.
-              </a>
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Photo Gallery — currently only shown for claimed/paid studios.
-          To re-enable Unsplash placeholders for ALL studios, remove the
-          (studio.tier === "claimed" || studio.tier === "paid") && wrapper below. */}
-      {(studio.tier === "claimed" || studio.tier === "paid") && (
-        <div className="max-w-5xl mx-auto px-6 pt-10 pb-0">
-          <StudioGallery
-            studioId={studio.id}
-            danceStyles={studio.danceStyles}
-            chain={studio.studioChain}
-            featuredImageUrl={studio.featuredImage}
-            studioPhotos={studioPhotos}
-          />
-        </div>
-      )}
-
-      {/* Body */}
-      <div className="max-w-5xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-          {/* Left / Main */}
-          <div className="lg:col-span-2 space-y-8">
-
-            {/* About */}
-            {studio.description && (
-              <section>
-                <h2 className="font-display font-bold text-gray-900 text-xl mb-3">
-                  About {studio.title}
-                  {studio.city ? ` in ${studio.city}` : ""}
-                </h2>
-                <p className="text-gray-600 leading-relaxed">{studio.description}</p>
-                {studioProfile?.custom_description && (
-                  <p className="text-xs text-gray-400 mt-2 italic">Description provided by studio owner.</p>
-                )}
-              </section>
-            )}
-
-            {/* Google Reviews — Featured studios */}
-            {googleReviews.length > 0 && (
-              <ReviewsSection reviews={googleReviews} />
-            )}
-
-            {/* Dance Styles */}
-            {studio.danceStyles.length > 0 && (
-              <section>
-                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Dance Styles Offered</h2>
-                <div className="flex flex-wrap gap-2">
-                  {studio.danceStyles.map((style) => (
-                    <span
-                      key={style}
-                      className="px-4 py-2 rounded-full text-sm font-semibold border"
-                      style={{ borderColor: "#b8922a", color: "#b8922a", background: "#fdf8f0" }}
-                    >
-                      {STYLE_LABELS[style as DanceStyle]}
-                    </span>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Amenities */}
-            {studio.amenities && studio.amenities.length > 0 && (
-              <section>
-                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Amenities</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {studio.amenities.map((a) => (
-                    <div key={a} className="flex items-center gap-2 text-sm text-gray-700">
-                      <span className="text-green-500 shrink-0">&#10003;</span>
-                      {AMENITY_LABELS[a] || a}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Pricing */}
-            <section>
-              <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Pricing</h2>
-              {(studio.introLessonRate || studio.privateLessonRate || studio.monthlyRate) ? (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {studio.introLessonRate && (
-                    <div className="p-4 rounded-xl border border-gray-200 text-center">
-                      <div className="text-2xl font-bold mb-1" style={{ color: "#b8922a" }}>
-                        {studio.introLessonRate}
-                      </div>
-                      <div className="text-xs font-bold uppercase tracking-wide text-gray-400">Intro Lesson</div>
-                    </div>
-                  )}
-                  {studio.privateLessonRate && (
-                    <div className="p-4 rounded-xl border border-gray-200 text-center">
-                      <div className="text-2xl font-bold mb-1" style={{ color: "#b8922a" }}>
-                        {studio.privateLessonRate}
-                      </div>
-                      <div className="text-xs font-bold uppercase tracking-wide text-gray-400">Drop-In Rate</div>
-                    </div>
-                  )}
-                  {studio.monthlyRate && (
-                    <div className="p-4 rounded-xl border border-gray-200 text-center">
-                      <div className="text-2xl font-bold mb-1" style={{ color: "#b8922a" }}>
-                        {studio.monthlyRate}
-                      </div>
-                      <div className="text-xs font-bold uppercase tracking-wide text-gray-400">Membership</div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                /* No pricing data — show a CTA to contact the studio */
-                <div className="rounded-xl border border-gray-200 bg-gray-50 p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  <div className="flex-1">
-                    <p className="font-semibold text-gray-800 mb-1">Pricing available upon inquiry</p>
-                    <p className="text-sm text-gray-500 leading-relaxed">
-                      Private lesson rates vary by instructor and package. Contact {studio.title} directly
-                      for current pricing, intro offers, and availability.
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-2 shrink-0">
-                    {studio.phone && (
-                      <a
-                        href={`tel:${studio.phone.replace(/\D/g, "")}`}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-gray-900
-                                   text-sm transition-all hover:brightness-110 whitespace-nowrap"
-                        style={{ background: "linear-gradient(135deg, #b8922a, #e8c560)" }}
-                      >
-                        <PhoneIcon /> Call for Pricing
-                      </a>
-                    )}
-                    {studio.website && (
-                      <a
-                        href={studio.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-gray-700
-                                   text-sm border-2 border-gray-200 hover:border-yellow-400 hover:text-yellow-800
-                                   transition-all whitespace-nowrap"
-                      >
-                        <GlobeIcon /> Visit Website
-                      </a>
-                    )}
-                    {!studio.phone && !studio.website && (
-                      <a
-                        href={`/claim?slug=${encodeURIComponent(studio.slug)}`}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-gray-600
-                                   text-sm border-2 border-dashed border-gray-300 hover:border-yellow-400
-                                   hover:text-yellow-800 transition-all whitespace-nowrap"
-                      >
-                        Own this studio? Add pricing
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
-            </section>
-
-            {/* Hours */}
-            {hoursRows.length > 0 && (
-              <section>
-                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Business Hours</h2>
-                <div className="rounded-xl border border-gray-200 overflow-hidden">
-                  {hoursRows.map((row, i) => (
-                    <div key={row.day}
-                      className={`flex justify-between px-5 py-3 text-sm ${
-                        i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      }`}>
-                      <span className="font-semibold text-gray-700">{row.day}</span>
-                      <span className="text-gray-500">{row.val}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* External Reviews */}
-            {(studio.yelpUrl || studio.googleMapsUrl) && (
-              <section>
-                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">Reviews &amp; Directions</h2>
-                <div className="flex flex-wrap gap-3">
-                  {studio.yelpUrl && (
-                    <a href={studio.yelpUrl} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 border-red-100
-                                 bg-red-50 text-red-700 font-semibold text-sm hover:bg-red-100 transition-colors">
-                      &#9733; Read Yelp Reviews
-                    </a>
-                  )}
-                  {studio.googleMapsUrl && (
-                    <a href={studio.googleMapsUrl} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 border-blue-100
-                                 bg-blue-50 text-blue-700 font-semibold text-sm hover:bg-blue-100 transition-colors">
-                      <MapIcon /> Get Directions
-                    </a>
-                  )}
-                </div>
-              </section>
-            )}
-
-            {/* Visible FAQ — mirrors FAQPage JSON-LD so Google can validate. Boosts CTR via scan-friendly answers. */}
-            {faqSchema.mainEntity.length > 0 && (
-              <section>
-                <h2 className="font-display font-bold text-gray-900 text-xl mb-4">
-                  Frequently Asked Questions
-                </h2>
-                <div className="rounded-xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
-                  {faqSchema.mainEntity.map((q, i) => (
-                    <details key={i} className="group">
-                      <summary className="flex justify-between items-center cursor-pointer px-5 py-4 bg-white hover:bg-gray-50 transition-colors font-semibold text-gray-900 text-sm md:text-base list-none">
-                        <span>{q.name}</span>
-                        <span className="text-gray-400 ml-3 group-open:rotate-180 transition-transform">&#9662;</span>
-                      </summary>
-                      <div className="px-5 py-4 text-gray-600 text-sm leading-relaxed bg-gray-50">
-                        {q.acceptedAnswer.text}
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-
-          {/* Right / Sidebar */}
-          <div className="space-y-6">
-
-            {/* Lead capture form */}
-            {studio.tier === "paid" && (
-              <LeadCaptureForm
-                studioSlug={studio.slug}
-                studioTitle={studio.title}
-              />
-            )}
-
-            {/* Google Business Profile connect — Featured studios only */}
-            {studio.tier === "paid" && !gbpConnected && (
-              <div className="rounded-2xl border border-dashed border-gray-200 p-5 bg-gray-50 shadow-sm">
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl">⭐</span>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">
-                      Show Live Google Ratings
-                    </h3>
-                    <p className="text-xs text-gray-500 leading-relaxed mb-3">
-                      Connect your Google Business Profile to display live star ratings and
-                      review counts directly on this listing.
-                    </p>
-                    <a
-                      href={`/api/auth/google?studio_slug=${encodeURIComponent(studio.slug)}`}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold
-                                 text-white transition-all hover:brightness-110"
-                      style={{ background: "#4285f4" }}
-                    >
-                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                      </svg>
-                      Connect Google Business
-                    </a>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* GBP connected confirmation */}
-            {studio.tier === "paid" && gbpConnected && (
-              <div className="rounded-2xl border border-green-100 p-4 bg-green-50 shadow-sm">
-                <div className="flex items-center gap-2 text-green-700 text-sm font-semibold">
-                  <span>✅</span> Google ratings connected
-                </div>
-                <p className="text-xs text-green-600 mt-1">
-                  Ratings refresh daily. Last sync shows {gbpRating?.toFixed(1)}★
-                  {gbpReviewCount ? ` · ${gbpReviewCount.toLocaleString()} reviews` : ""}.
-                </p>
-              </div>
-            )}
-
-            {/* Contact card */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <h3 className="font-display font-bold text-gray-900 text-lg mb-4">Contact &amp; Location</h3>
-
-              {studio.phone && (
-                <InfoRow
-                  icon={<PhoneIcon />}
-                  label="Phone"
-                  value={studio.phone}
-                  href={`tel:${studio.phone.replace(/\D/g, "")}`}
-                />
-              )}
-              {location && (
-                <InfoRow
-                  icon={<MapIcon />}
-                  label="Address"
-                  value={location}
-                  href={studio.googleMapsUrl}
-                />
-              )}
-              {studio.website && (
-                <InfoRow
-                  icon={<GlobeIcon />}
-                  label="Website"
-                  value={studio.website.replace(/^https?:\/\//, "")}
-                  href={studio.website}
-                />
-              )}
-              {studio.email && (
-                <InfoRow
-                  icon={<MailIcon />}
-                  label="Email"
-                  value={studio.email}
-                  href={`mailto:${studio.email}`}
-                />
-              )}
-              {studio.foundedYear && (
-                <InfoRow
-                  icon={<CalendarIcon />}
-                  label="Established"
-                  value={String(studio.foundedYear)}
-                />
-              )}
-
-              {/* Primary CTA */}
-              {studio.phone && (
-                <a
-                  href={`tel:${studio.phone.replace(/\D/g, "")}`}
-                  className="mt-5 flex items-center justify-center gap-2 w-full py-3 rounded-xl
-                             font-bold text-gray-900 text-sm transition-all hover:brightness-110"
-                  style={{ background: "linear-gradient(135deg, #b8922a, #e8c560)" }}
-                >
-                  <PhoneIcon /> Call to Book a Lesson
-                </a>
-              )}
-              {studio.website && (
-                <a
-                  href={studio.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 flex items-center justify-center gap-2 w-full py-3 rounded-xl
-                             font-bold text-gray-700 text-sm border-2 border-gray-200
-                             hover:border-yellow-400 hover:text-yellow-800 transition-all"
-                >
-                  <GlobeIcon /> Visit Website
-                </a>
-              )}
-            </div>
-
-            {/* Google Map embed */}
-            {mapEmbedUrl && (
-              <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
-                <iframe
-                  title={`Map of ${studio.title}`}
-                  src={mapEmbedUrl}
-                  width="100%"
-                  height="220"
-                  style={{ border: 0, display: "block" }}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen={false}
-                />
-              </div>
-            )}
-
-            {/* Social links */}
-            {(studio.facebookUrl || studio.instagramUrl) && (
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                <h3 className="font-display font-bold text-gray-900 text-lg mb-4">Follow</h3>
-                <div className="space-y-2">
-                  {studio.facebookUrl && (
-                    <a href={studio.facebookUrl} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
-                      <span>f</span> Facebook
-                    </a>
-                  )}
-                  {studio.instagramUrl && (
-                    <a href={studio.instagramUrl} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-pink-600 hover:underline">
-                      <span>@</span> Instagram
-                    </a>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Back to directory */}
-            <Link href="/studios"
-              className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-              &larr; Back to all studios
-            </Link>
-          </div>
+    <>
+      {/* Breadcrumb */}
+      <div className="wrap">
+        <div className="crumb">
+          <Link href="/">Home</Link><span>/</span>
+          {s.state && <><Link href={`/studios/city/${citySlug}`}>{s.state}</Link><span>/</span></>}
+          {s.city && <><Link href={`/studios/city/${citySlug}`}>{s.city}</Link><span>/</span></>}
+          {s.title}
         </div>
       </div>
 
-      {/* Style-Matched Related Studios */}
-      {styleRelated.length > 0 && primaryStyle && (
-        <section className="bg-white border-t border-gray-100 py-12 px-6">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="font-display font-bold text-gray-900 text-2xl mb-2">
-              Other {STYLE_LABELS[primaryStyle as DanceStyle]} Studios in {studio.city}
-            </h2>
-            <p className="text-gray-500 text-sm mb-6">
-              More {STYLE_LABELS[primaryStyle as DanceStyle].toLowerCase()} instruction nearby
-              &nbsp;·&nbsp;
-              <Link
-                href={`/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}/style/${primaryStyle.replace(/_/g, "-")}`}
-                className="text-amber-700 font-semibold hover:underline"
-              >
-                See all {STYLE_LABELS[primaryStyle as DanceStyle].toLowerCase()} studios in {studio.city} →
-              </Link>
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {styleRelated.map((s) => {
-                const sChain = CHAIN_CONFIG[s.studioChain];
-                return (
-                  <Link
-                    key={s.slug}
-                    href={`/studios/${s.slug}`}
-                    className="group bg-white rounded-2xl border border-gray-200 p-5 shadow-sm
-                               hover:shadow-md hover:border-yellow-300 transition-all block"
-                  >
-                    <span
-                      className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold mb-3"
-                      style={{ color: sChain.color, background: sChain.bg }}
-                    >
-                      {sChain.label}
+      {/* ===================== DETAIL HERO ===================== */}
+      <section className="dhero">
+        <div className="wrap">
+          <div className="dhero-card">
+            <div className="dh-top">
+              <div className="dh-title">
+                <span className={`badge ${isTier1 ? "t1" : "t2"}`}>
+                  {isTier1 ? "✓ Eco-Certified" : "◆ Eco Options Available"}
+                </span>
+                <h1>{s.title}</h1>
+                <div className="dh-loc">
+                  📍 {s.address ? `${s.address}, ` : ""}{location}
+                  {chain && (
+                    <span className="badge t2" style={{ marginLeft: "0.3rem" }}>
+                      {chain.label}
                     </span>
-                    <h3 className="font-display font-bold text-gray-900 text-base mb-1 group-hover:text-amber-800 transition-colors">
-                      {s.title}
-                    </h3>
-                    {s.tagline ? (
-                      <p className="text-gray-500 text-sm italic mb-2 line-clamp-2">{s.tagline}</p>
-                    ) : s.description ? (
-                      <p className="text-gray-500 text-sm mb-2 line-clamp-2">{s.description}</p>
-                    ) : null}
-                    <div className="flex items-center justify-between mt-3">
-                      {s.privateLessonRate && (
-                        <span className="text-sm font-semibold" style={{ color: "#b8922a" }}>
-                          {s.privateLessonRate}
-                        </span>
-                      )}
-                      <span className="text-xs text-gray-400 ml-auto">View studio &rarr;</span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Related Studios — general city */}
-      {relatedStudios.length > 0 && (
-        <section className="bg-gray-50 border-t border-gray-100 py-12 px-6">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="font-display font-bold text-gray-900 text-2xl mb-6">
-              More Studios in {studio.city}
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {relatedStudios.map((s) => {
-                const sChain = CHAIN_CONFIG[s.studioChain];
-                return (
-                  <Link
-                    key={s.slug}
-                    href={`/studios/${s.slug}`}
-                    className="group bg-white rounded-2xl border border-gray-200 p-5 shadow-sm
-                               hover:shadow-md hover:border-yellow-300 transition-all block"
-                  >
-                    <span
-                      className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold mb-3"
-                      style={{ color: sChain.color, background: sChain.bg }}
-                    >
-                      {sChain.label}
+                  )}
+                  {!chain && (
+                    <span className="badge t2" style={{ marginLeft: "0.3rem" }}>
+                      Independent
                     </span>
-                    <h3 className="font-display font-bold text-gray-900 text-base mb-1 group-hover:text-amber-800 transition-colors">
-                      {s.title}
-                    </h3>
-                    {s.tagline && (
-                      <p className="text-gray-500 text-sm italic mb-2 line-clamp-2">{s.tagline}</p>
-                    )}
-                    {s.description && !s.tagline && (
-                      <p className="text-gray-500 text-sm mb-2 line-clamp-2">{s.description}</p>
-                    )}
-                    <div className="flex items-center justify-between mt-3">
-                      {s.privateLessonRate && (
-                        <span className="text-sm font-semibold" style={{ color: "#b8922a" }}>
-                          {s.privateLessonRate}
-                        </span>
-                      )}
-                      <span className="text-xs text-gray-400 ml-auto">View studio &rarr;</span>
-                    </div>
-                  </Link>
-                );
-              })}
+                  )}
+                </div>
+                <div className="dh-rating">
+                  <span className="s">{stars}</span>
+                  <b>{(s.rating || 0).toFixed(1)}</b>
+                  <span>· {s.reviewCount || 0} reviews · Verified listing</span>
+                </div>
+              </div>
             </div>
-            <div className="mt-6">
-              <Link
-                href={`/studios/city/${studio.city.toLowerCase().replace(/\s+/g, "-")}`}
-                className="text-sm font-semibold text-amber-700 hover:text-amber-900 transition-colors"
-              >
-                See all pest control companies in {studio.city} &rarr;
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
 
-      {/* Footer */}
-      <footer className="py-10 px-6 bg-white border-t border-gray-100 mt-8">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div>
-            <div className="font-display font-bold text-gray-900">Green Pest Control Directory</div>
-            <p className="text-gray-400 text-sm mt-1">America&apos;s premier resource for private dance instruction</p>
-          </div>
-          <div className="flex gap-6 text-sm text-gray-400">
-            <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
-            <Link href="/studios" className="hover:text-gray-900 transition-colors">All Studios</Link>
+            <div className="dh-contact">
+              {s.phone && (
+                <a className="pill" href={`tel:${s.phone}`}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.97.36 1.92.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.89.34 1.84.57 2.81.7A2 2 0 0 1 22 16.92Z"/>
+                  </svg>
+                  {s.phone}
+                </a>
+              )}
+              {s.website && (
+                <a className="pill" href={s.website} target="_blank" rel="noopener noreferrer">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20Z"/>
+                  </svg>
+                  Website
+                </a>
+              )}
+            </div>
+
+            <div className="dh-actions">
+              <a className="btn btn-primary" href="#quote">Request a Free Quote →</a>
+              {s.phone && <a className="btn btn-ghost" href={`tel:${s.phone}`}>Call Now</a>}
+            </div>
           </div>
         </div>
-      </footer>
-    </main>
+      </section>
+
+      {/* ===================== MAIN LAYOUT ===================== */}
+      <div className="wrap">
+        <div className="layout">
+
+          {/* MAIN COLUMN */}
+          <div className="main">
+            {/* About */}
+            <div className="panel">
+              <h2><span className="em">📋</span>About this company</h2>
+              <p style={{ color: "var(--muted)" }}>
+                {s.description || `${s.title} is ${isTier1 ? "an Eco-Certified" : "a"} pest control company serving the ${s.city || ""} area.`}
+              </p>
+            </div>
+
+            {/* Service specialties */}
+            <div className="panel">
+              <h2><span className="em">🐜</span>Service specialties</h2>
+              <div className="tags">
+                {(s.serviceSpecialties || s.danceStyles || []).map((svc: string) => (
+                  <span className="tag" key={svc}>{svc}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Eco methods */}
+            <div className="panel">
+              <h2><span className="em">🌿</span>Eco methods they use</h2>
+              <div className="methods">
+                {displayMethods.map((m) => (
+                  <div className="method" key={m.key}>
+                    <span className="mi">{m.icon}</span>
+                    <div>
+                      <h3>{m.label}</h3>
+                      <p>{m.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Map */}
+            <div className="panel">
+              <h2><span className="em">📍</span>Service area</h2>
+              <div className="map">
+                <span className="pin">📍</span>
+                <span className="maplabel">
+                  {s.address ? `${s.address}, ` : ""}{location}
+                </span>
+              </div>
+            </div>
+
+            {/* FAQ */}
+            <div className="panel faq">
+              <h2><span className="em">❓</span>Eco practices — FAQ</h2>
+              <details open>
+                <summary>
+                  Are {s.title}&apos;s treatments safe for kids and pets?
+                  <span className="plus">+</span>
+                </summary>
+                <div className="ans">
+                  {isTier1
+                    ? `As an Eco-Certified provider, ${s.title} leads with botanical and EPA minimum-risk products. In most cases your family and pets can re-enter treated areas within an hour of application.`
+                    : `${s.title} offers eco-friendly treatment options that use lower-toxicity products. Ask about their pet-safe and child-safe service lines when requesting a quote.`
+                  }
+                </div>
+              </details>
+              <details>
+                <summary>
+                  What makes {s.title} &quot;{isTier1 ? "Eco-Certified" : "Eco Options"}&quot;?
+                  <span className="plus">+</span>
+                </summary>
+                <div className="ans">
+                  {isTier1
+                    ? `${s.title}'s entire business is built around green pest control — IPM and low-toxicity products are their default standard, not a paid add-on. They're classified Tier 1 in the Green Pest Directory.`
+                    : `${s.title} offers dedicated eco-friendly service lines alongside their conventional treatments. They're classified as "Eco Options Available" (Tier 2) in the Green Pest Directory.`
+                  }
+                </div>
+              </details>
+              <details>
+                <summary>
+                  Do green treatments work as well as conventional ones?
+                  <span className="plus">+</span>
+                </summary>
+                <div className="ans">
+                  For the vast majority of residential pest problems, yes. IPM addresses the root cause — entry points and food sources — so results often last longer than spray-only approaches.
+                </div>
+              </details>
+            </div>
+          </div>
+
+          {/* SIDEBAR */}
+          <aside className="side">
+            <div className="quote" id="quote">
+              <h2>Request a Free Quote</h2>
+              <p>No-obligation estimate from {s.title}.</p>
+              <form className="qform" action={`/api/contact/${slug}`} method="post">
+                <input type="text" name="name" placeholder="Your name" required />
+                <input type="tel" name="phone" placeholder="Phone number" required />
+                <input type="text" name="zip" placeholder="ZIP code" />
+                <textarea name="message" placeholder="What pest problem are you dealing with?"></textarea>
+                <button className="btn btn-primary" type="submit">Get My Free Quote</button>
+              </form>
+              <div className="reassure">🔒 Free · No spam · Replies within 24 hrs</div>
+            </div>
+
+            <div className="panel">
+              <h2><span className="em">🕘</span>Hours of operation</h2>
+              <ul className="hours">
+                {days.map((day, i) => {
+                  const hourKey = `hours${day.toLowerCase()}` as keyof Studio;
+                  const hours = (s as any)[hourKey] || (s as any)[`hours_${day.toLowerCase()}`];
+                  const isToday = i === todayIdx;
+                  return (
+                    <li key={day} className={isToday ? "today" : ""}>
+                      <span className="day">{day}{isToday ? " (today)" : ""}</span>
+                      <span className={hours && hours !== "Closed" ? "open" : "closed"}>
+                        {hours || "Hours not listed"}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+
+      {/* Schema.org */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ProfessionalService",
+            name: s.title,
+            "@id": `https://greenpestdirectory.com/studios/${slug}`,
+            url: s.website || `https://greenpestdirectory.com/studios/${slug}`,
+            telephone: s.phone || undefined,
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: s.address || undefined,
+              addressLocality: s.city || undefined,
+              addressRegion: s.state || undefined,
+              postalCode: s.zip || undefined,
+              addressCountry: "US",
+            },
+            ...(s.rating && {
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: String(s.rating),
+                reviewCount: String(s.reviewCount || 0),
+              },
+            }),
+            areaServed: s.city ? { "@type": "City", name: s.city } : undefined,
+          }),
+        }}
+      />
+    </>
   );
 }
