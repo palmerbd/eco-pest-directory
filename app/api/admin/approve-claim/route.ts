@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { Resend } from "resend";
 
-const resend     = new Resend(process.env.RESEND_API_KEY);
+const resend     = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
 const FROM_EMAIL = "leads@greenpestdirectory.com";
 const SITE_URL   = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirectory.com";
 

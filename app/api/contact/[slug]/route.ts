@@ -131,7 +131,7 @@ async function sendEmail({
   ip: string;
   key: string;
 }): Promise<NextResponse> {
-  const resend = new Resend(RESEND_API_KEY);
+  const resend = new Resend(RESEND_API_KEY || "re_placeholder");
 
   const subject = `New inquiry for ${studioTitle} — Green Pest Control Directory`;
 

@@ -22,7 +22,7 @@ const FROM_EMAIL    = "leads@greenpestdirectory.com";
 // GHL Workflow #1 — fires when a studio claim is submitted
 const GHL_CLAIM_WEBHOOK = "https://services.leadconnectorhq.com/hooks/gKAwJUdSQ6QMlAc0QXWb/webhook-trigger/77d77491-b7cf-463a-b228-c8876aaebb83";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
 
 // Base64 encode credentials for WP Application Password auth
 function wpAuthHeader(): string {

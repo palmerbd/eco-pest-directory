@@ -17,7 +17,7 @@ const SITE_URL    = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdi
 const ADMIN_EMAIL = "bpalmer@abilenewebsitedesign.com";
 const FROM_EMAIL  = "leads@greenpestdirectory.com";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
 
 export async function POST(req: NextRequest) {
   try {
