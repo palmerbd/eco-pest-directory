@@ -1,139 +1,137 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { getStudiosPage } from "@/lib/wordpress";
-import { StudioSearch } from "./StudioSearch";
+import { CHAIN_CONFIG } from "@/types/studio";
 
-// ISR: cache this page for 1 hour. Filtering is handled client-side by
-// StudioSearch — it lazily fetches the full studio dataset from /api/studios/all
-// only when the user applies a filter, so the server component is always the
-// same lightweight paginated default view regardless of URL params.
-//
-// This replaces force-dynamic (which ran the server component on every request).
-// CPU usage goes from ~1 invocation/request to ~1/hour.
-export const revalidate = 86400; // 24 hours — studio listing data changes infrequently; reduces ISR function invocations ~24x
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Find Private Pest Control Companies Near You",
+  title: "Find Eco-Friendly Pest Control Companies",
   description:
-    "Browse 3,400+ private pest control companies across America. Filter by city, dance style, and rating. Fred Astaire, Arthur Murray, Dance With Me, and elite independent studios offering ballroom, Latin, tango, and wedding dance lessons.",
-  alternates: { canonical: "https://www.greenpestdirectory.com/studios" },
+    "Browse all eco-friendly pest control companies nationwide. Filter by Eco-Certified providers, services, and ratings.",
 };
 
-const studiosPageSchema = {
-  "@context": "https://schema.org",
-  "@type": "SearchResultsPage",
-  name: "Find Private Pest Control Companies Near You",
-  description: "Search and filter 3,400+ private eco-friendly pest control studios across the United States.",
-  url: "https://www.greenpestdirectory.com/studios",
-};
-
-// ── Loading skeleton shown while Suspense / useSearchParams resolves ──────────
-
-function StudioSearchFallback() {
-  return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 space-y-3">
-        <div className="h-10 bg-gray-100 rounded-xl animate-pulse" />
-        <div className="flex gap-2">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-9 w-28 bg-gray-100 rounded-lg animate-pulse" />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default async function StudiosPage() {
-  // Always serve page 1, 48 studios. Filtering and subsequent pages are
-  // handled entirely client-side inside StudioSearch.
-  const { studios, total, totalPages } = await getStudiosPage(1, 48);
+export default async function CompaniesPage() {
+  const { studios, total } = await getStudiosPage(1, 48);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(studiosPageSchema) }}
-      />
-      <main>
-        {/* ── Header ────────────────────────────────────────────────────── */}
-        <section
-          className="py-16 px-6"
-          style={{ background: "linear-gradient(135deg, #0c1428 0%, #1a2d5a 100%)" }}
-        >
-          <div className="max-w-6xl mx-auto">
-            <nav className="text-sm mb-6">
-              <Link href="/" className="text-white/50 hover:text-white transition-colors">
-                Home
-              </Link>
-              <span className="text-white/30 mx-2">/</span>
-              <span className="text-white/80">Studios</span>
-            </nav>
-            <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#e8c560" }}>
-              The Directory
-            </p>
-            <h1
-              className="font-display text-white font-bold mb-4"
-              style={{ fontSize: "clamp(2rem, 5vw, 3rem)" }}
-            >
-              Private Pest Control Companies
-            </h1>
-            <p className="text-white/60 text-lg max-w-2xl">
-              {total > 0
-                ? `${total.toLocaleString()} elite studios listed — search and filter to find the perfect fit.`
-                : "Discover elite private pest control companies offering instruction in ballroom, Latin, tango, and more."}
-            </p>
+      <section className="chero" style={{ padding: "24px 0 36px" }}>
+        <div className="wrap">
+          <h1>
+            Eco-Friendly Pest Control{" "}
+            <span className="hl">Companies</span>
+          </h1>
+          <p>
+            Browse {total} pest control companies offering green, organic, and
+            pet-safe treatments nationwide.
+          </p>
+        </div>
+      </section>
+
+      <div className="wrap">
+        <div className="filterbar" style={{ marginTop: "-20px", position: "relative", zIndex: 5 }}>
+          <div className="seg">
+            <button className="active">All ({total})</button>
+            <button>Eco-Certified</button>
+            <button>Eco Options</button>
           </div>
-        </section>
+          <div className="selects">
+            <select aria-label="Service">
+              <option>All Services</option>
+              <option>Termite</option>
+              <option>Bed Bug</option>
+              <option>Mosquito</option>
+              <option>Rodent</option>
+              <option>General Pest</option>
+            </select>
+            <select aria-label="Sort">
+              <option>Eco-Friendly First</option>
+              <option>Rating</option>
+              <option>Name (A–Z)</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-        {/* ── Search + filter + grid (Suspense required for useSearchParams) ── */}
-        <Suspense fallback={<StudioSearchFallback />}>
-          <StudioSearch
-            studios={studios}
-            currentPage={1}
-            totalPages={totalPages}
-            totalStudios={total}
-          />
-        </Suspense>
+      <section className="block" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="results-meta">
+            <h2>{total} eco-friendly providers</h2>
+            <span>Showing 1–{Math.min(studios.length, 48)}</span>
+          </div>
 
-        {/* ── CTA banner ──────────────────────────────────────────────────── */}
-        <section className="py-16 px-6 bg-white border-t border-gray-200">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display font-bold text-gray-900 text-2xl mb-3">
-              Own a Pest Control Company?
-            </h2>
-            <p className="text-gray-500 mb-6">
-              List your studio in our directory and connect with students actively searching for private lessons.
+          <div className="grid">
+            {studios.map((s: any) => {
+              const isTier1 = s.ecoTier === "tier_1";
+              const chain = s.studioChain
+                ? CHAIN_CONFIG[s.studioChain as keyof typeof CHAIN_CONFIG]
+                : null;
+              return (
+                <article className="lcard" key={s.slug}>
+                  <div className="rowtop">
+                    <div>
+                      <h3>
+                        <Link href={`/studios/${s.slug}`}>{s.title}</Link>
+                      </h3>
+                      <div className="loc">
+                        📍 {s.city}
+                        {s.state ? `, ${s.state}` : ""}
+                      </div>
+                    </div>
+                    <span className={`badge ${isTier1 ? "t1" : "t2"}`}>
+                      {isTier1 ? "✓ Eco-Certified" : "◆ Eco Options"}
+                    </span>
+                  </div>
+                  <div className="stars">
+                    <span className="s">
+                      {"★".repeat(Math.round(s.rating || 0))}
+                      {"☆".repeat(5 - Math.round(s.rating || 0))}
+                    </span>
+                    <b>{(s.rating || 0).toFixed(1)}</b>
+                    <span>({s.reviewCount || 0})</span>
+                  </div>
+                  <div className="chips">
+                    {(s.serviceSpecialties || s.danceStyles || [])
+                      .slice(0, 3)
+                      .map((svc: string) => (
+                        <span className="chip" key={svc}>
+                          {svc}
+                        </span>
+                      ))}
+                  </div>
+                  <div className="meta">
+                    <span className="chainbadge">
+                      {chain?.label || "Independent"}
+                    </span>
+                    <Link
+                      className="btn btn-primary"
+                      href={`/studios/${s.slug}`}
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: "0 0 56px" }}>
+        <div className="wrap">
+          <div className="ctastrip">
+            <h2>Run a green pest control company?</h2>
+            <p>
+              Get found by homeowners searching for eco-friendly providers.
+              Claim your free listing in minutes.
             </p>
-            <Link
-              href="/contact"
-              className="inline-block px-8 py-3 rounded-lg font-bold text-gray-900 transition-all hover:brightness-110"
-              style={{ background: "linear-gradient(135deg, #b8922a, #e8c560)" }}
-            >
-              Get Listed
+            <Link className="btn btn-light" href="/claim">
+              List Your Company →
             </Link>
           </div>
-        </section>
-
-        {/* ── Footer ──────────────────────────────────────────────────────── */}
-        <footer className="py-10 px-6 bg-white border-t border-gray-100">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-              <div className="font-display font-bold text-gray-900">Green Pest Control Directory</div>
-              <p className="text-gray-400 text-sm mt-1">
-                America&apos;s premier resource for private dance instruction
-              </p>
-            </div>
-            <div className="flex gap-6 text-sm text-gray-400">
-              <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
-              <Link href="/studios" className="hover:text-gray-900 transition-colors">All Studios</Link>
-              <Link href="/ballroom-dance-lessons" className="hover:text-gray-900 transition-colors">Ballroom</Link>
-              <Link href="/wedding-dance-lessons" className="hover:text-gray-900 transition-colors">Wedding Dance</Link>
-            </div>
-          </div>
-        </footer>
-      </main>
+        </div>
+      </section>
     </>
   );
 }

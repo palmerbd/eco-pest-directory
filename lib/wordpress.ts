@@ -86,8 +86,8 @@ function mapWPPost(post: Record<string, unknown>): Studio {
   const acf   = (post.acf   as Record<string, unknown>) || {};
   const title = decodeHtmlEntities((post.title as Record<string, string>)?.rendered || "");
 
-  const city  = (acf.studio_address_city  as string) || "";
-  const state = (acf.studio_address_state as string) || "";
+  const city  = (acf.studio_city as string) || (acf.studio_address_city as string) || "";
+  const state = (acf.studio_state as string) || (acf.studio_address_state as string) || "";
 
   const rawStyles  = (acf.service_specialties as string[]) || (acf.studio_dance_styles as string[]) || [];
   const danceStyles: ServiceType[] = [
@@ -113,12 +113,12 @@ function mapWPPost(post: Record<string, unknown>): Studio {
           ?.replace(/<[^>]+>/g, "")
           .trim() || ""
       ),
-    phone:                 (acf.studio_phone          as string) || "",
-    address:               (acf.studio_address_street as string) || "",
+    phone:                 (acf.studio_phone as string) || "",
+    address:               (acf.studio_address as string) || (acf.studio_address_street as string) || "",
     city,
     state,
-    zip:                   (acf.studio_address_zip    as string) || "",
-    website:               (acf.studio_website        as string) || undefined,
+    zip:                   (acf.studio_zip as string) || (acf.studio_address_zip as string) || "",
+    website:               (acf.studio_website as string) || undefined,
     email:                 (acf.studio_email          as string) || undefined,
     studioChain:           detectChain(title),
     danceStyles,
@@ -155,13 +155,13 @@ function mapWPPost(post: Record<string, unknown>): Studio {
     satisfactionGuarantee: amenities.includes("satisfaction_guarantee"),
     serviceStartingPrice:  (acf.service_starting_price as string) || undefined,
     hours: {
-      monday:    (acf.studio_hours_mon as string) || undefined,
-      tuesday:   (acf.studio_hours_tue as string) || undefined,
-      wednesday: (acf.studio_hours_wed as string) || undefined,
-      thursday:  (acf.studio_hours_thu as string) || undefined,
-      friday:    (acf.studio_hours_fri as string) || undefined,
-      saturday:  (acf.studio_hours_sat as string) || undefined,
-      sunday:    (acf.studio_hours_sun as string) || undefined,
+      monday:    (acf.hours_monday as string) || (acf.studio_hours_mon as string) || undefined,
+      tuesday:   (acf.hours_tuesday as string) || (acf.studio_hours_tue as string) || undefined,
+      wednesday: (acf.hours_wednesday as string) || (acf.studio_hours_wed as string) || undefined,
+      thursday:  (acf.hours_thursday as string) || (acf.studio_hours_thu as string) || undefined,
+      friday:    (acf.hours_friday as string) || (acf.studio_hours_fri as string) || undefined,
+      saturday:  (acf.hours_saturday as string) || (acf.studio_hours_sat as string) || undefined,
+      sunday:    (acf.hours_sunday as string) || (acf.studio_hours_sun as string) || undefined,
     },
     featuredImage: undefined,
     claimed:       ["claimed", "paid"].includes((acf.studio_tier as string) || ""),
