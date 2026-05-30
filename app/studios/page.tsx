@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getStudiosPage } from "@/lib/wordpress";
 import { CHAIN_CONFIG } from "@/types/studio";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Find Eco-Friendly Pest Control Companies",
