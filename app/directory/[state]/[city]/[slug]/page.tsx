@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStudio } from "@/lib/wordpress";
+
 import { CHAIN_CONFIG } from "@/types/studio";
 
 export const dynamic = "force-dynamic";
@@ -28,9 +28,27 @@ export async function generateMetadata({ params }: { params: Promise<{ state: st
 
 export default async function CompanyPage({ params }: { params: Promise<{ state: string; city: string; slug: string }> }) {
   const { state: stateSlug, city: citySlug, slug } = await params;
-  const studio = await getStudio(slug);
-  if (!studio) notFound();
-  const s = studio as any;
+  const wpUrl = process.env.WP_API_URL || process.env.NEXT_PUBLIC_WP_API_URL || "";
+  let s: any = null;
+  try {
+    const res = await fetch(\`\${wpUrl}/wp/v2/pest_company?slug=\${slug}&status=publish&_fields=id,slug,title,excerpt,acf\`, { cache: "no-store" });
+    const posts = await res.json();
+    if (!posts.length) notFound();
+    const post = posts[0];
+    const acf = post.acf || {};
+    const specs = typeof acf.service_specialties === "string" ? acf.service_specialties.split(",").filter(Boolean) : (acf.service_specialties || []);
+    s = {
+      title: (post.title?.rendered || "").replace(/&#(\d+);/g, (_:any,n:any) => String.fromCharCode(Number(n))).replace(/&amp;/g,"&"),
+      city: acf.studio_city || "", state: acf.studio_state || "", zip: acf.studio_zip || "",
+      address: acf.studio_address || "", phone: acf.studio_phone || "", website: acf.studio_website || "",
+      rating: Number(acf.studio_rating) || 0, reviewCount: Number(acf.studio_review_count) || 0,
+      ecoTier: acf.eco_tier || "unclassified", studioChain: acf.studio_chain || "independent",
+      description: (post.excerpt?.rendered || "").replace(/<[^>]+>/g,"").trim(),
+      serviceSpecialties: specs, danceStyles: specs,
+      hours: { monday: acf.hours_monday, tuesday: acf.hours_tuesday, wednesday: acf.hours_wednesday,
+               thursday: acf.hours_thursday, friday: acf.hours_friday, saturday: acf.hours_saturday, sunday: acf.hours_sunday },
+    };
+  } catch { notFound(); }
   const loc = [s.city, s.state].filter(Boolean).join(", ");
   const t1 = s.ecoTier === "tier_1";
   const chain = s.studioChain ? CHAIN_CONFIG[s.studioChain as keyof typeof CHAIN_CONFIG] : null;
