@@ -294,14 +294,14 @@ export async function getStudio(slug: string): Promise<Studio | null> {
     // Override tier from Supabase claims — single source of truth for claim status.
     // WP ACF studio_tier field is a best-effort sync; Supabase is authoritative.
     try {
-      const { data: claim } = await supabaseAdmin
+      const { data: claim } = supabaseAdmin ? await supabaseAdmin
         .from("claims")
         .select("status, tier")
         .eq("studio_slug", slug)
         .in("status", ["verified", "approved"])
         .order("created_at", { ascending: false })
         .limit(1)
-        .maybeSingle();
+        .maybeSingle() : { data: null };
 
       if (claim) {
         studio.claimed = true;
