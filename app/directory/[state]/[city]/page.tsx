@@ -1,12 +1,42 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStudiosByCity, citySlugToName, getAllStudios, getMetroSlug, getMetroSuburbs } from "@/lib/wordpress";
+import { citySlugToName, getMetroSlug, getMetroSuburbs } from "@/lib/wordpress";
 import { CHAIN_CONFIG } from "@/types/studio";
 
 export const dynamic = "force-dynamic";
 
 const SVC = { general_pest:"General Pest", termite:"Termite", rodent:"Rodent", bed_bug:"Bed Bug", mosquito:"Mosquito", wildlife:"Wildlife", cockroach:"Cockroach", ant:"Ant", fumigation:"Fumigation", commercial:"Commercial", organic:"Organic", lawn_pest:"Lawn Pest" } as Record<string,string>;
+
+async function fetchByCity(citySlug: string) {
+  const wpUrl = process.env.WP_API_URL || process.env.NEXT_PUBLIC_WP_API_URL || "";
+  const cityName = citySlugToName(citySlug).toLowerCase();
+  try {
+    const all: any[] = [];
+    for (let page = 1; page <= 20; page++) {
+      const res = await fetch(\`\${wpUrl}/wp/v2/pest_company?per_page=100&page=\${page}&status=publish&_fields=id,slug,title,excerpt,acf\`, { cache: "no-store" });
+      if (!res.ok) break;
+      const data = await res.json();
+      if (!data.length) break;
+      all.push(...data);
+    }
+    return all.filter((post: any) => {
+      const city = (post.acf?.studio_city || "").toLowerCase();
+      return city === cityName;
+    }).map((post: any) => {
+      const acf = post.acf || {};
+      const specs = typeof acf.service_specialties === "string" ? acf.service_specialties.split(",").filter(Boolean) : (acf.service_specialties || ["general_pest"]);
+      return {
+        slug: post.slug,
+        title: dec(post.title?.rendered || ""),
+        city: acf.studio_city || "", state: acf.studio_state || "",
+        rating: Number(acf.studio_rating) || 0, reviewCount: Number(acf.studio_review_count) || 0,
+        ecoTier: acf.eco_tier || "unclassified", studioChain: acf.studio_chain || "independent",
+        serviceSpecialties: specs, danceStyles: specs,
+      };
+    });
+  } catch { return []; }
+}
 
 function dec(s: string) {
   return s.replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
@@ -16,7 +46,7 @@ function dec(s: string) {
 export async function generateMetadata({ params }: { params: Promise<{ state: string; city: string }> }): Promise<Metadata> {
   const { state, city } = await params;
   const cityName = citySlugToName(city);
-  const studios = await getStudiosByCity(city);
+  const studios = await fetchByCity(city);
   if (!studios.length) return { title: "City Not Found" };
   const st = studios[0]?.state || state.toUpperCase();
   return {
@@ -29,7 +59,7 @@ export async function generateMetadata({ params }: { params: Promise<{ state: st
 export default async function CityPage({ params }: { params: Promise<{ state: string; city: string }> }) {
   const { state: stateSlug, city } = await params;
   const cityName = citySlugToName(city);
-  const studios = await getStudiosByCity(city);
+  const studios = await fetchByCity(city);
   if (!studios.length) notFound();
   const st = studios[0]?.state || stateSlug.toUpperCase();
   const tier1 = studios.filter((s: any) => s.ecoTier === "tier_1").length;
