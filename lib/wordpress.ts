@@ -89,14 +89,21 @@ function mapWPPost(post: Record<string, unknown>): Studio {
   const city  = (acf.studio_city as string) || (acf.studio_address_city as string) || "";
   const state = (acf.studio_state as string) || (acf.studio_address_state as string) || "";
 
-  const rawStyles  = (acf.service_specialties as string[]) || (acf.studio_dance_styles as string[]) || [];
+  // service_specialties may be a comma-separated string or an array
+  const rawSpecialties = acf.service_specialties || acf.studio_dance_styles || [];
+  const rawStyles: string[] = typeof rawSpecialties === "string"
+    ? rawSpecialties.split(",").map((s: string) => s.trim()).filter(Boolean)
+    : (rawSpecialties as string[]);
   const danceStyles: ServiceType[] = [
     ...new Set(rawStyles.map((s) => SERVICE_MAP[s]).filter(Boolean) as ServiceType[]),
   ];
 
   const amenities = (acf.studio_amenities as string[]) || [];
   const ecoTier = (acf.eco_tier as EcoTier) || "unclassified";
-  const ecoServices = (acf.eco_services as EcoService[]) || [];
+  const rawEco = acf.eco_services || [];
+  const ecoServices: EcoService[] = typeof rawEco === "string"
+    ? rawEco.split(",").map((s: string) => s.trim()).filter(Boolean) as EcoService[]
+    : (rawEco as EcoService[]);
   const ecoVerified = (acf.eco_verified as boolean) || false;
   const ecoSource = (acf.eco_source as string) || "";
   const priceDropin  = acf.studio_price_dropin  as number | undefined;
@@ -134,12 +141,6 @@ function mapWPPost(post: Record<string, unknown>): Studio {
     facebookUrl:           (acf.studio_facebook_url    as string) || undefined,
     instagramUrl:          (acf.studio_instagram_url   as string) || undefined,
     amenities,
-    
-    
-    
-    
-    
-    
     
     ecoTier,
     ecoServices,
