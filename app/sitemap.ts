@@ -1,121 +1,51 @@
 import { MetadataRoute } from "next";
-import { getAllStudios, getBlogSlugs } from "@/lib/wordpress";
-import { COMPETITIONS } from "@/lib/competitions-data";
-import { COMP_REGION_LABELS, COMP_STYLE_LABELS } from "@/types/competition";
-import { DANCE_STYLES } from "@/types/studio";
+import { getAllStudios } from "@/lib/wordpress";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirectory.com";
 
-const CITIES = [
-  "los-angeles", "new-york-city", "chicago", "houston", "dallas",
-  "miami", "phoenix", "atlanta", "seattle", "denver",
-  "las-vegas", "boston", "san-diego", "austin", "tampa",
-  "nashville", "orlando", "portland", "san-antonio", "minneapolis",
-];
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [studios, blogSlugs] = await Promise.all([getAllStudios(), getBlogSlugs()]);
+  const studios = await getAllStudios();
 
-  const studioEntries: MetadataRoute.Sitemap = studios.map((studio) => ({
-    url: `${BASE_URL}/studios/${studio.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
-
-  const cityEntries: MetadataRoute.Sitemap = CITIES.map((city) => ({
-    url: `${BASE_URL}/studios/city/${city}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: 0.7,
-  }));
-
-  // City × Style intersection pages — high-value SEO targets
-  const cityStyleEntries: MetadataRoute.Sitemap = CITIES.flatMap((city) =>
-    DANCE_STYLES.map((style) => ({
-      url: `${BASE_URL}/studios/city/${city}/style/${style.replace(/_/g, "-")}`,
+  // Company detail pages: /[state]/[city]/[slug]
+  const companyEntries: MetadataRoute.Sitemap = studios.map((s: any) => {
+    const state = (s.state || "us").toLowerCase();
+    const city = (s.city || "unknown").toLowerCase().replace(/\s+/g, "-");
+    return {
+      url: `${BASE_URL}/${state}/${city}/${s.slug}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
-      priority: 0.65,
-    }))
-  );
-
-  const blogEntries: MetadataRoute.Sitemap = blogSlugs.map((slug) => ({
-    url: `${BASE_URL}/blog/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.75,
-  }));
-
-  // ── Competition routes ──────────────────────────────────────────────────────
-  const competitionEntries: MetadataRoute.Sitemap = COMPETITIONS.map((c) => ({
-    url: `${BASE_URL}/competitions/${c.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.75,
-  }));
-
-  const competitionRegionEntries: MetadataRoute.Sitemap = Object.keys(COMP_REGION_LABELS).map((r) => ({
-    url: `${BASE_URL}/competitions/region/${r}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
-
-  const competitionStyleEntries: MetadataRoute.Sitemap = Object.keys(COMP_STYLE_LABELS).map((s) => ({
-    url: `${BASE_URL}/competitions/style/${s}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
-
-  const staticEntries: MetadataRoute.Sitemap = [
-    {
-      url: BASE_URL,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
-    {
-      url: `${BASE_URL}/studios`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/competitions`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/blog`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
       priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/dance-lessons-near-me`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/cities`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
+    };
+  });
+
+  // City pages: /[state]/[city] — deduplicated
+  const citySet = new Set<string>();
+  studios.forEach((s: any) => {
+    const state = (s.state || "").toLowerCase();
+    const city = (s.city || "").toLowerCase().replace(/\s+/g, "-");
+    if (state && city) citySet.add(`${state}/${city}`);
+  });
+  const cityEntries: MetadataRoute.Sitemap = Array.from(citySet).map((path) => ({
+    url: `${BASE_URL}/${path}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  // Static pages
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: BASE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
+    { url: `${BASE_URL}/directory`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE_URL}/eco-friendly-pest-control`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE_URL}/organic-pest-control`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/pet-safe-pest-control`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/ipm-pest-control`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/claim`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/privacy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
+    { url: `${BASE_URL}/terms`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  return [
-    ...staticEntries,
-    ...cityEntries,
-    ...cityStyleEntries,
-    ...studioEntries,
-    ...blogEntries,
-    ...competitionEntries,
-    ...competitionRegionEntries,
-    ...competitionStyleEntries,
-  ];
+  return [...staticPages, ...cityEntries, ...companyEntries];
 }

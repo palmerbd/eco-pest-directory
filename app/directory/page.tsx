@@ -2,6 +2,21 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { CHAIN_CONFIG } from "@/types/studio";
 
+function decodeEntities(s) {
+  return s.replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, n) => String.fromCharCode(parseInt(n, 16)))
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&rsquo;/g, "\u2019")
+    .replace(/&lsquo;/g, "\u2018").replace(/&ndash;/g, "\u2013").replace(/&mdash;/g, "\u2014");
+}
+
+const SERVICE_DISPLAY = {
+  general_pest: "General Pest", termite: "Termite", rodent: "Rodent",
+  bed_bug: "Bed Bug", mosquito: "Mosquito", wildlife: "Wildlife",
+  cockroach: "Cockroach", ant: "Ant", fumigation: "Fumigation",
+  commercial: "Commercial", organic: "Organic", lawn_pest: "Lawn Pest",
+};
+
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -35,7 +50,7 @@ async function fetchCompanies() {
     
     const studios = raw.map((post: any) => {
       const acf = post.acf || {};
-      const title = post.title?.rendered || "";
+      const title = decodeEntities(post.title?.rendered || "");
       const city = acf.studio_city || acf.studio_address_city || "";
       const state = acf.studio_state || acf.studio_address_state || "";
       
@@ -104,7 +119,7 @@ export default async function CompaniesPage() {
                 <article className="lcard" key={s.slug}>
                   <div className="rowtop">
                     <div>
-                      <h3><Link href={`/studios/${s.slug}`}>{s.title}</Link></h3>
+                      <h3><Link href={`/${(s.state || "us").toLowerCase()}/${(s.city || "unknown").toLowerCase().replace(/\s+/g, "-")}/${s.slug}`}>{s.title}</Link></h3>
                       <div className="loc">📍 {s.city}{s.state ? `, ${s.state}` : ""}</div>
                     </div>
                     <span className={`badge ${isTier1 ? "t1" : "t2"}`}>
@@ -118,7 +133,7 @@ export default async function CompaniesPage() {
                   </div>
                   <div className="meta">
                     <span className="chainbadge">{chain?.label || "Independent"}</span>
-                    <Link className="btn btn-primary" href={`/studios/${s.slug}`}>View Details</Link>
+                    <Link className="btn btn-primary" href={`/${(s.state || "us").toLowerCase()}/${(s.city || "unknown").toLowerCase().replace(/\s+/g, "-")}/${s.slug}`}>View Details</Link>
                   </div>
                 </article>
               );

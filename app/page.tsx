@@ -24,7 +24,7 @@ export default async function HomePage() {
                 organic, and pet-safe treatments. Compare eco-certified
                 providers nationwide.
               </p>
-              <form className="search" action="/companies" method="get">
+              <form className="search" action="/directory" method="get">
                 <div className="field">
                   <svg
                     width="20"
@@ -220,7 +220,7 @@ export default async function HomePage() {
                     </div>
                     <div className="meta">
                       <span className="chainbadge">{s.chain || "Independent"}</span>
-                      <Link className="btn btn-primary" href={`/companies/${s.slug}`}>
+                      <Link className="btn btn-primary" href={`/directory/${s.slug}`}>
                         View Details
                       </Link>
                     </div>
@@ -267,7 +267,7 @@ export default async function HomePage() {
                     </div>
                     <div className="meta">
                       <span className="chainbadge">{c.chain}</span>
-                      <Link className="btn btn-primary" href="/companies">
+                      <Link className="btn btn-primary" href="/directory">
                         View Details
                       </Link>
                     </div>

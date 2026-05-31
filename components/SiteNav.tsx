@@ -12,7 +12,7 @@ export default function SiteNav() {
           <span className="leaf">🌿</span> Green Pest Directory
         </Link>
         <nav className="nav-links">
-          <Link href="/companies">Find Companies</Link>
+          <Link href="/directory">Find Companies</Link>
           <Link href="/eco-certified">Eco-Certified</Link>
           <Link href="/about">How It Works</Link>
           <Link href="/claim">For Businesses</Link>
@@ -34,7 +34,7 @@ export default function SiteNav() {
       </div>
       <div className="wrap">
         <div className={`mobile-menu${mobileOpen ? " open" : ""}`}>
-          <Link href="/companies" onClick={() => setMobileOpen(false)}>Find Companies</Link>
+          <Link href="/directory" onClick={() => setMobileOpen(false)}>Find Companies</Link>
           <Link href="/eco-certified" onClick={() => setMobileOpen(false)}>Eco-Certified</Link>
           <Link href="/about" onClick={() => setMobileOpen(false)}>How It Works</Link>
           <Link href="/claim" onClick={() => setMobileOpen(false)}>For Businesses</Link>
