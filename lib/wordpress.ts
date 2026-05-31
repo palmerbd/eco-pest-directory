@@ -291,26 +291,7 @@ export async function getStudio(slug: string): Promise<Studio | null> {
     if (!posts.length) return null;
     const studio = mapWPPost(posts[0]);
 
-    // Override tier from Supabase claims — single source of truth for claim status.
-    // WP ACF studio_tier field is a best-effort sync; Supabase is authoritative.
-    try {
-      const { data: claim } = supabaseAdmin ? await supabaseAdmin
-        .from("claims")
-        .select("status, tier")
-        .eq("studio_slug", slug)
-        .in("status", ["verified", "approved"])
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle() : { data: null };
-
-      if (claim) {
-        studio.claimed = true;
-        const rawTier = (claim.tier as string) || "claimed";
-        studio.tier = (["free","claimed","paid"].includes(rawTier) ? rawTier as ListingTier : "claimed");
-      }
-    } catch {
-      // Non-fatal — fall back to WP tier value
-    }
+    // Supabase claims override skipped — not configured yet
 
     return studio;
   } catch {
