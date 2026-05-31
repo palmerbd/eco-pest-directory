@@ -119,7 +119,7 @@ export default async function CompaniesPage() {
                 <article className="lcard" key={s.slug}>
                   <div className="rowtop">
                     <div>
-                      <h3><Link href={`/${(s.state || "us").toLowerCase()}/${(s.city || "unknown").toLowerCase().replace(/\s+/g, "-")}/${s.slug}`}>{s.title}</Link></h3>
+                      <h3><Link href={`/directory/${(s.state || "us").toLowerCase()}/${(s.city || "unknown").toLowerCase().replace(/\s+/g, "-")}/${s.slug}`}>{s.title}</Link></h3>
                       <div className="loc">📍 {s.city}{s.state ? `, ${s.state}` : ""}</div>
                     </div>
                     <span className={`badge ${isTier1 ? "t1" : "t2"}`}>
@@ -128,12 +128,12 @@ export default async function CompaniesPage() {
                   </div>
                   <div className="chips">
                     {s.serviceSpecialties?.slice(0, 3).map((svc: string) => (
-                      <span className="chip" key={svc}>{svc}</span>
+                      <span className="chip" key={svc}>{SERVICE_DISPLAY[svc as keyof typeof SERVICE_DISPLAY] || svc.replace(/_/g, " ")}</span>
                     ))}
                   </div>
                   <div className="meta">
                     <span className="chainbadge">{chain?.label || "Independent"}</span>
-                    <Link className="btn btn-primary" href={`/${(s.state || "us").toLowerCase()}/${(s.city || "unknown").toLowerCase().replace(/\s+/g, "-")}/${s.slug}`}>View Details</Link>
+                    <Link className="btn btn-primary" href={`/directory/${(s.state || "us").toLowerCase()}/${(s.city || "unknown").toLowerCase().replace(/\s+/g, "-")}/${s.slug}`}>View Details</Link>
                   </div>
                 </article>
               );
