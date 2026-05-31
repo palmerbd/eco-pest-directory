@@ -14,7 +14,7 @@ async function fetchByCity(citySlug: string) {
   try {
     const all: any[] = [];
     for (let page = 1; page <= 20; page++) {
-      const res = await fetch(\`\${wpUrl}/wp/v2/pest_company?per_page=100&page=\${page}&status=publish&_fields=id,slug,title,excerpt,acf\`, { cache: "no-store" });
+      const res = await fetch(`${wpUrl}/wp/v2/pest_company?per_page=100&page=${page}&status=publish&_fields=id,slug,title,excerpt,acf`, { cache: "no-store" });
       if (!res.ok) break;
       const data = await res.json();
       if (!data.length) break;
