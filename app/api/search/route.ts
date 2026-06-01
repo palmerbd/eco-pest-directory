@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 
-// US state name → abbreviation mapping
 const STATES: Record<string, string> = {
   alabama:"al",alaska:"ak",arizona:"az",arkansas:"ar",california:"ca",colorado:"co",
   connecticut:"ct",delaware:"de",florida:"fl",georgia:"ga",hawaii:"hi",idaho:"id",
@@ -18,15 +17,10 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
 
-  if (!q) {
-    return NextResponse.redirect(new URL("/directory", url.origin));
-  }
+  if (!q) return NextResponse.redirect(new URL("/directory", url.origin));
 
-  // Try to parse as "city, state" or "city state"
+  // Parse "city, state" or "city state"
   const parts = q.split(/[,\s]+/).filter(Boolean);
-  const citySlug = parts[0]?.replace(/\s+/g, "-") || q.replace(/\s+/g, "-");
-
-  // Check if last part is a state abbreviation or name
   const lastPart = parts[parts.length - 1]?.toLowerCase();
   let stateSlug = "";
 
@@ -41,6 +35,47 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL(`/directory/${stateSlug}/${city}`, url.origin));
   }
 
-  // Just a city name — redirect to directory with search
+  // No state provided — search WP for matching cities
+  const wpUrl = process.env.WP_API_URL || process.env.NEXT_PUBLIC_WP_API_URL || "";
+  try {
+    const all: any[] = [];
+    for (let page = 1; page <= 10; page++) {
+      const res = await fetch(`${wpUrl}/wp/v2/pest_company?per_page=100&page=${page}&status=publish&_fields=acf`, { next: { revalidate: 3600 } });
+      if (!res.ok) break;
+      const data = await res.json();
+      if (!data.length) break;
+      all.push(...data);
+    }
+
+    // Find cities matching the query
+    const matches = new Map<string, { city: string; state: string; count: number }>();
+    for (const post of all) {
+      const acf = post.acf || {};
+      const city = (acf.studio_city || "").toLowerCase();
+      const state = (acf.studio_state || "").toLowerCase();
+      if (city.includes(q) || q.includes(city)) {
+        const key = `${state}/${city.replace(/\s+/g, "-")}`;
+        if (!matches.has(key)) {
+          matches.set(key, { city: acf.studio_city, state: acf.studio_state, count: 0 });
+        }
+        matches.get(key)!.count++;
+      }
+    }
+
+    // Best match — redirect to city page
+    if (matches.size >= 1) {
+      // Pick the one with the most listings
+      let best = "";
+      let bestCount = 0;
+      for (const [key, val] of matches) {
+        if (val.count > bestCount) { best = key; bestCount = val.count; }
+      }
+      if (best) {
+        return NextResponse.redirect(new URL(`/directory/${best}`, url.origin));
+      }
+    }
+  } catch {}
+
+  // Fallback — go to directory
   return NextResponse.redirect(new URL(`/directory?q=${encodeURIComponent(q)}`, url.origin));
 }
