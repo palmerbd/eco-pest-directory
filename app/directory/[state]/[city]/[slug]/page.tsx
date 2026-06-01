@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CHAIN_CONFIG } from "@/types/studio";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const SVC: Record<string,string> = { general_pest:"General Pest", termite:"Termite", rodent:"Rodent", bed_bug:"Bed Bug", mosquito:"Mosquito", wildlife:"Wildlife", cockroach:"Cockroach", ant:"Ant", fumigation:"Fumigation", commercial:"Commercial", organic:"Organic", lawn_pest:"Lawn Pest" };
 
@@ -15,7 +15,7 @@ function dec(s: string) {
 async function fetchCompany(slug: string) {
   const wpUrl = process.env.WP_API_URL || process.env.NEXT_PUBLIC_WP_API_URL || "";
   try {
-    const res = await fetch(`${wpUrl}/wp/v2/pest_company?slug=${slug}&status=publish&_fields=id,slug,title,excerpt,acf`, { cache: "no-store" });
+    const res = await fetch(`${wpUrl}/wp/v2/pest_company?slug=${slug}&status=publish&_fields=id,slug,title,excerpt,acf`, { next: { revalidate: 3600 } });
     const posts = await res.json();
     if (!posts?.length) return null;
     const post = posts[0];

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { citySlugToName, getMetroSlug, getMetroSuburbs } from "@/lib/wordpress";
 import { CHAIN_CONFIG } from "@/types/studio";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const SVC = { general_pest:"General Pest", termite:"Termite", rodent:"Rodent", bed_bug:"Bed Bug", mosquito:"Mosquito", wildlife:"Wildlife", cockroach:"Cockroach", ant:"Ant", fumigation:"Fumigation", commercial:"Commercial", organic:"Organic", lawn_pest:"Lawn Pest" } as Record<string,string>;
 
@@ -14,7 +14,7 @@ async function fetchByCity(citySlug: string) {
   try {
     const all: any[] = [];
     for (let page = 1; page <= 20; page++) {
-      const res = await fetch(`${wpUrl}/wp/v2/pest_company?per_page=100&page=${page}&status=publish&_fields=id,slug,title,excerpt,acf`, { cache: "no-store" });
+      const res = await fetch(`${wpUrl}/wp/v2/pest_company?per_page=100&page=${page}&status=publish&_fields=id,slug,title,excerpt,acf`, { next: { revalidate: 3600 } });
       if (!res.ok) break;
       const data = await res.json();
       if (!data.length) break;

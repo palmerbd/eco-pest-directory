@@ -17,7 +17,7 @@ const SERVICE_DISPLAY = {
   commercial: "Commercial", organic: "Organic", lawn_pest: "Lawn Pest",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // ISR: refresh every hour
 
 export const metadata: Metadata = {
   title: "Find Eco-Friendly Pest Control Companies",
