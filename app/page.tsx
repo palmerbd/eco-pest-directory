@@ -305,27 +305,27 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="hubs">
-            <Link className="hub" href="/directory?eco=organic">
+            <Link className="hub" href="/organic-pest-control">
               <span className="ic">🌱</span>
               <h3>Organic Pest Control</h3>
               <span className="go">Explore →</span>
             </Link>
-            <Link className="hub" href="/directory?eco=pet-safe">
+            <Link className="hub" href="/pet-safe-pest-control">
               <span className="ic">🐾</span>
               <h3>Pet-Safe Pest Control</h3>
               <span className="go">Explore →</span>
             </Link>
-            <Link className="hub" href="/directory?eco=ipm">
+            <Link className="hub" href="/ipm-pest-control">
               <span className="ic">♻️</span>
               <h3>IPM Companies</h3>
               <span className="go">Explore →</span>
             </Link>
-            <Link className="hub" href="/directory?service=termite">
+            <Link className="hub" href="/eco-friendly-pest-control">
               <span className="ic">🪵</span>
               <h3>Eco Termite Control</h3>
               <span className="go">Explore →</span>
             </Link>
-            <Link className="hub" href="/directory?service=mosquito">
+            <Link className="hub" href="/eco-friendly-pest-control">
               <span className="ic">🦟</span>
               <h3>Natural Mosquito Control</h3>
               <span className="go">Explore →</span>

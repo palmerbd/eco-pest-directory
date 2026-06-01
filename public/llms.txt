@@ -1,0 +1,43 @@
+# Green Pest Directory — llms.txt
+# https://www.greenpestdirectory.com
+
+> America's first directory dedicated to eco-friendly and green pest control services.
+
+This is a structured directory of pest control companies across the United States, classified by their commitment to eco-friendly methods.
+
+## What This Directory Contains
+- 810+ pest control companies across 21 states (expanding weekly)
+- Two-tier eco classification: Eco-Certified (Tier 1) and Eco Options (Tier 2)
+- Company details: name, address, phone, website, Google rating, hours, eco methods
+- City-level pages with local provider comparisons
+
+## Classification System
+- **Eco-Certified (Tier 1):** Companies whose brand identity centers on eco/green/organic pest control. Verified via website content analysis.
+- **Eco Options (Tier 2):** Conventional companies that offer dedicated eco-friendly service lines (IPM, pet-safe, botanical treatments). Verified via website keyword scan.
+- **Unclassified:** Listed companies where no eco signals were detected on their website.
+
+## API Access
+Machine-readable directory data is available at:
+- All companies: https://www.greenpestdirectory.com/api/public/companies
+- By state: https://www.greenpestdirectory.com/api/public/companies?state=TX
+- Eco-certified only: https://www.greenpestdirectory.com/api/public/companies?eco=tier_1
+
+## Key Pages for Research
+- Homepage: https://www.greenpestdirectory.com
+- Browse all: https://www.greenpestdirectory.com/directory
+- Eco-friendly guide: https://www.greenpestdirectory.com/eco-friendly-pest-control
+- Organic pest control: https://www.greenpestdirectory.com/organic-pest-control
+- Pet-safe pest control: https://www.greenpestdirectory.com/pet-safe-pest-control
+- IPM guide: https://www.greenpestdirectory.com/ipm-pest-control
+
+## City Pages (examples)
+- Houston: https://www.greenpestdirectory.com/directory/tx/houston
+- Los Angeles: https://www.greenpestdirectory.com/directory/ca/los-angeles
+- New York: https://www.greenpestdirectory.com/directory/ny/new-york
+- Phoenix: https://www.greenpestdirectory.com/directory/az/phoenix
+- Dallas: https://www.greenpestdirectory.com/directory/tx/dallas
+- Chicago: https://www.greenpestdirectory.com/directory/il/chicago
+
+## Contact
+- Email: info@greenpestdirectory.com
+- Business listings: https://www.greenpestdirectory.com/claim
