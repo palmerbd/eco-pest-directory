@@ -83,7 +83,15 @@ export async function GET(req: Request) {
     }
   }
 
-  // 2. Single word/phrase — search our database for matching cities
+  // 2. Check if it's a state name or abbreviation (before city search)
+  if (qLower.length === 2 && STATE_NAMES[qLower]) {
+    return NextResponse.redirect(new URL(`/directory?state=${qLower}`, url.origin));
+  }
+  if (STATES[qLower]) {
+    return NextResponse.redirect(new URL(`/directory?state=${STATES[qLower]}`, url.origin));
+  }
+
+  // 3. Single word/phrase — search our database for matching cities
   const cities = await fetchAllCities();
   
   // Exact city match
@@ -111,13 +119,7 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL(`/directory/${partialMatches[0].key}`, url.origin));
   }
 
-  // 3. Check if it's a state name or abbreviation
-  if (STATES[qLower]) {
-    return NextResponse.redirect(new URL(`/directory?state=${STATES[qLower]}`, url.origin));
-  }
-  if (qLower.length === 2 && STATE_NAMES[qLower]) {
-    return NextResponse.redirect(new URL(`/directory?state=${qLower}`, url.origin));
-  }
+
 
   // 4. No match — redirect to directory with search term (shows "no results" message)
   return NextResponse.redirect(new URL(`/directory?q=${encodeURIComponent(q)}`, url.origin));

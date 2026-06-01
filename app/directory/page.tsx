@@ -74,7 +74,7 @@ async function fetchCompanies() {
     });
     
     console.log("[studios] Mapped items:", studios.length);
-    return { studios, total };
+    return { studios, total: studios.length };
   } catch (err: any) {
     console.error("[studios] FETCH ERROR:", err.message);
     return { studios: [], total: 0 };
