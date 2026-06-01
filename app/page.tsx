@@ -215,7 +215,7 @@ export default async function HomePage() {
                   <article className="lcard" key={s.slug}>
                     <div className="rowtop">
                       <div>
-                        <h3>{s.title}</h3>
+                        <h3><Link href={`/directory/${(s.state || "us").toLowerCase()}/${(s.city || "unknown").toLowerCase().replace(/\s+/g, "-")}/${s.slug}`}>{s.title}</Link></h3>
                         <div className="loc">
                           📍 {s.city}, {s.state}
                         </div>
@@ -236,7 +236,7 @@ export default async function HomePage() {
                     </div>
                     <div className="meta">
                       <span className="chainbadge">{s.chain || "Independent"}</span>
-                      <Link className="btn btn-primary" href={`/directory/${s.slug}`}>
+                      <Link className="btn btn-primary" href={`/directory/${(s.state || "us").toLowerCase()}/${(s.city || "unknown").toLowerCase().replace(/\s+/g, "-")}/${s.slug}`}>
                         View Details
                       </Link>
                     </div>
@@ -305,27 +305,27 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="hubs">
-            <Link className="hub" href="/organic-pest-control">
+            <Link className="hub" href="/directory?eco=organic">
               <span className="ic">🌱</span>
               <h3>Organic Pest Control</h3>
               <span className="go">Explore →</span>
             </Link>
-            <Link className="hub" href="/pet-safe-pest-control">
+            <Link className="hub" href="/directory?eco=pet-safe">
               <span className="ic">🐾</span>
               <h3>Pet-Safe Pest Control</h3>
               <span className="go">Explore →</span>
             </Link>
-            <Link className="hub" href="/ipm-pest-control">
+            <Link className="hub" href="/directory?eco=ipm">
               <span className="ic">♻️</span>
               <h3>IPM Companies</h3>
               <span className="go">Explore →</span>
             </Link>
-            <Link className="hub" href="/termite-control">
+            <Link className="hub" href="/directory?service=termite">
               <span className="ic">🪵</span>
               <h3>Eco Termite Control</h3>
               <span className="go">Explore →</span>
             </Link>
-            <Link className="hub" href="/mosquito-control">
+            <Link className="hub" href="/directory?service=mosquito">
               <span className="ic">🦟</span>
               <h3>Natural Mosquito Control</h3>
               <span className="go">Explore →</span>
