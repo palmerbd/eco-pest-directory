@@ -82,11 +82,12 @@ export default async function BrowsePage({
     s.title.toLowerCase().includes(qFilter)
   );
 
+  const isFiltered = !!(ecoFilter || qFilter || stateFilter);
   const heading = qFilter
     ? `Results for "${sp.q}"`
     : stateFilter
     ? `Providers in ${stateFilter.toUpperCase()}`
-    : `Browse ${total} pest control`;
+    : `${total} pest control`;
 
   return (
     <>
@@ -97,25 +98,87 @@ export default async function BrowsePage({
         </div>
       </section>
 
+      {/* ===== SEARCH + FILTER BAR ===== */}
       <div className="wrap">
-        <div className="filterbar" style={{ marginTop: "-20px", position: "relative", zIndex: 5 }}>
-          <div className="seg">
-            <Link href="/directory" style={!ecoFilter ? { background: "var(--accent)", color: "#fff", borderRadius: "999px", padding: "0.6rem 0.9rem", fontFamily: "Montserrat", fontWeight: 700, fontSize: "0.8rem" } : { padding: "0.6rem 0.9rem", fontFamily: "Montserrat", fontWeight: 700, fontSize: "0.8rem", color: "var(--muted)" }}>All ({total})</Link>
-            <Link href="/directory?eco=tier_1" style={ecoFilter === "tier_1" ? { background: "var(--accent)", color: "#fff", borderRadius: "999px", padding: "0.6rem 0.9rem", fontFamily: "Montserrat", fontWeight: 700, fontSize: "0.8rem" } : { padding: "0.6rem 0.9rem", fontFamily: "Montserrat", fontWeight: 700, fontSize: "0.8rem", color: "var(--muted)" }}>Eco-Certified ({tier1Count})</Link>
-            <Link href="/directory?eco=tier_2" style={ecoFilter === "tier_2" ? { background: "var(--accent)", color: "#fff", borderRadius: "999px", padding: "0.6rem 0.9rem", fontFamily: "Montserrat", fontWeight: 700, fontSize: "0.8rem" } : { padding: "0.6rem 0.9rem", fontFamily: "Montserrat", fontWeight: 700, fontSize: "0.8rem", color: "var(--muted)" }}>Eco Options ({tier2Count})</Link>
-          </div>
-          <div className="selects">
-            <select aria-label="Service"><option>All Services</option><option>Termite</option><option>Bed Bug</option><option>Mosquito</option><option>Rodent</option></select>
-            <select aria-label="Sort"><option>Eco-Friendly First</option><option>Rating</option><option>Name (A-Z)</option></select>
-          </div>
+        <div style={{
+          marginTop: "-20px", position: "relative", zIndex: 5,
+          background: "#fff", border: "1px solid var(--line)", borderRadius: "16px",
+          padding: "14px", boxShadow: "var(--shadow-sm)",
+          display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center",
+        }}>
+          {/* Search input — left side, takes most space */}
+          <form action="/api/search" method="get" style={{
+            display: "flex", flex: "1 1 300px", alignItems: "center", gap: "0.5rem",
+            background: "var(--card)", border: "1px solid var(--line)", borderRadius: "10px",
+            padding: "0.45rem 0.7rem",
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/>
+            </svg>
+            <input
+              type="text" name="q"
+              placeholder="Search by city or state..."
+              defaultValue={sp.q || ""}
+              style={{
+                border: "none", outline: "none", background: "transparent",
+                fontFamily: "Inter, sans-serif", fontSize: "0.9rem",
+                width: "100%", color: "var(--ink)",
+              }}
+            />
+            <button type="submit" className="btn btn-primary" style={{
+              padding: "0.4rem 0.85rem", fontSize: "0.78rem", whiteSpace: "nowrap",
+            }}>Search</button>
+          </form>
+
+          {/* Eco tier dropdown */}
+          <Link href={ecoFilter === "tier_1" ? "/directory" : "/directory?eco=tier_1"} style={{
+            display: "inline-flex", alignItems: "center", gap: "0.4rem",
+            padding: "0.55rem 0.85rem", borderRadius: "10px", fontSize: "0.82rem",
+            fontFamily: "Montserrat, sans-serif", fontWeight: 700, whiteSpace: "nowrap",
+            border: ecoFilter === "tier_1" ? "2px solid var(--t1-fg)" : "1px solid var(--line)",
+            background: ecoFilter === "tier_1" ? "var(--t1-bg)" : "#fff",
+            color: ecoFilter === "tier_1" ? "var(--t1-fg)" : "var(--muted)",
+          }}>
+            {"✓"} Eco-Certified ({tier1Count})
+          </Link>
+
+          <Link href={ecoFilter === "tier_2" ? "/directory" : "/directory?eco=tier_2"} style={{
+            display: "inline-flex", alignItems: "center", gap: "0.4rem",
+            padding: "0.55rem 0.85rem", borderRadius: "10px", fontSize: "0.82rem",
+            fontFamily: "Montserrat, sans-serif", fontWeight: 700, whiteSpace: "nowrap",
+            border: ecoFilter === "tier_2" ? "2px solid var(--t2-fg)" : "1px solid var(--line)",
+            background: ecoFilter === "tier_2" ? "var(--t2-bg)" : "#fff",
+            color: ecoFilter === "tier_2" ? "var(--t2-fg)" : "var(--muted)",
+          }}>
+            {"◆"} Eco Options ({tier2Count})
+          </Link>
+
+          {/* Service type dropdown */}
+          <select aria-label="Service" style={{
+            fontFamily: "Inter, sans-serif", fontSize: "0.85rem", color: "var(--ink)",
+            padding: "0.55rem 0.7rem", border: "1px solid var(--line)", borderRadius: "10px",
+            background: "#fff", cursor: "pointer",
+          }}>
+            <option>All Services</option><option>Termite</option><option>Bed Bug</option>
+            <option>Mosquito</option><option>Rodent</option><option>General Pest</option>
+          </select>
+
+          {/* Clear filters link — only show when filtering */}
+          {isFiltered && (
+            <Link href="/directory" style={{
+              fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600,
+              fontFamily: "Montserrat, sans-serif", whiteSpace: "nowrap",
+            }}>Clear all ×</Link>
+          )}
         </div>
       </div>
 
-      <section className="block" style={{ paddingTop: 0 }}>
+      {/* ===== RESULTS ===== */}
+      <section className="block" style={{ paddingTop: "20px" }}>
         <div className="wrap">
           <div className="results-meta">
             <h2>{filtered.length} eco-friendly providers</h2>
-            <span>Showing 1-{Math.min(filtered.length, 100)}</span>
+            <span>{isFiltered ? "Filtered results" : `Showing 1-${Math.min(filtered.length, 100)}`}</span>
           </div>
 
           {filtered.length > 0 ? (
@@ -157,7 +220,7 @@ export default async function BrowsePage({
               <h3 style={{ fontSize: "1.3rem", color: "var(--dark)", marginBottom: "8px" }}>
                 No providers found{qFilter ? ` for "${sp.q}"` : stateFilter ? ` in ${stateFilter.toUpperCase()}` : ""}
               </h3>
-              <p>We are expanding coverage daily. Try searching for a nearby city or <Link href="/directory" style={{ color: "var(--accent)", fontWeight: 600 }}>browse all providers</Link>.</p>
+              <p>We are expanding coverage daily. Try a nearby city or <Link href="/directory" style={{ color: "var(--accent)", fontWeight: 600 }}>browse all providers</Link>.</p>
             </div>
           )}
         </div>
