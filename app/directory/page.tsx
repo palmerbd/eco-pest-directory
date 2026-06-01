@@ -81,13 +81,22 @@ async function fetchCompanies() {
   }
 }
 
-export default async function CompaniesPage({ searchParams }: { searchParams: Promise<{ eco?: string; q?: string }> }) {
+export default async function CompaniesPage({ searchParams }: { searchParams: Promise<{ eco?: string; q?: string; state?: string }> }) {
   const sp = await searchParams;
   const ecoFilter = sp.eco || "";
   const { studios, total } = await fetchCompanies();
-  const filtered = ecoFilter === "tier_1" ? studios.filter((s: any) => s.ecoTier === "tier_1")
-    : ecoFilter === "tier_2" ? studios.filter((s: any) => s.ecoTier === "tier_2")
-    : studios;
+  const qFilter = (sp.q || "").toLowerCase();
+  const stateFilter = (sp.state || "").toLowerCase();
+  
+  let filtered = studios;
+  if (ecoFilter === "tier_1") filtered = filtered.filter((s: any) => s.ecoTier === "tier_1");
+  else if (ecoFilter === "tier_2") filtered = filtered.filter((s: any) => s.ecoTier === "tier_2");
+  if (stateFilter) filtered = filtered.filter((s: any) => (s.state || "").toLowerCase() === stateFilter);
+  if (qFilter) filtered = filtered.filter((s: any) => 
+    (s.city || "").toLowerCase().includes(qFilter) || 
+    (s.state || "").toLowerCase().includes(qFilter) ||
+    (s.title || "").toLowerCase().includes(qFilter)
+  );
   const tier1 = studios.filter((s: any) => s.ecoTier === "tier_1").length;
   const tier2 = studios.length - tier1;
 
@@ -96,7 +105,7 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Pr
       <section className="chero" style={{ padding: "24px 0 36px" }}>
         <div className="wrap">
           <h1>Eco-Friendly Pest Control <span className="hl">Companies</span></h1>
-          <p>Browse {filtered.length} pest control companies offering green, organic, and pet-safe treatments nationwide.</p>
+          <p>{qFilter ? `Showing results for \"${sp.q}\"` : stateFilter ? `Providers in ${stateFilter.toUpperCase()}` : `Browse ${filtered.length} pest control`} companies offering green, organic, and pet-safe treatments nationwide.</p>
         </div>
       </section>
       <div className="wrap">
@@ -147,6 +156,14 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Pr
             })}
           </div>
         </div>
+        {filtered.length === 0 && (qFilter || stateFilter) && (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--muted)" }}>
+            <h3 style={{ fontSize: "1.3rem", color: "var(--dark)", marginBottom: "8px" }}>
+              No providers found{qFilter ? ` for "${sp.q}"` : stateFilter ? ` in ${stateFilter.toUpperCase()}` : ""}
+            </h3>
+            <p>We're expanding coverage daily. Try searching for a nearby city or <Link href="/directory" style={{ color: "var(--accent)", fontWeight: 600 }}>browse all providers</Link>.</p>
+          </div>
+        )}
       </section>
       <section style={{ padding: "0 0 56px" }}>
         <div className="wrap">
