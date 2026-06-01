@@ -6,7 +6,7 @@ export default async function HomePage() {
   let featured: any[] = [];
   try {
     const wpUrl = process.env.WP_API_URL || process.env.NEXT_PUBLIC_WP_API_URL || "";
-    const res = await fetch(\`\${wpUrl}/wp/v2/pest_company?per_page=8&status=publish&_fields=id,slug,title,acf\`, { cache: "no-store" });
+    const res = await fetch(`${wpUrl}/wp/v2/pest_company?per_page=8&status=publish&_fields=id,slug,title,acf`, { cache: "no-store" });
     const raw = await res.json();
     featured = (raw || []).map((post: any) => {
       const acf = post.acf || {};
