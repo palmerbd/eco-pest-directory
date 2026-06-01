@@ -26,13 +26,20 @@ export const metadata: Metadata = {
 
 async function fetchCompanies() {
   const wpUrl = process.env.WP_API_URL || process.env.NEXT_PUBLIC_WP_API_URL || "";
-  const url = `${wpUrl}/wp/v2/pest_company?per_page=48&status=publish&page=1&_fields=id,slug,title,excerpt,acf`;
+    let raw: any[] = [];
+    for (let pg = 1; pg <= 20; pg++) {
+      const res = await fetch(`${wpUrl}/wp/v2/pest_company?per_page=100&page=${pg}&status=publish&_fields=id,slug,title,excerpt,acf`, { next: { revalidate: 3600 } });
+      if (!res.ok) break;
+      const batch = await res.json();
+      if (!batch.length) break;
+      raw = raw.concat(batch);
+    }
   
   console.log("[studios] Fetching from:", url);
   
   try {
     const res = await fetch(url, {
-      cache: "no-store",
+      next: { revalidate: 3600 },
       headers: { "Content-Type": "application/json" },
     });
     
