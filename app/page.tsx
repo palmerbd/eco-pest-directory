@@ -1,9 +1,25 @@
 import Link from "next/link";
-import { getAllStudios } from "@/lib/wordpress";
+
 
 export default async function HomePage() {
-  const studios = await getAllStudios();
-  const featured = studios.slice(0, 8);
+  // Fetch featured listings directly from WP REST API
+  let featured: any[] = [];
+  try {
+    const wpUrl = process.env.WP_API_URL || process.env.NEXT_PUBLIC_WP_API_URL || "";
+    const res = await fetch(\`\${wpUrl}/wp/v2/pest_company?per_page=8&status=publish&_fields=id,slug,title,acf\`, { cache: "no-store" });
+    const raw = await res.json();
+    featured = (raw || []).map((post: any) => {
+      const acf = post.acf || {};
+      const title = (post.title?.rendered || "").replace(/&#(\d+);/g, (_:any,n:any) => String.fromCharCode(Number(n))).replace(/&amp;/g,"&");
+      const specs = typeof acf.service_specialties === "string" ? acf.service_specialties.split(",").filter(Boolean) : [];
+      return {
+        slug: post.slug, title, city: acf.studio_city || "", state: acf.studio_state || "",
+        rating: Number(acf.studio_rating) || 0, reviewCount: Number(acf.studio_review_count) || 0,
+        ecoTier: acf.eco_tier || "unclassified", chain: acf.studio_chain || "independent",
+        serviceSpecialties: specs,
+      };
+    });
+  } catch {}
 
   return (
     <>
@@ -24,7 +40,7 @@ export default async function HomePage() {
                 organic, and pet-safe treatments. Compare eco-certified
                 providers nationwide.
               </p>
-              <form className="search" action="/directory" method="get">
+              <form className="search" action="/api/search" method="get">
                 <div className="field">
                   <svg
                     width="20"
@@ -215,7 +231,7 @@ export default async function HomePage() {
                     </div>
                     <div className="chips">
                       {(s.serviceSpecialties || []).slice(0, 3).map((svc: string) => (
-                        <span className="chip" key={svc}>{svc}</span>
+                        <span className="chip" key={svc}>{({"general_pest":"General Pest","termite":"Termite","rodent":"Rodent","bed_bug":"Bed Bug","mosquito":"Mosquito","wildlife":"Wildlife","organic":"Organic"})[svc] || svc.replace(/_/g," ")}</span>
                       ))}
                     </div>
                     <div className="meta">
