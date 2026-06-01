@@ -81,23 +81,30 @@ async function fetchCompanies() {
   }
 }
 
-export default async function CompaniesPage() {
+export default async function CompaniesPage({ searchParams }: { searchParams: Promise<{ eco?: string; q?: string }> }) {
+  const sp = await searchParams;
+  const ecoFilter = sp.eco || "";
   const { studios, total } = await fetchCompanies();
+  const filtered = ecoFilter === "tier_1" ? studios.filter((s: any) => s.ecoTier === "tier_1")
+    : ecoFilter === "tier_2" ? studios.filter((s: any) => s.ecoTier === "tier_2")
+    : studios;
+  const tier1 = studios.filter((s: any) => s.ecoTier === "tier_1").length;
+  const tier2 = studios.length - tier1;
 
   return (
     <>
       <section className="chero" style={{ padding: "24px 0 36px" }}>
         <div className="wrap">
           <h1>Eco-Friendly Pest Control <span className="hl">Companies</span></h1>
-          <p>Browse {total} pest control companies offering green, organic, and pet-safe treatments nationwide.</p>
+          <p>Browse {filtered.length} pest control companies offering green, organic, and pet-safe treatments nationwide.</p>
         </div>
       </section>
       <div className="wrap">
         <div className="filterbar" style={{ marginTop: "-20px", position: "relative", zIndex: 5 }}>
           <div className="seg">
-            <button className="active">All ({total})</button>
-            <button>Eco-Certified</button>
-            <button>Eco Options</button>
+            <Link href="/directory" style={!ecoFilter ? {background:"var(--accent)",color:"#fff",borderRadius:"999px",padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem"} : {padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem",color:"var(--muted)"}}>All ({total})</Link>
+            <Link href="/directory?eco=tier_1" style={ecoFilter==="tier_1" ? {background:"var(--accent)",color:"#fff",borderRadius:"999px",padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem"} : {padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem",color:"var(--muted)"}}>Eco-Certified ({tier1})</Link>
+            <Link href="/directory?eco=tier_2" style={ecoFilter==="tier_2" ? {background:"var(--accent)",color:"#fff",borderRadius:"999px",padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem"} : {padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem",color:"var(--muted)"}}>Eco Options ({tier2})</Link>
           </div>
           <div className="selects">
             <select aria-label="Service"><option>All Services</option><option>Termite</option><option>Bed Bug</option><option>Mosquito</option><option>Rodent</option></select>
@@ -108,11 +115,11 @@ export default async function CompaniesPage() {
       <section className="block" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <div className="results-meta">
-            <h2>{total} eco-friendly providers</h2>
-            <span>Showing 1–{Math.min(studios.length, 48)}</span>
+            <h2>{filtered.length} eco-friendly providers</h2>
+            <span>Showing 1–{Math.min(filtered.length, 48)}</span>
           </div>
           <div className="grid">
-            {studios.map((s: any) => {
+            {filtered.map((s: any) => {
               const isTier1 = s.ecoTier === "tier_1";
               const chain = CHAIN_CONFIG[s.studioChain as keyof typeof CHAIN_CONFIG];
               return (

@@ -56,14 +56,19 @@ export async function generateMetadata({ params }: { params: Promise<{ state: st
   };
 }
 
-export default async function CityPage({ params }: { params: Promise<{ state: string; city: string }> }) {
+export default async function CityPage({ params, searchParams }: { params: Promise<{ state: string; city: string }>; searchParams: Promise<{ eco?: string; service?: string }> }) {
   const { state: stateSlug, city } = await params;
+  const sp = await searchParams;
+  const ecoFilter = sp.eco || "";
   const cityName = citySlugToName(city);
   const studios = await fetchByCity(city);
   if (!studios.length) notFound();
   const st = studios[0]?.state || stateSlug.toUpperCase();
   const tier1 = studios.filter((s: any) => s.ecoTier === "tier_1").length;
   const tier2 = studios.length - tier1;
+  const filtered = ecoFilter === "tier_1" ? studios.filter((s: any) => s.ecoTier === "tier_1")
+    : ecoFilter === "tier_2" ? studios.filter((s: any) => s.ecoTier === "tier_2")
+    : studios;
   const avg = (studios.reduce((sum: number, s: any) => sum + (s.rating || 0), 0) / studios.length).toFixed(1);
   const metroSlug = getMetroSlug(city);
   const suburbs = metroSlug ? getMetroSuburbs(metroSlug).filter((s) => s !== city).slice(0, 8) : [];
@@ -86,9 +91,9 @@ export default async function CityPage({ params }: { params: Promise<{ state: st
       <div className="wrap">
         <div className="filterbar" style={{ marginTop: "-26px", position: "relative", zIndex: 5 }}>
           <div className="seg">
-            <button className="active">All ({studios.length})</button>
-            <button>Eco-Certified ({tier1})</button>
-            <button>Eco Options ({tier2})</button>
+            <Link href={`/directory/${stateSlug}/${city}`} style={!ecoFilter ? {background:"var(--accent)",color:"#fff",borderRadius:"999px",padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem"} : {padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem",color:"var(--muted)"}}>All ({studios.length})</Link>
+            <Link href={`/directory/${stateSlug}/${city}?eco=tier_1`} style={ecoFilter==="tier_1" ? {background:"var(--accent)",color:"#fff",borderRadius:"999px",padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem"} : {padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem",color:"var(--muted)"}}>Eco-Certified ({tier1})</Link>
+            <Link href={`/directory/${stateSlug}/${city}?eco=tier_2`} style={ecoFilter==="tier_2" ? {background:"var(--accent)",color:"#fff",borderRadius:"999px",padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem"} : {padding:"0.6rem 0.9rem",fontFamily:"Montserrat",fontWeight:700,fontSize:"0.8rem",color:"var(--muted)"}}>Eco Options ({tier2})</Link>
           </div>
           <div className="selects">
             <select aria-label="Service"><option>All Services</option><option>Termite</option><option>Bed Bug</option><option>Mosquito</option><option>Rodent</option><option>General Pest</option></select>
@@ -100,11 +105,11 @@ export default async function CityPage({ params }: { params: Promise<{ state: st
       <section className="block" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <div className="results-meta">
-            <h2>{studios.length} eco-friendly providers in {cityName}</h2>
-            <span>Showing 1–{Math.min(studios.length, 9)} · Eco-Certified first</span>
+            <h2>{filtered.length} eco-friendly providers in {cityName}</h2>
+            <span>Showing 1–{Math.min(filtered.length, 9)} · Eco-Certified first</span>
           </div>
           <div className="grid">
-            {studios.map((s: any) => {
+            {filtered.map((s: any) => {
               const t1 = s.ecoTier === "tier_1";
               const chain = s.studioChain ? CHAIN_CONFIG[s.studioChain as keyof typeof CHAIN_CONFIG] : null;
               const svcs = (s.serviceSpecialties || s.danceStyles || []).slice(0, 3);
