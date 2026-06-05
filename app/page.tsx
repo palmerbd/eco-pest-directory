@@ -67,7 +67,7 @@ export default async function HomePage() {
               <div className="trust">
                 <span className="item">
                   <span className="dot"></span>
-                  <b>1,400+</b> Companies
+                  <b>2,100+</b> Companies
                 </span>
                 <span className="item">
                   <span className="dot"></span>
