@@ -11,7 +11,7 @@ export default async function HomePage() {
     featured = (raw || []).map((post: any) => {
       const acf = post.acf || {};
       const title = (post.title?.rendered || "").replace(/&#(\d+);/g, (_:any,n:any) => String.fromCharCode(Number(n))).replace(/&amp;/g,"&");
-      const specs = typeof acf.service_specialties === "string" ? acf.service_specialties.split(",").filter(Boolean) : [];
+      const specs = typeof acf.service_specialties === "string" ? achf.service_specialties.split(",").filter(Boolean) : [];
       return {
         slug: post.slug, title, city: acf.studio_city || "", state: acf.studio_state || "",
         rating: Number(acf.studio_rating) || 0, reviewCount: Number(acf.studio_review_count) || 0,
@@ -67,7 +67,7 @@ export default async function HomePage() {
               <div className="trust">
                 <span className="item">
                   <span className="dot"></span>
-                  <b>2,100+</b> Companies
+                  <b>2,550+</b> Companies
                 </span>
                 <span className="item">
                   <span className="dot"></span>
