@@ -6,19 +6,19 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpestdirec
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const studios = await getAllStudios();
 
-  // Company detail pages: /[state]/[city]/[slug]
+  // Company detail pages: /directory/[state]/[city]/[slug]
   const companyEntries: MetadataRoute.Sitemap = studios.map((s: any) => {
     const state = (s.state || "us").toLowerCase();
     const city = (s.city || "unknown").toLowerCase().replace(/\s+/g, "-");
     return {
-      url: `${BASE_URL}/${state}/${city}/${s.slug}`,
+      url: `${BASE_URL}/directory/${state}/${city}/${s.slug}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.8,
     };
   });
 
-  // City pages: /[state]/[city] — deduplicated
+  // City pages: /directory/[state]/[city] — deduplicated
   const citySet = new Set<string>();
   studios.forEach((s: any) => {
     const state = (s.state || "").toLowerCase();
@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (state && city) citySet.add(`${state}/${city}`);
   });
   const cityEntries: MetadataRoute.Sitemap = Array.from(citySet).map((path) => ({
-    url: `${BASE_URL}/${path}`,
+    url: `${BASE_URL}/directory/${path}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.7,
