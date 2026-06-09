@@ -56,6 +56,8 @@ export default function ClaimCallbackPage() {
             owner_name:   String(meta.owner_name),
             owner_email:  String(meta.owner_email),
             owner_phone:  String(meta.owner_phone || ""),
+          studio_city:  String(meta.studio_city || ""),
+          studio_state: String(meta.studio_state || ""),
           };
         } else {
           // Neither source has data -- session exists but no claim in flight
