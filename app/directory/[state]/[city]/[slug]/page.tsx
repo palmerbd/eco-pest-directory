@@ -113,7 +113,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ state:
           <div className="panel"><h2>📋 About</h2><p style={{ color: "var(--muted)" }}>{s.description || `${s.title} is ${t1 ? "an Eco-Certified" : "a"} pest control company serving ${s.city}.`}</p></div>
           <div className="panel"><h2>🐜 Services</h2><div className="tags">{s.services.map((svc: string) => (<span className="tag" key={svc}>{SVC[svc] || svc.replace(/_/g," ")}</span>))}</div></div>
           <div className="panel"><h2>🌿 Eco methods</h2><div className="methods">{(t1 ? ecoMethods : ecoMethods.slice(0,2)).map(m => (<div className="method" key={m.label}><span className="mi">{m.icon}</span><div><h3>{m.label}</h3><p>{m.desc}</p></div></div>))}</div></div>
-          <div className="panel"><h2>📍 Service area</h2><div className="map"><span className="pin">📍</span><span className="maplabel">{s.address ? `${s.address}, ` : ""}{loc}</span></div></div>
+          <div className="panel"><h2>📍 Service area</h2><div className="map" style={{ overflow: "hidden", borderRadius: "12px" }}><iframe width="100%" height="250" style={{border:0}} loading="lazy" referrerPolicy="no-referrer-when-downgrade" src={`https://maps.google.com/maps?q=${mapsQuery}&output=embed`}></iframe></div></div>
           <div className="panel faq"><h2>❓ FAQ</h2>
             <details open><summary>Are treatments safe for kids and pets? <span className="plus">+</span></summary><div className="ans">{t1 ? `As an Eco-Certified provider, ${s.title} leads with botanical and EPA minimum-risk products.` : `${s.title} offers eco-friendly treatment options. Ask about pet-safe service lines.`}</div></details>
             <details><summary>Do green treatments work as well as conventional? <span className="plus">+</span></summary><div className="ans">For most residential pest problems, yes. IPM addresses root causes so results often last longer.</div></details>
@@ -151,10 +151,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ state:
                   </a>
                 )}
                 {(s.address || loc) && (
-                  <div className="map" style={{ marginTop: "8px" }}>
-                    <span className="pin">📍</span>
-                    <span className="maplabel">{s.address ? `${s.address}, ` : ""}{loc}</span>
-                  </div>
+                  <div className="map" style={{ marginTop: "8px", overflow: "hidden", borderRadius: "8px" }}><iframe width="100%" height="180" style={{border:0}} loading="lazy" referrerPolicy="no-referrer-when-downgrade" src={`https://maps.google.com/maps?q=${mapsQuery}&output=embed`}></iframe></div>
                 )}
                 <a href={`https://www.google.com/maps/search/${mapsQuery}`} target="_blank" rel="noopener noreferrer"
                   style={{ display: "block", textAlign: "center", marginTop: "10px", fontSize: "0.85rem", color: "var(--accent)", fontWeight: 600 }}>
