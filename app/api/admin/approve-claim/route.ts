@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   // ── 1. Fetch the claim ────────────────────────────────────────────────────
   const { data: claim, error: fetchErr } = await supabaseAdmin
     .from("claims")
-    .select("id, studio_title, studio_slug, owner_name, owner_email, status")
+    .select("id, studio_title, studio_slug, studio_city, studio_state, owner_name, owner_email, status")
     .eq("id", claim_id)
     .single();
 
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 3. Send approval email ─────────────────────────────────────────────────
-  const listingUrl = `${SITE_URL}/studios/${claim.studio_slug}`;
+  const listingUrl = `${SITE_URL}/directory/${(claim.studio_city || "").toLowerCase()}/${(claim.studio_state || "").toLowerCase()}/${claim.studio_slug}`;
   const dashboardUrl = `${SITE_URL}/dashboard`;
 
   try {
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
                       </td>
                       <td style="padding-bottom:12px;">
                         <p style="color:#111827;font-size:14px;font-weight:600;margin:0 0 2px;">Log in to your dashboard</p>
-                        <p style="color:#6b7280;font-size:13px;margin:0;">Manage your studio profile, update your description, and add social links.</p>
+                        <p style="color:#6b7280;font-size:13px;margin:0;">Manage your business profile, update your description, and add social links.</p>
                       </td>
                     </tr>
                     <tr>
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
                       </td>
                       <td style="padding-bottom:12px;">
                         <p style="color:#111827;font-size:14px;font-weight:600;margin:0 0 2px;">View your live listing</p>
-                        <p style="color:#6b7280;font-size:13px;margin:0;">See how your studio appears to dancers searching the directory.</p>
+                        <p style="color:#6b7280;font-size:13px;margin:0;">See how your business appears to homeowners searching the directory.</p>
                       </td>
                     </tr>
                     <tr>
