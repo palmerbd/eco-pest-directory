@@ -3,7 +3,7 @@
 // Avoids mixed-content errors (HTTPS page → HTTP WP backend).
 //
 // Query params (one required):
-//   ?slug=buertis-dance-studio   → exact slug lookup
+//   ?slug=green-pest-company   → exact slug lookup
 //   ?q=Arthur+Murray             → free-text search (per_page=8)
 
 import { NextRequest, NextResponse } from "next/server";
@@ -34,7 +34,7 @@ interface WPStudio {
   id:    number;
   slug:  string;
   title: { rendered: string };
-  acf:   { studio_address_city?: string; studio_address_state?: string };
+  acf:   { studio_city?: string; studio_state?: string };
 }
 
 export async function GET(req: NextRequest) {
@@ -63,8 +63,8 @@ export async function GET(req: NextRequest) {
       id:    p.id,
       slug:  p.slug,
       title: decodeHtmlEntities(p.title?.rendered || ""),
-      city:  p.acf?.studio_address_city  || "",
-      state: p.acf?.studio_address_state || "",
+      city:  p.acf?.studio_city  || "",
+      state: p.acf?.studio_state || "",
     }));
     return NextResponse.json(studios);
   } catch (err) {
