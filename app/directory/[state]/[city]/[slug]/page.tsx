@@ -68,7 +68,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ state:
     { icon: "🌼", label: "Botanical Products", desc: "Essential-oil based barriers." },
   ];
 
-  const claimHref = `/claim?id=${s.studioId}&slug=${slug}&title=${encodeURIComponent(s.title)}`;
+  const claimHref = `/claim?id=${s.studioId}&slug=${slug}&title=${encodeURIComponent(s.title)}&city=${citySlug}&state=${stateSlug}`;
   const mapsQuery = encodeURIComponent((s.address ? `${s.address} ` : "") + loc);
 
   return (
