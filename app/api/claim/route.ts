@@ -19,7 +19,7 @@ const SITE_URL      = process.env.NEXT_PUBLIC_SITE_URL || "https://www.greenpest
 const ADMIN_EMAIL   = "bpalmer@abilenewebsitedesign.com";
 const FROM_EMAIL    = "leads@greenpestdirectory.com";
 
-// GHL Workflow #1 — fires when a studio claim is submitted
+// GHL Workflow #1 — fires when a business claim is submitted
 const GHL_CLAIM_WEBHOOK = "https://services.leadconnectorhq.com/hooks/gKAwJUdSQ6QMlAc0QXWb/webhook-trigger/77d77491-b7cf-463a-b228-c8876aaebb83";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
       owner_name,
       owner_email,
       owner_phone,
+      studio_city,
+      studio_state,
       user_id,
     } = body;
 
@@ -91,7 +93,7 @@ export async function POST(req: NextRequest) {
 
     // ── Fire GHL Workflow #1 (non-fatal) ──────────────────────────────────────
     // Places the contact into the Studio Owner Pipeline → "Claimed" stage.
-    const studioUrl = `${SITE_URL}/studios/${studio_slug}`;
+    const studioUrl = `${SITE_URL}/directory/${(studio_state || "").toLowerCase()}/${(studio_city || "").toLowerCase()}/${studio_slug}`;
     try {
       const nameParts  = owner_name.trim().split(/\s+/);
       const first_name = nameParts[0] || "";
@@ -141,7 +143,7 @@ export async function POST(req: NextRequest) {
 
       // Bust the ISR cache for this studio's detail page so the amber
       // "claim this listing" bar disappears immediately on the next request.
-      try { revalidatePath(`/studios/${studio_slug}`); } catch { /* non-fatal */ }
+      try { revalidatePath(`/directory/${(studio_state || "").toLowerCase()}/${(studio_city || "").toLowerCase()}/${studio_slug}`); } catch { /* non-fatal */ }
     }
 
     // ── Send emails via Resend (non-fatal on failure) ──────────────────────
@@ -243,7 +245,7 @@ export async function POST(req: NextRequest) {
         </td></tr>
       </table>
       <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 8px;">Questions? Just reply to this email — it comes straight to us.</p>
-      <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 28px;">Looking forward to helping your studio stand out,</p>
+      <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 28px;">Looking forward to helping your business stand out,</p>
       <p style="color:#374151;font-size:15px;margin:0;font-weight:600;">The Green Pest Control Directory Team</p>
     </td>
   </tr>
