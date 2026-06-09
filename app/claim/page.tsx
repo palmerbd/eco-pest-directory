@@ -16,12 +16,16 @@ export default function ClaimPage() {
   const [prefillId, setPrefillId]       = useState("");
   const [prefillSlug, setPrefillSlug]   = useState("");
   const [prefillTitle, setPrefillTitle] = useState("");
+  const [prefillCity, setPrefillCity] = useState("");
+  const [prefillState, setPrefillState] = useState("");
 
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
     setPrefillId(p.get("id") || "");
     setPrefillSlug(p.get("slug") || "");
     setPrefillTitle(p.get("title") || "");
+    setPrefillCity(p.get("city") || "");
+    setPrefillState(p.get("state") || "");
   }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -44,7 +48,9 @@ export default function ClaimPage() {
     }
 
     // 1. Save claim data to localStorage so the callback page can read it
-    const pendingClaim = { studio_id: studioId, studio_slug: studioSlug, studio_title: company, owner_name: ownerName, owner_email: ownerEmail, owner_phone: ownerPhone };
+    const pendingClaim = { studio_id: studioId, studio_slug: studioSlug, studio_title: company,
+        studio_city: prefillCity,
+        studio_state: prefillState, owner_name: ownerName, owner_email: ownerEmail, owner_phone: ownerPhone };
     try { localStorage.setItem("pendingClaim", JSON.stringify(pendingClaim)); } catch { /* private browsing — fallback to metadata only */ }
 
     // 2. Send magic link — embed claim data in user_metadata as cross-browser fallback
