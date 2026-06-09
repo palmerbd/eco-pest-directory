@@ -1,6 +1,6 @@
 "use client";
 
-// ─── /dashboard — Studio Owner Dashboard ─────────────────────────────────────
+// ─── /dashboard — Business Owner Dashboard ─────────────────────────────────────
 // Requires Supabase session (redirects to /claim if not logged in).
 // Shows the owner's claimed listing, claim status, and next steps.
 
@@ -89,7 +89,7 @@ export default function DashboardPage() {
           <div className="text-5xl mb-4">&#128274;</div>
           <h1 className="font-bold text-gray-900 text-xl mb-2">Sign in required</h1>
           <p className="text-gray-500 text-sm mb-6">
-            You need to claim a studio listing before you can access the dashboard.
+            You need to claim a business listing before you can access the dashboard.
           </p>
           <Link
             href="/claim"
@@ -163,7 +163,7 @@ export default function DashboardPage() {
             </button>
           </div>
           {/* Title row */}
-          <h1 className="font-bold text-white text-2xl">Studio Dashboard</h1>
+          <h1 className="font-bold text-white text-2xl">Owner Dashboard</h1>
           <p className="text-white/50 text-sm mt-1">{email}</p>
         </div>
       </div>
@@ -188,7 +188,7 @@ export default function DashboardPage() {
           >
             <div className="font-bold text-gray-900">{claim!.studio_title}</div>
             <Link
-              href={`/studios/${claim!.studio_slug}`}
+              href={claim!.studio_city && claim!.studio_state ? `/directory/${claim!.studio_state}/${claim!.studio_city}/${claim!.studio_slug}` : `/directory`}
               className="text-xs text-yellow-700 hover:underline mt-1 inline-block"
             >
               View listing &#8599;
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                   <h3 className="font-bold text-white text-lg mb-2">You&apos;re Featured!</h3>
                   <p className="text-white/60 text-sm">
                     Your listing has the gold Featured badge, lead capture form, and priority
-                    placement in search results. Students can contact you directly.
+                    placement in search results. Customers can contact you directly.
                   </p>
                 </div>
                 <span className="text-3xl ml-4">&#11088;</span>
@@ -300,7 +300,7 @@ export default function DashboardPage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h3 className="font-bold text-gray-900 mb-2">Questions?</h3>
           <p className="text-gray-500 text-sm mb-3">
-            Need to update your studio information or have a question about your claim?
+            Need to update your business information or have a question about your claim?
           </p>
           <Link
             href="/contact"
