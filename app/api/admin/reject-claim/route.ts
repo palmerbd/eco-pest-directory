@@ -1,7 +1,7 @@
 /**
  * POST /api/admin/reject-claim
  * ─────────────────────────────
- * Rejects a pending studio claim:
+ * Rejects a pending business claim:
  *   1. Validates admin token
  *   2. Updates Supabase claim status → "rejected"
  *   3. Sends a polite rejection email to the claimant via Resend
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   // ── 1. Fetch the claim ────────────────────────────────────────────────────
   const { data: claim, error: fetchErr } = await supabaseAdmin
     .from("claims")
-    .select("id, studio_title, studio_slug, owner_name, owner_email, status")
+    .select("id, studio_title, studio_slug, studio_city, studio_state, owner_name, owner_email, status")
     .eq("id", claim_id)
     .single();
 
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 3. Send rejection email ────────────────────────────────────────────────
-  const listingUrl  = `${SITE_URL}/studios/${claim.studio_slug}`;
+  const listingUrl  = `${SITE_URL}/directory/${(claim.studio_city || "").toLowerCase()}/${(claim.studio_state || "").toLowerCase()}/${claim.studio_slug}`;
   const contactUrl  = `${SITE_URL}/contact`;
   const firstName   = claim.owner_name.split(" ")[0];
 
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
               </p>
               ${reasonHtml}
               <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 28px;">
-                Your free listing for ${claim.studio_title} remains active and visible to dancers
+                Your free listing for ${claim.studio_title} remains active and visible to homeowners
                 searching the directory. If you believe this decision was made in error, or if
                 you can provide additional information to verify your ownership, please reach out
                 to us directly — we're happy to take another look.
