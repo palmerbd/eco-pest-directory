@@ -1,11 +1,8 @@
 "use client";
 
 // /claim/callback -- Magic Link Callback
-// Supabase redirects here after user clicks the magic link in their email.
-// Exchanges the auth code for a session, reads pending claim data from
-// localStorage (primary) or Supabase user_metadata (fallback -- works when
-// the link is opened in a different browser than where the form was filled).
-// Then calls /api/claim to finalize, and redirects to /dashboard.
+// Processes the magic link verification, finalizes the claim, redirects to dashboard.
+// Styled to match the green design system used across the directory.
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -20,130 +17,197 @@ export default function ClaimCallbackPage() {
 
   useEffect(() => {
     async function handleCallback() {
-      // Step 1: Exchange the code for a session
       const { data: sessionData, error: sessionError } =
         await supabase.auth.getSession();
-
       if (sessionError || !sessionData.session) {
         setStatus("error");
         setMessage("Verification failed. The link may have expired. Please try claiming again.");
         return;
       }
 
-      // Step 2: Read pending claim data.
-      // Primary source: localStorage (set on the same device/browser before the magic link was sent).
-      // Fallback: Supabase user_metadata (set in signInWithOtp options.data -- works even when the
-      // magic link is opened in a different browser or email app than where the form was filled out).
       let claim: Record<string, string>;
-
       const raw = localStorage.getItem("pendingClaim");
       if (raw) {
-        try {
-          claim = JSON.parse(raw);
-        } catch {
+        try { claim = JSON.parse(raw); } catch {
           setStatus("error");
           setMessage("Claim data was corrupted. Please start the claim process again.");
           return;
         }
       } else {
-        // localStorage empty -- try user metadata embedded in the magic link session
         const meta = sessionData.session.user.user_metadata || {};
         if (meta.studio_slug && meta.owner_name && meta.owner_email) {
           claim = {
-            studio_id:    String(meta.studio_id || ""),
-            studio_slug:  String(meta.studio_slug),
+            studio_id: String(meta.studio_id || ""),
+            studio_slug: String(meta.studio_slug),
             studio_title: String(meta.studio_title || ""),
-            owner_name:   String(meta.owner_name),
-            owner_email:  String(meta.owner_email),
-            owner_phone:  String(meta.owner_phone || ""),
-          studio_city:  String(meta.studio_city || ""),
-          studio_state: String(meta.studio_state || ""),
+            owner_name: String(meta.owner_name),
+            owner_email: String(meta.owner_email),
+            owner_phone: String(meta.owner_phone || ""),
+            studio_city: String(meta.studio_city || ""),
+            studio_state: String(meta.studio_state || ""),
           };
         } else {
-          // Neither source has data -- session exists but no claim in flight
           router.push("/dashboard");
           return;
         }
       }
 
-      // Step 3: POST to /api/claim to record claim in Supabase + update WP
       setStatus("claiming");
       setMessage("Recording your claim...");
-
       try {
         const res = await fetch("/api/claim", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...claim,
-            user_id: sessionData.session.user.id,
-          }),
+          body: JSON.stringify({ ...claim, user_id: sessionData.session.user.id }),
         });
-
         const body = await res.json();
-
         if (!res.ok) {
           if (body.code === "already_claimed") {
             setStatus("error");
             setMessage("This listing has already been claimed by another verified owner.");
-          } else {
-            throw new Error(body.message || "Unknown error");
-          }
+          } else { throw new Error(body.message || "Unknown error"); }
           return;
         }
-
-        // Success -- clear localStorage and go to dashboard
         localStorage.removeItem("pendingClaim");
         setStatus("success");
         setMessage("Claim verified! Redirecting to your dashboard...");
         setTimeout(() => router.push("/dashboard"), 1500);
-
       } catch (err) {
         console.error("Claim finalization error:", err);
         setStatus("error");
         setMessage("Something went wrong while recording your claim. Please contact us.");
       }
     }
-
     handleCallback();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const iconMap: Record<Status, string> = {
-    verifying: "&#128272;",
-    claiming:  "&#128196;",
-    success:   "&#9989;",
-    error:     "&#9888;",
-  };
+  }, []);
 
   return (
-    <main
-      style={{ background: "linear-gradient(135deg,#0c1428 0%,#1a2d5a 100%)", minHeight: "100vh" }}
-      className="flex items-center justify-center px-6"
-    >
-      <div className="bg-white rounded-2xl shadow-lg p-10 max-w-md w-full text-center">
-        <div className="text-5xl mb-5" dangerouslySetInnerHTML={{ __html: iconMap[status] }} />
-        <h1 className="font-bold text-gray-900 text-xl mb-3">
-          {status === "success" ? "Claim Verified!" :
-           status === "error"   ? "Something went wrong" :
-                                  "Processing your claim..."}
-        </h1>
-        <p className="text-gray-500 text-sm leading-relaxed">{message}</p>
-        {status === "error" && (
-          <a
-            href="/claim"
-            className="inline-block mt-6 px-6 py-2.5 rounded-xl font-bold text-sm text-gray-900
-                       transition-all hover:brightness-110"
-            style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}
-          >
-            Try Again
-          </a>
-        )}
-        {(status === "verifying" || status === "claiming") && (
-          <div className="flex justify-center mt-6">
-            <div className="animate-spin w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full" />
+    <>
+      <main className="cb-page">
+        <div className="cb-card">
+          {/* Icon */}
+          <div className="cb-icon">
+            {status === "verifying" && (
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            )}
+            {status === "claiming" && (
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
+            )}
+            {status === "success" && (
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+            )}
+            {status === "error" && (
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            )}
           </div>
-        )}
-      </div>
-    </main>
+
+          {/* Heading */}
+          <h1 className="cb-heading">
+            {status === "success" ? "Claim Verified!" :
+             status === "error"   ? "Something went wrong" :
+                                    "Processing your claim..."}
+          </h1>
+
+          {/* Message */}
+          <p className="cb-message">{message}</p>
+
+          {/* Spinner for loading states */}
+          {(status === "verifying" || status === "claiming") && (
+            <div className="cb-spinner-wrap">
+              <div className="cb-spinner" />
+            </div>
+          )}
+
+          {/* Error retry button */}
+          {status === "error" && (
+            <a href="/claim" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: "20px" }}>
+              Try Again
+            </a>
+          )}
+
+          {/* Success checkmark animation */}
+          {status === "success" && (
+            <p className="cb-redirect-note">Redirecting you now...</p>
+          )}
+        </div>
+      </main>
+
+      <style jsx>{`
+        .cb-page {
+          min-height: 100vh;
+          background: var(--page, #f7faf8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+        }
+        .cb-card {
+          background: #fff;
+          border: 1px solid var(--line, #d1ddd6);
+          border-radius: 22px;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+          padding: 48px 36px;
+          max-width: 440px;
+          width: 100%;
+          text-align: center;
+        }
+        .cb-icon {
+          margin-bottom: 20px;
+          display: flex;
+          justify-content: center;
+        }
+        .cb-heading {
+          font-family: 'Montserrat', sans-serif;
+          font-size: 1.35rem;
+          font-weight: 800;
+          color: var(--dark, #052e16);
+          margin-bottom: 10px;
+        }
+        .cb-message {
+          color: var(--muted, #4b6354);
+          font-size: 0.95rem;
+          line-height: 1.6;
+          margin-bottom: 8px;
+        }
+        .cb-spinner-wrap {
+          display: flex;
+          justify-content: center;
+          margin-top: 24px;
+        }
+        .cb-spinner {
+          width: 32px;
+          height: 32px;
+          border: 3px solid var(--line, #d1ddd6);
+          border-top-color: var(--accent, #15803d);
+          border-radius: 50%;
+          animation: cb-spin 0.7s linear infinite;
+        }
+        @keyframes cb-spin { to { transform: rotate(360deg); } }
+        .cb-redirect-note {
+          color: var(--accent, #15803d);
+          font-size: 0.85rem;
+          font-weight: 600;
+          margin-top: 16px;
+        }
+        @media (max-width: 480px) {
+          .cb-card { padding: 36px 24px; }
+        }
+      `}</style>
+    </>
   );
 }
