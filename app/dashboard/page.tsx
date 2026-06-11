@@ -1,6 +1,6 @@
 "use client";
 
-// âââ /dashboard â Business Owner Dashboard âââââââââââââââââââââââââââââââââââââ
+// /dashboard -- Business Owner Dashboard
 // Requires Supabase session (redirects to /claim if not logged in).
 // Shows the owner's claimed listing, claim status, and next steps.
 // Styled to match the listing detail pages (green design system).
@@ -13,28 +13,24 @@ import StudioProfileEditor from "@/components/StudioProfileEditor";
 
 type PageState = "loading" | "unauthenticated" | "no_claim" | "ready";
 
-const STATUS_CONFIG: Record<string, { label: string; icon: string; color: string; bg: string; border: string; desc: string }> = {
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string; desc: string }> = {
   pending: {
     label: "Pending Review",
-    icon: "â³",
     color: "#92400e", bg: "#fef3c7", border: "#fde68a",
-    desc: "Your claim has been submitted. Our team will review it within 1â2 business days.",
+    desc: "Your claim has been submitted. Our team will review it within 1-2 business days.",
   },
   verified: {
     label: "Under Review",
-    icon: "ð",
     color: "#92400e", bg: "#fef3c7", border: "#fde68a",
-    desc: "Your email is verified and your claim is in our review queue. Weâll send an approval email within 1 business day.",
+    desc: "Your email is verified and your claim is in our review queue. We will send an approval email within 1 business day.",
   },
   approved: {
     label: "Approved",
-    icon: "â",
     color: "#166534", bg: "#dcfce7", border: "#bbf7d0",
     desc: "Your listing is claimed and showing a Verified Owner badge.",
   },
   rejected: {
     label: "Not Approved",
-    icon: "â",
     color: "#991b1b", bg: "#fee2e2", border: "#fecaca",
     desc: "We were unable to verify your ownership. Please contact us for details.",
   },
@@ -82,18 +78,18 @@ export default function DashboardPage() {
 
   return (
     <>
-      {/* ââ Loading spinner ââ */}
+      {/* Loading spinner */}
       {pageState === "loading" && (
         <main className="dash-loading">
           <div className="dash-spinner" />
         </main>
       )}
 
-      {/* ââ Not logged in ââ */}
+      {/* Not logged in */}
       {pageState === "unauthenticated" && (
         <main className="dash-loading">
           <div className="dash-gate-card">
-            <div className="dash-gate-icon">ð</div>
+            <div className="dash-gate-icon">&#x1F512;</div>
             <h1>Sign in required</h1>
             <p>You need to claim a business listing before you can access the dashboard.</p>
             <Link href="/claim" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
@@ -103,11 +99,11 @@ export default function DashboardPage() {
         </main>
       )}
 
-      {/* ââ No claim yet ââ */}
+      {/* No claim yet */}
       {pageState === "no_claim" && (
         <main className="dash-loading">
           <div className="dash-gate-card">
-            <div className="dash-gate-icon">ð</div>
+            <div className="dash-gate-icon">&#x1F4CB;</div>
             <h1>No claim on file</h1>
             <p>Logged in as <strong>{email}</strong>.</p>
             <p>You haven&apos;t claimed a listing yet, or your claim may be associated with a different email address.</p>
@@ -121,10 +117,10 @@ export default function DashboardPage() {
         </main>
       )}
 
-      {/* ââ Dashboard (ready) ââ */}
+      {/* Dashboard (ready) */}
       {pageState === "ready" && (
         <>
-          {/* ââ Hero header â matches .chero from city pages ââ */}
+          {/* Hero header */}
           <section className="dash-hero">
             <div className="wrap">
               <div className="dash-hero-nav">
@@ -137,42 +133,42 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          {/* ââ Body ââ */}
+          {/* Body */}
           <div className="wrap">
             <div className="dash-body">
 
-              {/* ââ Status banner ââ */}
+              {/* Status banner */}
               <div className="panel dash-status-panel" style={{ borderColor: cfg.border }}>
                 <div className="dash-status-row">
                   <h2>Claim Status</h2>
                   <span className="badge" style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}>
-                    {cfg.icon}&nbsp; {cfg.label}
+                    {cfg.label}
                   </span>
                 </div>
                 <p className="dash-status-desc">{cfg.desc}</p>
               </div>
 
-              {/* ââ Listing card ââ */}
+              {/* Listing card */}
               <div className="panel">
-                <h2>ð Your Listing</h2>
+                <h2>Your Listing</h2>
                 <div className="dash-listing-card">
                   <div>
                     <div className="dash-listing-name">{claim!.studio_title}</div>
                     {(claim!.studio_city || claim!.studio_state) && (
                       <div className="dash-listing-loc">
-                        ð {[claim!.studio_city, claim!.studio_state].filter(Boolean).join(", ")}
+                        {[claim!.studio_city, claim!.studio_state].filter(Boolean).join(", ")}
                       </div>
                     )}
                   </div>
                   <Link href={listingHref} className="btn btn-ghost" style={{ fontSize: "0.82rem", padding: "0.55em 1em" }}>
-                    View listing â
+                    View listing &#8594;
                   </Link>
                 </div>
               </div>
 
-              {/* ââ Owner details ââ */}
+              {/* Owner details */}
               <div className="panel">
-                <h2>ð¤ Owner Information</h2>
+                <h2>Owner Information</h2>
                 <div className="dash-details-grid">
                   <div className="dash-detail">
                     <div className="dash-detail-label">Name</div>
@@ -199,36 +195,36 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* ââ Upgrade / Featured CTA ââ */}
+              {/* Upgrade / Featured CTA */}
               {(claim!.status === "verified" || claim!.status === "approved") && (
                 <div className="dash-upgrade-card">
                   {claim!.tier === "paid" ? (
                     <div className="dash-upgrade-inner">
                       <div>
-                        <div className="eyebrow" style={{ color: "#bbf7d0", marginBottom: "0.5rem" }}>â­ Featured Listing â Active</div>
+                        <div className="eyebrow" style={{ color: "#bbf7d0", marginBottom: "0.5rem" }}>Featured Listing &mdash; Active</div>
                         <h3>You&apos;re Featured!</h3>
                         <p>Your listing has the gold Featured badge, lead capture form, and priority placement in search results. Customers can contact you directly.</p>
                       </div>
-                      <span style={{ fontSize: "2.5rem" }}>â­</span>
+                      <span style={{ fontSize: "2.5rem" }}>&#11088;</span>
                     </div>
                   ) : (
                     <>
                       <div className="dash-upgrade-inner">
                         <div>
                           <div className="eyebrow" style={{ color: "#bbf7d0", marginBottom: "0.5rem" }}>
-                            Featured Listing â $49/mo <span style={{ color: "rgba(255,255,255,0.3)", textDecoration: "line-through", fontWeight: 400, textTransform: "none" }}>$99</span>
+                            Featured Listing &mdash; $49/mo <span style={{ color: "rgba(255,255,255,0.3)", textDecoration: "line-through", fontWeight: 400, textTransform: "none" }}>$99</span>
                           </div>
                           <h3>Upgrade to Featured</h3>
                           <p>Get a lead capture form, &ldquo;Featured&rdquo; badge, priority placement in search results, and monthly performance insights.</p>
                         </div>
-                        <span style={{ fontSize: "2.5rem" }}>â­</span>
+                        <span style={{ fontSize: "2.5rem" }}>&#11088;</span>
                       </div>
                       <div style={{ marginTop: "20px" }}>
                         <Link href="/upgrade" className="btn btn-primary" style={{ background: "#fff", color: "var(--dark)", boxShadow: "0 4px 14px rgba(0,0,0,0.15)" }}>
-                          Upgrade to Featured â
+                          Upgrade to Featured &#8594;
                         </Link>
                         <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.78rem", marginTop: "10px" }}>
-                          $49/mo promo rate (reg. $99) Â· Cancel anytime Â· Powered by Stripe
+                          $49/mo promo rate (reg. $99) &middot; Cancel anytime &middot; Powered by Stripe
                         </p>
                       </div>
                     </>
@@ -236,12 +232,12 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* ââ Photo management â Featured tier only ââ */}
+              {/* Photo management -- Featured tier only */}
               {claim!.tier === "paid" && (
                 <PhotoManager claimId={claim!.id} studioSlug={claim!.studio_slug} />
               )}
 
-              {/* ââ Profile editor â Featured tier only ââ */}
+              {/* Profile editor -- Featured tier only */}
               {claim!.tier === "paid" && (
                 <StudioProfileEditor
                   claimId={claim!.id}
@@ -252,13 +248,13 @@ export default function DashboardPage() {
                 />
               )}
 
-              {/* ââ Help ââ */}
+              {/* Help */}
               <div className="panel">
-                <h2>ð¬ Questions?</h2>
+                <h2>Questions?</h2>
                 <p style={{ color: "var(--muted)", fontSize: "0.92rem", marginBottom: "12px" }}>
                   Need to update your business information or have a question about your claim?
                 </p>
-                <Link href="/contact" className="dash-contact-link">Contact us â</Link>
+                <Link href="/contact" className="dash-contact-link">Contact us &#8594;</Link>
               </div>
 
             </div>
@@ -266,7 +262,7 @@ export default function DashboardPage() {
         </>
       )}
 
-      {/* ââ Scoped styles â always rendered ââ */}
+      {/* Scoped styles -- always rendered */}
       <style jsx>{`
         /* Loading / gate screens */
         .dash-loading {
