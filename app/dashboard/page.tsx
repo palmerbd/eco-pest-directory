@@ -72,200 +72,201 @@ export default function DashboardPage() {
     window.location.href = "/";
   }
 
-  /* ââ Loading ââââââââââââââââââââââââââââââââââââââââââââââââ */
-  if (pageState === "loading") {
-    return (
-      <main className="dash-loading">
-        <div className="dash-spinner" />
-      </main>
-    );
-  }
+  const cfg = pageState === "ready"
+    ? (STATUS_CONFIG[claim!.status] || STATUS_CONFIG.pending)
+    : STATUS_CONFIG.pending;
 
-  /* ââ Not logged in ââââââââââââââââââââââââââââââââââââââââââ */
-  if (pageState === "unauthenticated") {
-    return (
-      <main className="dash-loading">
-        <div className="dash-gate-card">
-          <div className="dash-gate-icon">ð</div>
-          <h1>Sign in required</h1>
-          <p>You need to claim a business listing before you can access the dashboard.</p>
-          <Link href="/claim" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-            Claim Your Listing
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
-  /* ââ No claim yet âââââââââââââââââââââââââââââââââââââââââââ */
-  if (pageState === "no_claim") {
-    return (
-      <main className="dash-loading">
-        <div className="dash-gate-card">
-          <div className="dash-gate-icon">ð</div>
-          <h1>No claim on file</h1>
-          <p>Logged in as <strong>{email}</strong>.</p>
-          <p>You haven&apos;t claimed a listing yet, or your claim may be associated with a different email address.</p>
-          <Link href="/claim" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginBottom: "12px" }}>
-            Claim a Listing
-          </Link>
-          <button onClick={handleSignOut} className="dash-signout-link">
-            Sign out
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  /* ââ Dashboard (ready) ââââââââââââââââââââââââââââââââââââââ */
-  const cfg = STATUS_CONFIG[claim!.status] || STATUS_CONFIG.pending;
-  const listingHref = claim!.studio_city && claim!.studio_state
+  const listingHref = (pageState === "ready" && claim!.studio_city && claim!.studio_state)
     ? `/directory/${claim!.studio_state}/${claim!.studio_city}/${claim!.studio_slug}`
     : `/directory`;
 
   return (
     <>
-      {/* ââ Hero header â matches .chero from city pages ââ */}
-      <section className="dash-hero">
-        <div className="wrap">
-          <div className="dash-hero-nav">
-            <Link href="/" className="dash-hero-back">&larr; Back to directory</Link>
-            <button onClick={handleSignOut} className="dash-hero-signout">Sign out</button>
+      {/* ââ Loading spinner ââ */}
+      {pageState === "loading" && (
+        <main className="dash-loading">
+          <div className="dash-spinner" />
+        </main>
+      )}
+
+      {/* ââ Not logged in ââ */}
+      {pageState === "unauthenticated" && (
+        <main className="dash-loading">
+          <div className="dash-gate-card">
+            <div className="dash-gate-icon">ð</div>
+            <h1>Sign in required</h1>
+            <p>You need to claim a business listing before you can access the dashboard.</p>
+            <Link href="/claim" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
+              Claim Your Listing
+            </Link>
           </div>
-          <div className="eyebrow" style={{ color: "#bbf7d0", marginBottom: "0.6rem" }}>Owner Dashboard</div>
-          <h1 className="dash-hero-title">{claim!.studio_title}</h1>
-          <p className="dash-hero-email">{email}</p>
-        </div>
-      </section>
+        </main>
+      )}
 
-      {/* ââ Body ââ */}
-      <div className="wrap">
-        <div className="dash-body">
+      {/* ââ No claim yet ââ */}
+      {pageState === "no_claim" && (
+        <main className="dash-loading">
+          <div className="dash-gate-card">
+            <div className="dash-gate-icon">ð</div>
+            <h1>No claim on file</h1>
+            <p>Logged in as <strong>{email}</strong>.</p>
+            <p>You haven&apos;t claimed a listing yet, or your claim may be associated with a different email address.</p>
+            <Link href="/claim" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginBottom: "12px" }}>
+              Claim a Listing
+            </Link>
+            <button onClick={handleSignOut} className="dash-signout-link">
+              Sign out
+            </button>
+          </div>
+        </main>
+      )}
 
-          {/* ââ Status banner ââ */}
-          <div className="panel dash-status-panel" style={{ borderColor: cfg.border }}>
-            <div className="dash-status-row">
-              <h2>Claim Status</h2>
-              <span className="badge" style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}>
-                {cfg.icon}&nbsp; {cfg.label}
-              </span>
+      {/* ââ Dashboard (ready) ââ */}
+      {pageState === "ready" && (
+        <>
+          {/* ââ Hero header â matches .chero from city pages ââ */}
+          <section className="dash-hero">
+            <div className="wrap">
+              <div className="dash-hero-nav">
+                <Link href="/" className="dash-hero-back">&larr; Back to directory</Link>
+                <button onClick={handleSignOut} className="dash-hero-signout">Sign out</button>
+              </div>
+              <div className="eyebrow" style={{ color: "#bbf7d0", marginBottom: "0.6rem" }}>Owner Dashboard</div>
+              <h1 className="dash-hero-title">{claim!.studio_title}</h1>
+              <p className="dash-hero-email">{email}</p>
             </div>
-            <p className="dash-status-desc">{cfg.desc}</p>
-          </div>
+          </section>
 
-          {/* ââ Listing card ââ */}
-          <div className="panel">
-            <h2>ð Your Listing</h2>
-            <div className="dash-listing-card">
-              <div>
-                <div className="dash-listing-name">{claim!.studio_title}</div>
-                {(claim!.studio_city || claim!.studio_state) && (
-                  <div className="dash-listing-loc">
-                    ð {[claim!.studio_city, claim!.studio_state].filter(Boolean).join(", ")}
-                  </div>
-                )}
-              </div>
-              <Link href={listingHref} className="btn btn-ghost" style={{ fontSize: "0.82rem", padding: "0.55em 1em" }}>
-                View listing â
-              </Link>
-            </div>
-          </div>
+          {/* ââ Body ââ */}
+          <div className="wrap">
+            <div className="dash-body">
 
-          {/* ââ Owner details ââ */}
-          <div className="panel">
-            <h2>ð¤ Owner Information</h2>
-            <div className="dash-details-grid">
-              <div className="dash-detail">
-                <div className="dash-detail-label">Name</div>
-                <div className="dash-detail-value">{claim!.owner_name}</div>
-              </div>
-              <div className="dash-detail">
-                <div className="dash-detail-label">Email</div>
-                <div className="dash-detail-value">{claim!.owner_email}</div>
-              </div>
-              {claim!.owner_phone && (
-                <div className="dash-detail">
-                  <div className="dash-detail-label">Phone</div>
-                  <div className="dash-detail-value">{claim!.owner_phone}</div>
+              {/* ââ Status banner ââ */}
+              <div className="panel dash-status-panel" style={{ borderColor: cfg.border }}>
+                <div className="dash-status-row">
+                  <h2>Claim Status</h2>
+                  <span className="badge" style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}>
+                    {cfg.icon}&nbsp; {cfg.label}
+                  </span>
                 </div>
-              )}
-              <div className="dash-detail">
-                <div className="dash-detail-label">Submitted</div>
-                <div className="dash-detail-value">
-                  {new Date(claim!.created_at).toLocaleDateString("en-US", {
-                    year: "numeric", month: "long", day: "numeric",
-                  })}
-                </div>
+                <p className="dash-status-desc">{cfg.desc}</p>
               </div>
-            </div>
-          </div>
 
-          {/* ââ Upgrade / Featured CTA ââ */}
-          {(claim!.status === "verified" || claim!.status === "approved") && (
-            <div className="dash-upgrade-card">
-              {claim!.tier === "paid" ? (
-                <div className="dash-upgrade-inner">
+              {/* ââ Listing card ââ */}
+              <div className="panel">
+                <h2>ð Your Listing</h2>
+                <div className="dash-listing-card">
                   <div>
-                    <div className="eyebrow" style={{ color: "#bbf7d0", marginBottom: "0.5rem" }}>â­ Featured Listing â Active</div>
-                    <h3>You&apos;re Featured!</h3>
-                    <p>Your listing has the gold Featured badge, lead capture form, and priority placement in search results. Customers can contact you directly.</p>
-                  </div>
-                  <span style={{ fontSize: "2.5rem" }}>â­</span>
-                </div>
-              ) : (
-                <>
-                  <div className="dash-upgrade-inner">
-                    <div>
-                      <div className="eyebrow" style={{ color: "#bbf7d0", marginBottom: "0.5rem" }}>
-                        Featured Listing â $49/mo <span style={{ color: "rgba(255,255,255,0.3)", textDecoration: "line-through", fontWeight: 400, textTransform: "none" }}>$99</span>
+                    <div className="dash-listing-name">{claim!.studio_title}</div>
+                    {(claim!.studio_city || claim!.studio_state) && (
+                      <div className="dash-listing-loc">
+                        ð {[claim!.studio_city, claim!.studio_state].filter(Boolean).join(", ")}
                       </div>
-                      <h3>Upgrade to Featured</h3>
-                      <p>Get a lead capture form, &ldquo;Featured&rdquo; badge, priority placement in search results, and monthly performance insights.</p>
+                    )}
+                  </div>
+                  <Link href={listingHref} className="btn btn-ghost" style={{ fontSize: "0.82rem", padding: "0.55em 1em" }}>
+                    View listing â
+                  </Link>
+                </div>
+              </div>
+
+              {/* ââ Owner details ââ */}
+              <div className="panel">
+                <h2>ð¤ Owner Information</h2>
+                <div className="dash-details-grid">
+                  <div className="dash-detail">
+                    <div className="dash-detail-label">Name</div>
+                    <div className="dash-detail-value">{claim!.owner_name}</div>
+                  </div>
+                  <div className="dash-detail">
+                    <div className="dash-detail-label">Email</div>
+                    <div className="dash-detail-value">{claim!.owner_email}</div>
+                  </div>
+                  {claim!.owner_phone && (
+                    <div className="dash-detail">
+                      <div className="dash-detail-label">Phone</div>
+                      <div className="dash-detail-value">{claim!.owner_phone}</div>
                     </div>
-                    <span style={{ fontSize: "2.5rem" }}>â­</span>
+                  )}
+                  <div className="dash-detail">
+                    <div className="dash-detail-label">Submitted</div>
+                    <div className="dash-detail-value">
+                      {new Date(claim!.created_at).toLocaleDateString("en-US", {
+                        year: "numeric", month: "long", day: "numeric",
+                      })}
+                    </div>
                   </div>
-                  <div style={{ marginTop: "20px" }}>
-                    <Link href="/upgrade" className="btn btn-primary" style={{ background: "#fff", color: "var(--dark)", boxShadow: "0 4px 14px rgba(0,0,0,0.15)" }}>
-                      Upgrade to Featured â
-                    </Link>
-                    <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.78rem", marginTop: "10px" }}>
-                      $49/mo promo rate (reg. $99) Â· Cancel anytime Â· Powered by Stripe
-                    </p>
-                  </div>
-                </>
+                </div>
+              </div>
+
+              {/* ââ Upgrade / Featured CTA ââ */}
+              {(claim!.status === "verified" || claim!.status === "approved") && (
+                <div className="dash-upgrade-card">
+                  {claim!.tier === "paid" ? (
+                    <div className="dash-upgrade-inner">
+                      <div>
+                        <div className="eyebrow" style={{ color: "#bbf7d0", marginBottom: "0.5rem" }}>â­ Featured Listing â Active</div>
+                        <h3>You&apos;re Featured!</h3>
+                        <p>Your listing has the gold Featured badge, lead capture form, and priority placement in search results. Customers can contact you directly.</p>
+                      </div>
+                      <span style={{ fontSize: "2.5rem" }}>â­</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="dash-upgrade-inner">
+                        <div>
+                          <div className="eyebrow" style={{ color: "#bbf7d0", marginBottom: "0.5rem" }}>
+                            Featured Listing â $49/mo <span style={{ color: "rgba(255,255,255,0.3)", textDecoration: "line-through", fontWeight: 400, textTransform: "none" }}>$99</span>
+                          </div>
+                          <h3>Upgrade to Featured</h3>
+                          <p>Get a lead capture form, &ldquo;Featured&rdquo; badge, priority placement in search results, and monthly performance insights.</p>
+                        </div>
+                        <span style={{ fontSize: "2.5rem" }}>â­</span>
+                      </div>
+                      <div style={{ marginTop: "20px" }}>
+                        <Link href="/upgrade" className="btn btn-primary" style={{ background: "#fff", color: "var(--dark)", boxShadow: "0 4px 14px rgba(0,0,0,0.15)" }}>
+                          Upgrade to Featured â
+                        </Link>
+                        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.78rem", marginTop: "10px" }}>
+                          $49/mo promo rate (reg. $99) Â· Cancel anytime Â· Powered by Stripe
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
               )}
+
+              {/* ââ Photo management â Featured tier only ââ */}
+              {claim!.tier === "paid" && (
+                <PhotoManager claimId={claim!.id} studioSlug={claim!.studio_slug} />
+              )}
+
+              {/* ââ Profile editor â Featured tier only ââ */}
+              {claim!.tier === "paid" && (
+                <StudioProfileEditor
+                  claimId={claim!.id}
+                  studioSlug={claim!.studio_slug}
+                  studioTitle={claim!.studio_title}
+                  studioCity={(claim as Claim & { studio_city?: string }).studio_city ?? ""}
+                  studioState={(claim as Claim & { studio_state?: string }).studio_state ?? ""}
+                />
+              )}
+
+              {/* ââ Help ââ */}
+              <div className="panel">
+                <h2>ð¬ Questions?</h2>
+                <p style={{ color: "var(--muted)", fontSize: "0.92rem", marginBottom: "12px" }}>
+                  Need to update your business information or have a question about your claim?
+                </p>
+                <Link href="/contact" className="dash-contact-link">Contact us â</Link>
+              </div>
+
             </div>
-          )}
-
-          {/* ââ Photo management â Featured tier only ââ */}
-          {claim!.tier === "paid" && (
-            <PhotoManager claimId={claim!.id} studioSlug={claim!.studio_slug} />
-          )}
-
-          {/* ââ Profile editor â Featured tier only ââ */}
-          {claim!.tier === "paid" && (
-            <StudioProfileEditor
-              claimId={claim!.id}
-              studioSlug={claim!.studio_slug}
-              studioTitle={claim!.studio_title}
-              studioCity={(claim as Claim & { studio_city?: string }).studio_city ?? ""}
-              studioState={(claim as Claim & { studio_state?: string }).studio_state ?? ""}
-            />
-          )}
-
-          {/* ââ Help ââ */}
-          <div className="panel">
-            <h2>ð¬ Questions?</h2>
-            <p style={{ color: "var(--muted)", fontSize: "0.92rem", marginBottom: "12px" }}>
-              Need to update your business information or have a question about your claim?
-            </p>
-            <Link href="/contact" className="dash-contact-link">Contact us â</Link>
           </div>
+        </>
+      )}
 
-        </div>
-      </div>
-
-      {/* ââ Scoped styles ââ */}
+      {/* ââ Scoped styles â always rendered ââ */}
       <style jsx>{`
         /* Loading / gate screens */
         .dash-loading {
