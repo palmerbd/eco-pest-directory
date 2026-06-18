@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /admin — BDD Studio Claims Command Center
+ * /admin — GPD Company Claims Command Center
  * ─────────────────────────────────────────
  * Password-gated admin dashboard with three tabs:
  *   1. Pending Review  — status "verified", awaiting approval
@@ -298,7 +298,7 @@ function PendingTable({
       <table className="w-full text-left">
         <thead>
           <tr className="border-b-2 border-gray-200 text-xs text-gray-500 uppercase tracking-wide">
-            <th className="py-2 px-4">Studio</th>
+            <th className="py-2 px-4">Company</th>
             <th className="py-2 px-4">Claimant</th>
             <th className="py-2 px-4">Submitted</th>
             <th className="py-2 px-4 w-52">Review</th>
@@ -468,7 +468,7 @@ function ClaimsTable({
       <table className="w-full text-left">
         <thead>
           <tr className="border-b-2 border-gray-200 text-xs text-gray-500 uppercase tracking-wide">
-            <th className="py-2 px-4">Studio</th>
+            <th className="py-2 px-4">Company</th>
             <th className="py-2 px-4">Tier</th>
             <th className="py-2 px-4">Owner</th>
             <th className="py-2 px-4">Profile</th>
@@ -509,7 +509,7 @@ function LoginScreen({ onLogin }: { onLogin: (token: string) => void }) {
       if (res.status === 401) {
         setError("Incorrect password.");
       } else {
-        sessionStorage.setItem("bdd_admin_token", password);
+        sessionStorage.setItem("gpd_admin_token", password);
         onLogin(password);
       }
     } catch {
@@ -524,7 +524,7 @@ function LoginScreen({ onLogin }: { onLogin: (token: string) => void }) {
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm">
         <div className="text-center mb-6">
           <div className="text-3xl mb-2">🎯</div>
-          <h1 className="text-xl font-bold text-gray-900">BDD Command Center</h1>
+          <h1 className="text-xl font-bold text-gray-900">GPD Command Center</h1>
           <p className="text-sm text-gray-500 mt-1">Admin access only</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -628,8 +628,8 @@ function Dashboard({ adminToken }: { adminToken: string }) {
         <div className="flex items-center gap-3">
           <span className="text-xl">🎯</span>
           <div>
-            <h1 className="font-bold text-lg leading-tight">BDD Command Center</h1>
-            <p className="text-xs text-blue-300">Green Pest Control Directory — Studio Claims</p>
+            <h1 className="font-bold text-lg leading-tight">GPD Command Center</h1>
+            <p className="text-xs text-blue-300">Green Pest Control Directory — Company Claims</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -643,7 +643,7 @@ function Dashboard({ adminToken }: { adminToken: string }) {
             ↺ Refresh
           </button>
           <button
-            onClick={() => { sessionStorage.removeItem("bdd_admin_token"); window.location.reload(); }}
+            onClick={() => { sessionStorage.removeItem("gpd_admin_token"); window.location.reload(); }}
             className="text-xs text-gray-400 hover:text-white transition-colors"
           >
             Sign out
@@ -727,12 +727,12 @@ function Dashboard({ adminToken }: { adminToken: string }) {
                 {activeTab === "pending"
                   ? "Claims awaiting review — verify ownership before approving"
                   : activeTab === "claimed"
-                  ? "Approved studios on the free tier — push to GHL to start upgrade sequence"
-                  : "Studios on the Featured plan ($49/mo)"}
+                  ? "Approved companies on the free tier — push to GHL to start upgrade sequence"
+                  : "Companies on the Featured plan ($49/mo)"}
               </h2>
               {activeTab === "pending" && pendingCount > 0 && (
                 <span className="text-xs text-gray-400 italic">
-                  Click 🔍 Google verify to check the studio before acting
+                  Click 🔍 Google verify to check the company before acting
                 </span>
               )}
             </div>
@@ -752,8 +752,8 @@ function Dashboard({ adminToken }: { adminToken: string }) {
                 onGhlUpdate={updateGhl}
                 emptyMsg={
                   activeTab === "claimed"
-                    ? "No approved studios yet. Approve pending claims first."
-                    : "No featured studios yet."
+                    ? "No approved companies yet. Approve pending claims first."
+                    : "No featured companies yet."
                 }
               />
             )}
@@ -772,7 +772,7 @@ export default function AdminPage() {
   const [checked,    setChecked]    = useState(false);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("bdd_admin_token");
+    const stored = sessionStorage.getItem("gpd_admin_token");
     if (stored) setAdminToken(stored);
     setChecked(true);
   }, []);

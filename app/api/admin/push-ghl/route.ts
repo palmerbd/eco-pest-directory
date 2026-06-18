@@ -1,7 +1,7 @@
 /**
  * /api/admin/push-ghl
  * ────────────────────
- * Creates (or updates) a GHL contact + opportunity for a claimed studio owner.
+ * Creates (or updates) a GHL contact + opportunity for a claimed company owner.
  * Called from the admin dashboard when you click "Push to GHL" on a claim.
  *
  * POST /api/admin/push-ghl
@@ -15,7 +15,7 @@
  *  3. Create an opportunity in the correct stage based on tier:
  *     - "claimed"  → stage named "Claimed — Free"  (first stage)
  *     - "paid"     → stage named "Featured"        (last stage)
- *  4. Tag the contact: "bdd-claimed" or "bdd-featured"
+ *  4. Tag the contact: "gpd-claimed" or "gpd-featured"
  *  5. Return the GHL contact ID and opportunity ID
  */
 
@@ -26,7 +26,7 @@ const GHL_TOKEN   = process.env.GHL_API_TOKEN!;
 const LOCATION_ID = "gKAwJUdSQ6QMlAc0QXWb";
 const GHL_VERSION = "2021-07-28";
 
-// Studio Owner Pipeline (confirmed 2026-04-19)
+// Company Owner Pipeline (confirmed 2026-04-19)
 const PIPELINE_ID        = "LF3giKT3c7he0Few1f51";
 const STAGE_CLAIMED_ID   = "3159abd3-a1e1-4047-9b7f-f2f46146ac7d"; // "Claimed"
 const STAGE_FEATURED_ID  = "ee33ef09-6042-4916-9984-04b3e1c4231a"; // "Featured (Paid)"
@@ -85,10 +85,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing owner_email or studio_slug" }, { status: 400 });
   }
 
-  const listingUrl = `https://www.greenpestdirectory.com/studios/${studio_slug}`;
-  const [firstName, ...rest] = (owner_name ?? "Studio Owner").split(" ");
+  const listingUrl = `https://www.greenpestdirectory.com`;
+  const [firstName, ...rest] = (owner_name ?? "Company Owner").split(" ");
   const lastName = rest.join(" ") || "Owner";
-  const tag = tier === "paid" ? "bdd-featured" : "bdd-claimed";
+  const tag = tier === "paid" ? "gpd-featured" : "gpd-claimed";
 
   try {
     // ── 1. Upsert GHL contact ─────────────────────────────────────────────────
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
         firstName,
         lastName,
         phone: owner_phone ?? "",
-        tags: [tag, "ballroom-dance-directory"],
+        tags: [tag, "green-pest-directory"],
         customFields: [
           { key: "studio_name",  field_value: studio_title },
           { key: "studio_slug",  field_value: studio_slug  },
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
         email: owner_email,
         phone: owner_phone ?? "",
         source: "Green Pest Control Directory",
-        tags: [tag, "ballroom-dance-directory"],
+        tags: [tag, "green-pest-directory"],
         customFields: [
           { key: "studio_name",  field_value: studio_title },
           { key: "studio_slug",  field_value: studio_slug  },
@@ -169,7 +169,7 @@ export async function POST(req: NextRequest) {
       success:       true,
       contactId,
       opportunityId,
-      pipeline:      "Studio Owner Pipeline",
+      pipeline:      "Company Owner Pipeline",
       stage:         stageName,
     });
 

@@ -174,12 +174,12 @@ interface OwnerResult {
 
 // Business type words that often follow an owner name in a studio name
 const BUSINESS_SUFFIXES =
-  /\s+(?:dance|dancing|ballroom|studio|studios|school|academy|center|centre|arts|ballet|movement|fitness|instruction|lessons|training|inc|llc)[\s,.]*/i;
+  /\s+(?:pest|control|exterminating|exterminators|termite|fumigation|services|solutions|environmental|home|defense|company|inc|llc)[\s,.]*/i;
 
 /**
  * Strategy -1: Extract owner name directly from the studio business name.
  * "Nancy Thompson Pest Control Company" → "Nancy Thompson"
- * "Kim Lesher Ballroom" → "Kim Lesher"
+ * "Kim Lesher Pest Control" → "Kim Lesher"
  * Only fires if the name leads with a valid person name before a known suffix.
  */
 function tryStudioName(studioName: string): string | null {
@@ -188,7 +188,7 @@ function tryStudioName(studioName: string): string | null {
     .trim();
 
   // Pattern: starts with "First Last" followed by a business suffix
-  const m = cleaned.match(/^([A-Z][a-z'\-]{1,17}\s+[A-Z][a-z'\-]{1,17})(?:'s?)?\s+(?:dance|dancing|ballroom|studio|studios|school|academy|center|centre|arts|ballet|movement|fitness)/i);
+  const m = cleaned.match(/^([A-Z][a-z'\-]{1,17}\s+[A-Z][a-z'\-]{1,17})(?:'s?)?\s+(?:pest|control|exterminating|services|solutions|environmental|termite|fumigation|home|defense)/i);
   if (m) {
     const candidate = m[1].trim();
     if (isValidPersonName(candidate)) return candidate;
@@ -308,7 +308,7 @@ async function fetchPage(url: string): Promise<string | null> {
       signal: controller.signal,
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; BDD-Directory/1.0; +https://greenpestdirectory.com)",
+          "Mozilla/5.0 (compatible; GPD-Directory/1.0; +https://greenpestdirectory.com)",
         Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
       },

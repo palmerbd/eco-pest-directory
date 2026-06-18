@@ -23,7 +23,7 @@ export default function ClaimBadge({ slug }: Props) {
   }, [slug]);
 
   if (!claimed) {
-    // Not claimed — show a visible "Own this studio?" CTA
+    // Not claimed — show a visible "Own this company?" CTA
     if (claimed === false) {
       return (
         <Link
@@ -37,7 +37,7 @@ export default function ClaimBadge({ slug }: Props) {
           }}
         >
           <span>🏷</span>
-          <span>Own this studio? Claim your listing</span>
+          <span>Own this company? Claim your listing</span>
         </Link>
       );
     }

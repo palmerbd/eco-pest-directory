@@ -57,8 +57,8 @@ export default function PrivacyPage() {
               <p className="mb-3 font-medium text-gray-700">Information you provide to us:</p>
               <ul className="list-disc pl-6 space-y-1 text-sm mb-4">
                 <li>Contact form submissions (name, email, message)</li>
-                <li>Studio claim requests (name, email, phone, studio affiliation)</li>
-                <li>Studio listing information submitted by verified owners</li>
+                <li>Company claim requests (name, email, phone, studio affiliation)</li>
+                <li>Company listing information submitted by verified owners</li>
               </ul>
               <p className="mb-3 font-medium text-gray-700">Information collected automatically:</p>
               <ul className="list-disc pl-6 space-y-1 text-sm">
@@ -98,8 +98,8 @@ export default function PrivacyPage() {
               </p>
               <ul className="list-disc pl-6 space-y-1 text-sm">
                 <li>
-                  <strong>Studio owners (paid tier):</strong> If you submit an inquiry through a
-                  featured studio&apos;s listing, your name, email, and message will be shared with
+                  <strong>Company owners (paid tier):</strong> If you submit an inquiry through a
+                  featured company&apos;s listing, your name, email, and message will be shared with
                   that studio owner.
                 </li>
                 <li>
@@ -116,10 +116,10 @@ export default function PrivacyPage() {
             <section>
               <h2 className="font-display font-bold text-gray-900 text-xl mb-3">6. Studio Listing Data</h2>
               <p>
-                Basic business information for studios listed on this directory (studio name,
+                Basic business information for companies listed on this directory (company name,
                 address, phone number, hours of operation) is compiled from publicly available
                 sources. This information is not personal data under applicable privacy laws.
-                Studio owners may request correction or removal of their listing at any time.
+                Company owners may request correction or removal of their listing at any time.
               </p>
             </section>
 

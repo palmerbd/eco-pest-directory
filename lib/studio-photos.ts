@@ -43,91 +43,49 @@ export function unsplashUrl(photoId: string, width = 800, height = 500): string 
   return `https://images.unsplash.com/photo-${photoId}?auto=format&fit=crop&w=${width}&h=${height}&q=80`;
 }
 
-// ─── Photo pools (4 slots each — rotated by studio ID) ───────────────────────
+// ─── Photo pools (4 slots each — rotated by company ID) ───────────────────────
 
-const BALLROOM_PHOTOS: UnsplashPhoto[] = [
-  local("/images/ballroom.png", "Elegant couple performing a eco-friendly pest control"),
-  local("/images/ballroom.png", "Elegant couple performing a eco-friendly pest control"),
-  local("/images/ballroom.png", "Elegant couple performing a eco-friendly pest control"),
-  local("/images/ballroom.png", "Elegant couple performing a eco-friendly pest control"),
+const PEST_PHOTOS: UnsplashPhoto[] = [
+  local("/images/ballroom.png", "Professional pest control service in action"),
+  local("/images/ballroom.png", "Professional pest control service in action"),
+  local("/images/ballroom.png", "Professional pest control service in action"),
+  local("/images/ballroom.png", "Professional pest control service in action"),
 ];
 
-const WALTZ_PHOTOS: UnsplashPhoto[] = [
-  local("/images/waltz.png", "Graceful waltz couple in flowing motion"),
-  local("/images/waltz.png", "Graceful waltz couple in flowing motion"),
-  local("/images/waltz.png", "Graceful waltz couple in flowing motion"),
-  local("/images/waltz.png", "Graceful waltz couple in flowing motion"),
-];
-
-const LATIN_PHOTOS: UnsplashPhoto[] = [
-  local("/images/latin.png", "Latin dance couple in elegant performance"),
-  local("/images/latin.png", "Latin dance couple in elegant performance"),
-  local("/images/latin.png", "Latin dance couple in elegant performance"),
-  local("/images/latin.png", "Latin dance couple in elegant performance"),
-];
-
-const SALSA_PHOTOS: UnsplashPhoto[] = [
-  local("/images/salsa.png", "Energetic salsa dancers in motion"),
-  local("/images/salsa.png", "Energetic salsa dancers in motion"),
-  local("/images/salsa.png", "Energetic salsa dancers in motion"),
-  local("/images/salsa.png", "Energetic salsa dancers in motion"),
-];
-
-const TANGO_PHOTOS: UnsplashPhoto[] = [
-  local("/images/tango.png", "Passionate tango embrace"),
-  local("/images/tango.png", "Passionate tango embrace"),
-  local("/images/tango.png", "Passionate tango embrace"),
-  local("/images/tango.png", "Passionate tango embrace"),
-];
-
-const WEDDING_PHOTOS: UnsplashPhoto[] = [
-  local("/images/wedding.png", "Couple sharing their first wedding dance"),
-  local("/images/wedding.png", "Couple sharing their first wedding dance"),
-  local("/images/wedding.png", "Couple sharing their first wedding dance"),
-  local("/images/wedding.png", "Couple sharing their first wedding dance"),
-];
-
-const SWING_PHOTOS: UnsplashPhoto[] = [
-  local("/images/swing.png", "Swing dancers performing with energy"),
-  local("/images/swing.png", "Swing dancers performing with energy"),
-  local("/images/swing.png", "Swing dancers performing with energy"),
-  local("/images/swing.png", "Swing dancers performing with energy"),
-];
-
-const COMPETITION_PHOTOS: UnsplashPhoto[] = [
-  local("/images/competition.png", "Competitive dancers on stage"),
-  local("/images/competition.png", "Competitive dancers on stage"),
-  local("/images/competition.png", "Competitive dancers on stage"),
-  local("/images/competition.png", "Competitive dancers on stage"),
-];
-
-const STUDIO_INTERIOR_PHOTOS: UnsplashPhoto[] = [
+const COMPANY_INTERIOR_PHOTOS: UnsplashPhoto[] = [
   local("/images/ballroom.png", "Professional pest control company interior"),
   local("/images/ballroom.png", "Professional pest control company interior"),
   local("/images/ballroom.png", "Professional pest control company interior"),
 ];
 
-// ─── Style → photo pool mapping ───────────────────────────────────────────────
+// ─── Service type → photo pool mapping ───────────────────────────────────────
 
 const STYLE_PHOTO_MAP: Partial<Record<DanceStyle, UnsplashPhoto[]>> = {
-  ballroom:      BALLROOM_PHOTOS,
-  waltz:         WALTZ_PHOTOS,
-  foxtrot:       BALLROOM_PHOTOS,
-  latin:         LATIN_PHOTOS,
-  salsa:         SALSA_PHOTOS,
-  cha_cha:       LATIN_PHOTOS,
-  rumba:         LATIN_PHOTOS,
-  tango:         TANGO_PHOTOS,
-  wedding_dance: WEDDING_PHOTOS,
-  swing:         SWING_PHOTOS,
-  competition:   COMPETITION_PHOTOS,
+  general_pest: PEST_PHOTOS,
+  termite:      PEST_PHOTOS,
+  rodent:       PEST_PHOTOS,
+  bed_bug:      PEST_PHOTOS,
+  mosquito:     PEST_PHOTOS,
+  wildlife:     PEST_PHOTOS,
+  cockroach:    PEST_PHOTOS,
+  ant:          PEST_PHOTOS,
+  fumigation:   PEST_PHOTOS,
+  commercial:   PEST_PHOTOS,
+  organic:      PEST_PHOTOS,
+  lawn_pest:    PEST_PHOTOS,
 };
 
 const CHAIN_PHOTO_MAP: Record<StudioChain, UnsplashPhoto[]> = {
-  fred_astaire:  BALLROOM_PHOTOS,
-  arthur_murray: BALLROOM_PHOTOS,
-  dance_with_me: LATIN_PHOTOS,
-  independent:   STUDIO_INTERIOR_PHOTOS,
+  orkin:        PEST_PHOTOS,
+  terminix:     PEST_PHOTOS,
+  truly_nolen:  PEST_PHOTOS,
+  aptive:       PEST_PHOTOS,
+  abc_home:     PEST_PHOTOS,
+  hometeam:     PEST_PHOTOS,
+  massey:       PEST_PHOTOS,
+  turner:       PEST_PHOTOS,
+  ecoshield:    PEST_PHOTOS,
+  independent:  COMPANY_INTERIOR_PHOTOS,
 };
 
 // ─── Photo selection ──────────────────────────────────────────────────────────
@@ -141,7 +99,7 @@ export function getStudioPhotos(
   danceStyles: DanceStyle[],
   chain:       StudioChain,
 ): StudioPhotoSet {
-  const primaryPool   = (danceStyles[0] && STYLE_PHOTO_MAP[danceStyles[0]]) || BALLROOM_PHOTOS;
+  const primaryPool   = (danceStyles[0] && STYLE_PHOTO_MAP[danceStyles[0]]) || PEST_PHOTOS;
   const secondaryPool = (danceStyles[1] && STYLE_PHOTO_MAP[danceStyles[1]]) || primaryPool;
   const accentPool    = CHAIN_PHOTO_MAP[chain];
   return {

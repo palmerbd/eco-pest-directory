@@ -1,6 +1,6 @@
 "use client";
 // ─── StudioProfileEditor ──────────────────────────────────────────────────────
-// Four-section dashboard panel for Featured-tier studio owners:
+// Four-section dashboard panel for Featured-tier company owners:
 //   1. Custom Description
 //   2. Social Media Links
 //   3. Google Reviews toggle
@@ -113,7 +113,7 @@ export default function StudioProfileEditor({ claimId, studioSlug, studioTitle, 
         </div>
         <div>
           <h2 className="font-bold text-gray-900 text-lg leading-tight">Featured Listing Settings</h2>
-          <p className="text-xs text-gray-400">Customize how your studio appears to potential students</p>
+          <p className="text-xs text-gray-400">Customize how your company appears to potential customers</p>
         </div>
       </div>
 
@@ -122,7 +122,7 @@ export default function StudioProfileEditor({ claimId, studioSlug, studioTitle, 
       ═══════════════════════════════════════════════════════════ */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
         <h3 className="font-bold text-gray-900 mb-1 flex items-center gap-2">
-          <span>📝</span> Studio Description
+          <span>📝</span> Company Description
         </h3>
         <p className="text-xs text-gray-400 mb-3">
           Write your own description. This replaces the auto-generated text on your listing page.
@@ -131,7 +131,7 @@ export default function StudioProfileEditor({ claimId, studioSlug, studioTitle, 
           value={profile.custom_description ?? ""}
           onChange={e => update({ custom_description: e.target.value })}
           rows={6}
-          placeholder="Tell potential students what makes your studio special — your teaching approach, atmosphere, styles offered, instructor experience…"
+          placeholder="Tell potential customers what makes your company special — your treatment approach, service area, specialties, certifications…"
           className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-300 resize-y"
         />
         <div className="text-right text-xs text-gray-400 mt-1">
@@ -147,7 +147,7 @@ export default function StudioProfileEditor({ claimId, studioSlug, studioTitle, 
           <span>📲</span> Social Media
         </h3>
         <p className="text-xs text-gray-400 mb-4">
-          Add your social profiles — icons will appear on your listing page so students can follow you.
+          Add your social profiles — icons will appear on your listing page so customers can follow you.
         </p>
 
         <div className="space-y-3">
@@ -163,7 +163,7 @@ export default function StudioProfileEditor({ claimId, studioSlug, studioTitle, 
               type="url"
               value={profile.facebook_url ?? ""}
               onChange={e => update({ facebook_url: e.target.value })}
-              placeholder="https://facebook.com/yourstudio"
+              placeholder="https://facebook.com/yourcompany"
               className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
             />
           </div>
@@ -180,7 +180,7 @@ export default function StudioProfileEditor({ claimId, studioSlug, studioTitle, 
               type="url"
               value={profile.instagram_url ?? ""}
               onChange={e => update({ instagram_url: e.target.value })}
-              placeholder="https://instagram.com/yourstudio"
+              placeholder="https://instagram.com/yourcompany"
               className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
             />
           </div>
@@ -197,7 +197,7 @@ export default function StudioProfileEditor({ claimId, studioSlug, studioTitle, 
               type="url"
               value={profile.tiktok_url ?? ""}
               onChange={e => update({ tiktok_url: e.target.value })}
-              placeholder="https://tiktok.com/@yourstudio"
+              placeholder="https://tiktok.com/@yourcompany"
               className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
             />
           </div>
@@ -277,7 +277,7 @@ export default function StudioProfileEditor({ claimId, studioSlug, studioTitle, 
             type="text"
             value={profile.promo_text ?? ""}
             onChange={e => update({ promo_text: e.target.value })}
-            placeholder="e.g. First lesson FREE for new students!"
+            placeholder="e.g. First treatment FREE for new customers!"
             maxLength={120}
             className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"
           />
@@ -312,7 +312,7 @@ export default function StudioProfileEditor({ claimId, studioSlug, studioTitle, 
               placeholder={
                 profile.promo_type === "percentage" ? "e.g. 20%" :
                 profile.promo_type === "dollar"     ? "e.g. $30 off" :
-                profile.promo_type === "free_trial" ? "e.g. First Lesson Free" :
+                profile.promo_type === "free_trial" ? "e.g. First Treatment Free" :
                 "e.g. Buy 5 get 1 free"
               }
               className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-300"

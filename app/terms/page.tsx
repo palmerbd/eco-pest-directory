@@ -56,8 +56,8 @@ export default function TermsPage() {
               <p>
                 Green Pest Control Directory is an independent, third-party online directory. We are not
                 affiliated with, endorsed by, or sponsored by any pest control company franchise or brand
-                listed on this site, including but not limited to Arthur Murray International, Fred
-                Astaire Pest Control Companies, or Dance With Me Studios. All trademarks are the property of
+                listed on this site, including but not limited to Orkin, Terminix,
+                Aptive Environmental, or EcoShield Pest Solutions. All trademarks are the property of
                 their respective owners.
               </p>
             </section>
@@ -67,11 +67,11 @@ export default function TermsPage() {
               <p className="mb-3">
                 Listing information on this Site is compiled from publicly available sources and is
                 provided for informational purposes only. We do not guarantee the accuracy,
-                completeness, or currentness of any listing. Studio hours, pricing, contact
+                completeness, or currentness of any listing. Company hours, pricing, contact
                 information, and service offerings are subject to change.
               </p>
               <p>
-                You should independently verify all information by contacting the studio directly
+                You should independently verify all information by contacting the company directly
                 before visiting or making any purchasing decisions.
               </p>
             </section>
@@ -91,12 +91,12 @@ export default function TermsPage() {
             <section>
               <h2 className="font-display font-bold text-gray-900 text-xl mb-3">5. Studio Listings</h2>
               <p className="mb-3">
-                Listings on this Site are compiled from public sources. Studio owners and authorized
+                Listings on this Site are compiled from public sources. Company owners and authorized
                 representatives may request corrections, updates, or removal of their listing at any
                 time by contacting us. We will process removal requests within 5 business days.
               </p>
               <p>
-                Studio owners who claim their listing are responsible for the accuracy of any
+                Company owners who claim their listing are responsible for the accuracy of any
                 information they provide or update.
               </p>
             </section>
@@ -105,7 +105,7 @@ export default function TermsPage() {
               <h2 className="font-display font-bold text-gray-900 text-xl mb-3">6. Intellectual Property</h2>
               <p>
                 The design, layout, and original content of this Site are owned by Eco-Friendly Pest Control
-                Directory. Studio names and brand names are the property of their respective owners
+                Directory. Company names and brand names are the property of their respective owners
                 and are used solely for identification purposes. You may not reproduce, distribute,
                 or create derivative works from this Site&apos;s original content without written
                 permission.

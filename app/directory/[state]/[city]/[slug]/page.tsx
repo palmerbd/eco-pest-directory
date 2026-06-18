@@ -73,6 +73,50 @@ export default async function CompanyPage({ params }: { params: Promise<{ state:
 
   return (
     <>
+      {/* Schema.org JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "PestControlService",
+            name: s.title,
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: s.address || undefined,
+              addressLocality: s.city,
+              addressRegion: s.state,
+              postalCode: s.zip || undefined,
+              addressCountry: "US",
+            },
+            telephone: s.phone || undefined,
+            url: s.website || `https://www.greenpestdirectory.com/directory/${stateSlug}/${citySlug}/${slug}`,
+            description: s.description || `${s.title} provides ${t1 ? "eco-certified" : "eco-friendly"} pest control in ${loc}.`,
+            additionalType: t1 ? "https://schema.org/GreenPractice" : undefined,
+            aggregateRating: s.rating > 0 ? {
+              "@type": "AggregateRating",
+              ratingValue: s.rating,
+              reviewCount: s.reviewCount || 1,
+            } : undefined,
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://www.greenpestdirectory.com/" },
+              { "@type": "ListItem", position: 2, name: "Directory", item: "https://www.greenpestdirectory.com/directory" },
+              { "@type": "ListItem", position: 3, name: s.state, item: `https://www.greenpestdirectory.com/directory/${stateSlug}` },
+              { "@type": "ListItem", position: 4, name: s.city, item: `https://www.greenpestdirectory.com/directory/${stateSlug}/${citySlug}` },
+              { "@type": "ListItem", position: 5, name: s.title },
+            ],
+          }),
+        }}
+      />
       <div className="wrap"><div className="crumb">
         <Link href="/">Home</Link><span>/</span>
         <Link href="/directory">{s.state}</Link><span>/</span>

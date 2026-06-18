@@ -1,8 +1,8 @@
 // ─── WordPress Headless API Client ───────────────────────────────────────────
 // Fetches data from WordPress REST API on the Hetzner server (178.156.197.177).
-// ACF field names use studio_* prefix (kept from BDD for backward compat) field group (imported 2026-03-30).
+// ACF field names use studio_* prefix (kept for backward compat with database schema).
 
-import { Studio, StudioCard, ServiceType, CompanyChain, EcoTier, EcoService, ListingTier } from "@/types/studio";
+import { Studio, StudioCard, ServiceType, DanceStyle, CompanyChain, EcoTier, EcoService, ListingTier } from "@/types/studio";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 const WP_API_URL =
@@ -63,7 +63,7 @@ function detectChain(title: string): CompanyChain {
   return "independent";
 }
 
-// ── ACF dance style → our DanceStyle union ───────────────────────────────────
+// ── ACF service type → our ServiceType union ───────────────────────────────────
 
 const SERVICE_MAP: Record<string, ServiceType> = {
   general_pest: "general_pest",
@@ -106,9 +106,6 @@ function mapWPPost(post: Record<string, unknown>): Studio {
     : (rawEco as EcoService[]);
   const ecoVerified = (acf.eco_verified as boolean) || false;
   const ecoSource = (acf.eco_source as string) || "";
-  const priceDropin  = acf.studio_price_dropin  as number | undefined;
-  const priceMonthly = acf.studio_price_monthly as number | undefined;
-  const priceIntro   = acf.studio_price_intro   as number | undefined;
 
   return {
     id:                    post.id as number,
@@ -129,9 +126,6 @@ function mapWPPost(post: Record<string, unknown>): Studio {
     email:                 (acf.studio_email          as string) || undefined,
     studioChain:           detectChain(title),
     danceStyles,
-    privateLessonRate:     priceDropin  ? `$${priceDropin}/hr`  : undefined,
-    introLessonRate:       priceIntro   ? `$${priceIntro}`      : undefined,
-    monthlyRate:           priceMonthly ? `$${priceMonthly}/mo` : undefined,
     rating:                (acf.studio_rating        as number)  || undefined,
     reviewCount:           (acf.studio_review_count  as number)  || undefined,
     tagline:               (acf.studio_tagline       as string)  || undefined,
@@ -419,7 +413,7 @@ export async function getStudiosByCity(citySlug: string): Promise<StudioCard[]> 
   return all.filter((s) => metroNames.has(s.city.toLowerCase()));
 }
 
-/** Studios filtered by dance style — fetches ALL studios to search across full directory */
+/** Companies filtered by service type — fetches ALL studios to search across full directory */
 export async function getStudiosByStyle(style: string): Promise<StudioCard[]> {
   const all = await getAllStudios(100);
   return all.filter((s) => s.danceStyles.includes(style as DanceStyle));

@@ -18,6 +18,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
+  // State pages: /directory/[state] — deduplicated
+  const stateSet = new Set<string>();
+  studios.forEach((s: any) => {
+    const state = (s.state || "").toLowerCase();
+    if (state) stateSet.add(state);
+  });
+  const stateEntries: MetadataRoute.Sitemap = Array.from(stateSet).map((state) => ({
+    url: `${BASE_URL}/directory/${state}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.75,
+  }));
+
   // City pages: /directory/[state]/[city] — deduplicated
   const citySet = new Set<string>();
   studios.forEach((s: any) => {
@@ -47,5 +60,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/terms`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  return [...staticPages, ...cityEntries, ...companyEntries];
+  return [...staticPages, ...stateEntries, ...cityEntries, ...companyEntries];
 }

@@ -11,8 +11,8 @@ import { supabase, type Claim } from "@/lib/supabase";
 type PageState = "loading" | "unauthenticated" | "no_claim" | "already_paid" | "ready" | "redirecting";
 
 const FEATURES = [
-  { icon: "\uD83D\uDCEC", title: "Lead Capture Form",         desc: "Prospective students contact you directly from your listing. Their name, email, and message land in your inbox instantly." },
-  { icon: "\u2B50",        title: "Featured Badge",            desc: "A gold \u2018Featured\u2019 badge on your listing card sets you apart from every other studio in the directory." },
+  { icon: "\uD83D\uDCEC", title: "Lead Capture Form",         desc: "Prospective customers contact you directly from your listing. Their name, email, and message land in your inbox instantly." },
+  { icon: "\u2B50",        title: "Featured Badge",            desc: "A gold \u2018Featured\u2019 badge on your listing card sets you apart from every other company in the directory." },
   { icon: "\uD83D\uDD1D", title: "Priority Placement",        desc: "Featured listings appear above free listings in all search results and city pages \u2014 more eyeballs, more inquiries." },
   { icon: "\uD83D\uDCF8", title: "Enhanced Profile",          desc: "Upload your own photos, add a promo video link, and write a custom description that replaces the default copy." },
   { icon: "\uD83D\uDCCA", title: "Monthly Performance Report", desc: "See how many people viewed your listing and how many clicked to contact you each month." },
@@ -95,7 +95,7 @@ export default function UpgradePage() {
           <div className="text-5xl mb-4">&#128274;</div>
           <h1 className="font-bold text-gray-900 text-xl mb-2">Claim your listing first</h1>
           <p className="text-gray-500 text-sm mb-6">
-            You need to claim and verify your studio listing before upgrading to Featured.
+            You need to claim and verify your company listing before upgrading to Featured.
           </p>
           <Link href="/claim"
             className="inline-block w-full py-3 rounded-xl font-bold text-gray-900 text-sm text-center transition-all hover:brightness-110"
@@ -167,7 +167,7 @@ export default function UpgradePage() {
         </h1>
         <p className="text-white/60 text-lg max-w-xl mx-auto mb-8">
           Upgrade <strong className="text-white">{claim?.studio_title}</strong> to Featured and
-          start receiving direct inquiries from students searching in your area.
+          start receiving direct inquiries from homeowners searching in your area.
         </p>
 
         {/* Price */}
@@ -181,7 +181,7 @@ export default function UpgradePage() {
             <div className="text-white font-bold text-5xl">$49<span className="text-2xl text-white/50 font-normal">/mo</span></div>
             <div className="text-white/30 text-xl line-through mb-1">$99</div>
           </div>
-          <div className="text-white/40 text-xs mt-2">Promotional rate for early studios. Cancel anytime.</div>
+          <div className="text-white/40 text-xs mt-2">Promotional rate for early companies. Cancel anytime.</div>
         </div>
 
         {/* CTA */}
@@ -223,7 +223,7 @@ export default function UpgradePage() {
             {[
               {
                 q: "What is the promotional price?",
-                a: "You're locking in $49/month — a limited-time promotional rate for early studios. The regular price is $99/month. Your rate is locked as long as your subscription is active.",
+                a: "You're locking in $49/month — a limited-time promotional rate for early companies. The regular price is $99/month. Your rate is locked as long as your subscription is active.",
               },
               {
                 q: "Can I cancel anytime?",
@@ -231,7 +231,7 @@ export default function UpgradePage() {
               },
               {
                 q: "How quickly do leads arrive?",
-                a: "Instantly. When a student submits the contact form on your listing, the message is emailed to you within seconds.",
+                a: "Instantly. When a homeowner submits the contact form on your listing, the message is emailed to you within seconds.",
               },
               {
                 q: "What if I&apos;m not approved yet?",

@@ -52,7 +52,7 @@ export default function LeadCaptureForm({
       <div className="flex items-center gap-2 mb-4">
         <span className="text-yellow-400 text-lg">⭐</span>
         <div>
-          <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider">Featured Studio</div>
+          <div className="text-yellow-400 text-xs font-bold uppercase tracking-wider">Featured Company</div>
           <h3 className="font-bold text-white text-base leading-tight">Send a Message</h3>
         </div>
       </div>
@@ -65,7 +65,7 @@ export default function LeadCaptureForm({
         <button type="submit" disabled={state === "submitting"} className="w-full py-3 rounded-xl font-bold text-gray-900 text-sm transition-all hover:brightness-110 disabled:opacity-60" style={{ background: "linear-gradient(135deg,#b8922a,#e8c560)" }}>
           {state === "submitting" ? "Sending\u2026" : "Send Message \u2192"}
         </button>
-        <p className="text-white/30 text-xs text-center">Your message goes directly to the studio owner.</p>
+        <p className="text-white/30 text-xs text-center">Your message goes directly to the company owner.</p>
       </form>
     </div>
   );

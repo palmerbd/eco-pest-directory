@@ -8,11 +8,11 @@
 //   define('WP_REVALIDATE_SECRET', 'your-secret-here'); // match Vercel env var
 //   define('WP_REVALIDATE_URL', 'https://greenpestdirectory.com/api/revalidate');
 //
-//   function bdd_revalidate_on_save($post_id, $post, $update) {
+//   function gpd_revalidate_on_save($post_id, $post, $update) {
 //     if ($post->post_type !== 'pest_company' || $post->post_status !== 'publish') return;
 //     $slug = $post->post_name;
-//     $city = strtolower(str_replace(' ', '-', get_field('studio_address_city', $post_id) ?? ''));
-//     $styles = get_field('studio_dance_styles', $post_id) ?? [];
+//     $city = strtolower(str_replace(' ', '-', get_field('company_city', $post_id) ?? ''));
+//     $styles = get_field('service_specialties', $post_id) ?? [];
 //     wp_remote_post(WP_REVALIDATE_URL, [
 //       'body'    => json_encode(['secret' => WP_REVALIDATE_SECRET, 'slug' => $slug, 'city' => $city, 'styles' => $styles]),
 //       'headers' => ['Content-Type' => 'application/json'],
@@ -20,7 +20,7 @@
 //       'blocking' => false,
 //     ]);
 //   }
-//   add_action('save_post', 'bdd_revalidate_on_save', 10, 3);
+//   add_action('save_post', 'gpd_revalidate_on_save', 10, 3);
 //
 // ── Vercel setup ─────────────────────────────────────────────────────────────
 // Add environment variable in Vercel dashboard:
@@ -29,7 +29,7 @@
 // ── Test from terminal ───────────────────────────────────────────────────────
 //   curl -X POST https://greenpestdirectory.com/api/revalidate \
 //     -H "Content-Type: application/json" \
-//     -d '{"secret":"your-secret","slug":"fred-astaire-dance-studio-dallas-tx"}'
+//     -d '{"secret":"your-secret","slug":"orkin-houston-tx"}'
 
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
@@ -46,33 +46,30 @@ export async function POST(req: NextRequest) {
 
     const revalidated: string[] = [];
 
-    // Always revalidate studio listing + homepage
-    revalidatePath("/studios");
-    revalidated.push("/studios");
+    // Always revalidate directory listing + homepage
+    revalidatePath("/directory");
+    revalidated.push("/directory");
     revalidatePath("/");
     revalidated.push("/");
 
-    // Revalidate the specific studio detail page
+    // Revalidate the specific company detail page
     if (slug) {
-      revalidatePath(`/studios/${slug}`);
-      revalidated.push(`/studios/${slug}`);
+      revalidatePath("/directory");
+      revalidated.push("/directory");
     }
 
     // Revalidate the city page
     if (city) {
-      revalidatePath(`/studios/city/${city}`);
-      revalidated.push(`/studios/city/${city}`);
+      revalidatePath("/directory");
+      revalidated.push("/directory");
     }
 
-    // Revalidate any matching style landing pages
+    // Revalidate any matching specialty landing pages
     const STYLE_PAGE_MAP: Record<string, string> = {
-      ballroom:     "/ballroom-dance-lessons",
-      latin:        "/latin-dance-lessons",
-      tango:        "/tango-dance-lessons",
-      wedding:      "/wedding-dance-lessons",
-      wedding_dance:"/wedding-dance-lessons",
-      swing:        "/swing-dance-lessons",
-      competition:  "/competition-dance-lessons",
+      eco_friendly: "/eco-friendly-pest-control",
+      organic:      "/organic-pest-control",
+      pet_safe:     "/pet-safe-pest-control",
+      ipm:          "/ipm-pest-control",
     };
 
     if (Array.isArray(styles)) {

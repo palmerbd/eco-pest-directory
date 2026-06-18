@@ -20,10 +20,10 @@ const WP_API_URL      = process.env.WP_API_URL || "http://178.156.197.177/wp-jso
 const WP_APP_USER     = process.env.WP_APP_USER!;
 const WP_APP_PASSWORD = process.env.WP_APP_PASSWORD!;
 
-// GHL Workflow #2 — fires when a Stripe payment confirms a Featured studio upgrade
+// GHL Workflow #2 — fires when a Stripe payment confirms a Featured company upgrade
 const GHL_STRIPE_WEBHOOK = "https://services.leadconnectorhq.com/hooks/gKAwJUdSQ6QMlAc0QXWb/webhook-trigger/bffde7d8-2595-416c-a347-8726edf35fcf";
 
-// GHL Workflow #3 — fires when a studio subscription is cancelled (cancellation save drip)
+// GHL Workflow #3 — fires when a company subscription is cancelled (cancellation save drip)
 // TODO: Replace with actual Workflow #3 inbound webhook URL once created in GHL
 const GHL_CANCEL_WEBHOOK = "";
 
@@ -31,7 +31,7 @@ function wpAuthHeader() {
   return "Basic " + Buffer.from(`${WP_APP_USER}:${WP_APP_PASSWORD}`).toString("base64");
 }
 
-// ── Studio: Update WP studio_tier field (non-fatal if it fails) ───────────────
+// ── Company: Update WP studio_tier field (non-fatal if it fails) ───────────────
 async function updateWpTier(studioSlug: string, tier: "claimed" | "paid") {
   try {
     const searchRes = await fetch(
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       console.log(`[webhook] ✅ Competition Featured activated — claim ${claimId}, comp ${competitionSlug}`);
     }
 
-    // ── Studio checkout ───────────────────────────────────────────────────────
+    // ── Company checkout ───────────────────────────────────────────────────────
     else {
       const { error } = await supabaseAdmin
         .from("claims")
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
         console.warn("[webhook] GHL webhook error:", ghlErr);
       }
 
-      console.log(`[webhook] ✅ Studio Featured activated — claim ${claimId}, studio ${studioSlug}`);
+      console.log(`[webhook] ✅ Company Featured activated — claim ${claimId}, studio ${studioSlug}`);
     }
   }
 
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // ── Studio cancellation ───────────────────────────────────────────────────
+    // ── Company cancellation ───────────────────────────────────────────────────
     else {
       const { data: claim } = await supabaseAdmin
         .from("claims")
@@ -190,7 +190,7 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        console.log(`[webhook] ⏹ Studio Featured cancelled — claim ${claim.id}, studio ${slug}`);
+        console.log(`[webhook] ⏹ Company Featured cancelled — claim ${claim.id}, studio ${slug}`);
       }
     }
   }

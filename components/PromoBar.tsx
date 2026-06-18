@@ -1,5 +1,5 @@
 // ─── PromoBar ─────────────────────────────────────────────────────────────────
-// Renders a promotion banner for Featured studios in the hero area.
+// Renders a promotion banner for Featured companies in the hero area.
 // Only shows when promo_text is set and promo_end_date is in the future (or null).
 
 import React from "react";

@@ -169,7 +169,7 @@ async function sendEmail({
         </div>
 
         <div style="display:flex;gap:12px">
-          <a href="mailto:${senderEmail}?subject=Re: Dance lesson inquiry"
+          <a href="mailto:${senderEmail}?subject=Re: Pest control inquiry"
             style="display:inline-block;background:linear-gradient(135deg,#b8922a,#e8c560);color:#1a1a1a;
                    font-weight:bold;font-size:13px;padding:10px 20px;border-radius:8px;text-decoration:none">
             Reply to ${senderName} →
