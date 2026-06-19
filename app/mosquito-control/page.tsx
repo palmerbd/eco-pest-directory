@@ -18,6 +18,21 @@ export default function MosquitoControlPage() {
         </div>
       </section>
 
+      <section style={{ padding: "0 0 32px" }}>
+        <div className="wrap" style={{ maxWidth: "800px" }}>
+          <form className="search" action="/api/search" method="get">
+            <div className="field">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3-3" />
+              </svg>
+              <input type="text" name="q" placeholder="Enter city or ZIP code" aria-label="City or ZIP" />
+            </div>
+            <button className="btn btn-primary" type="submit">Search</button>
+          </form>
+        </div>
+      </section>
+
       <section className="block">
         <div className="wrap" style={{ maxWidth: "800px" }}>
 
