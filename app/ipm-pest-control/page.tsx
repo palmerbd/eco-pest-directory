@@ -80,6 +80,20 @@ export default function IPMPestControlPage() {
         </div>
       </section>
 
+      <section className="seo" style={{ paddingTop: 0 }}><div className="wrap"><div className="panel">
+        <h3>Related guides</h3>
+        <p style={{ color: "var(--muted)", marginBottom: "12px" }}>Explore specific eco-friendly pest control topics:</p>
+        <div className="citychips">
+          <Link className="citychip" href="/eco-friendly-pest-control">What Is Eco-Friendly Pest Control?</Link>
+          <Link className="citychip" href="/organic-pest-control">Organic Pest Control</Link>
+          <Link className="citychip" href="/pet-safe-pest-control">Pet-Safe Treatments</Link>
+          <Link className="citychip" href="/termite-control">Eco Termite Control</Link>
+          <Link className="citychip" href="/rodent-control">Green Rodent Control</Link>
+          <Link className="citychip" href="/bed-bug-control">Bed Bug Solutions</Link>
+          <Link className="citychip" href="/mosquito-control">Mosquito Control</Link>
+        </div>
+      </div></div></section>
+
       <section style={{ padding: "0 0 56px" }}>
         <div className="wrap">
           <div className="ctastrip">

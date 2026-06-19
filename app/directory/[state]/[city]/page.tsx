@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { citySlugToName, getMetroSlug, getMetroSuburbs } from "@/lib/wordpress";
 import { CHAIN_CONFIG } from "@/types/studio";
+import { getCityIntroCopy } from "@/lib/seo-copy";
 
 export const revalidate = 3600;
 
@@ -40,7 +41,7 @@ async function fetchByCity(citySlug: string) {
 
 function dec(s: string) {
   return s.replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
-    .replace(/&amp;/g, "&").replace(/&rsquo;/g, "’").replace(/&lsquo;/g, "‘");
+    .replace(/&amp;/g, "&").replace(/&rsquo;/g, "'").replace(/&lsquo;/g, "'");
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ state: string; city: string }> }): Promise<Metadata> {
@@ -49,9 +50,10 @@ export async function generateMetadata({ params }: { params: Promise<{ state: st
   const studios = await fetchByCity(city);
   if (!studios.length) return { title: "City Not Found" };
   const st = studios[0]?.state || state.toUpperCase();
+  const tier1 = studios.filter((s: any) => s.ecoTier === "tier_1").length;
   return {
     title: `Eco-Friendly Pest Control in ${cityName}, ${st} — ${studios.length} Green Providers`,
-    description: `Compare ${studios.length} eco-friendly pest control companies in ${cityName}, ${st}. Filter by Eco-Certified providers, services, and ratings.`,
+    description: `Compare ${studios.length} eco-friendly pest control companies in ${cityName}, ${st}. ${tier1} Eco-Certified providers offering organic, pet-safe, and IPM-based treatments. Find green exterminators near you.`,
     alternates: { canonical: `https://www.greenpestdirectory.com/directory/${state}/${city}` },
   };
 }
@@ -72,14 +74,30 @@ export default async function CityPage({ params, searchParams }: { params: Promi
   const avg = (studios.reduce((sum: number, s: any) => sum + (s.rating || 0), 0) / studios.length).toFixed(1);
   const metroSlug = getMetroSlug(city);
   const suburbs = metroSlug ? getMetroSuburbs(metroSlug).filter((s) => s !== city).slice(0, 8) : [];
+  const introCopy = getCityIntroCopy(city);
+
+  /* Collect top services for this city */
+  const svcCount: Record<string,number> = {};
+  studios.forEach((s: any) => (s.serviceSpecialties || []).forEach((sv: string) => { svcCount[sv] = (svcCount[sv] || 0) + 1; }));
+  const topServices = Object.entries(svcCount).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k]) => SVC[k] || k.replace(/_/g, " "));
+
+  /* FAQ data */
+  const faqItems = [
+    { q: `How much does eco-friendly pest control cost in ${cityName}?`, a: `Most ${cityName} eco providers charge $40–$85 per visit for recurring quarterly service, or $150–$400 for one-time treatments. Pricing is typically within 10–20% of conventional pest control in the ${cityName} area.` },
+    { q: `How many eco-friendly pest control companies are in ${cityName}?`, a: `The Green Pest Directory lists ${studios.length} eco-friendly pest control providers in ${cityName}, ${st} — ${tier1} are Eco-Certified (Tier 1) and ${tier2} offer Eco Options (Tier 2).` },
+    { q: `What is the difference between Eco-Certified and Eco Options?`, a: `Eco-Certified (Tier 1) companies in ${cityName} build their entire business around green, organic, and low-toxicity methods — it's their default approach. Eco Options (Tier 2) are conventional providers that offer dedicated eco-friendly service lines on request.` },
+    { q: `Are eco-friendly pest control treatments safe for pets and children?`, a: `Yes. Eco-friendly providers in ${cityName} use EPA minimum-risk products, botanical formulations, and targeted application methods like gel bait stations and crack-and-crevice treatments that minimize exposure. Most treatments allow re-entry within 30–60 minutes once surfaces dry.` },
+    { q: `What pests do eco-friendly companies in ${cityName} treat?`, a: `${cityName} eco providers handle the full range of common pests including ${topServices.length > 0 ? topServices.join(", ").toLowerCase() : "general pest, termite, rodent, and mosquito"} control. Many also offer wildlife exclusion and lawn pest management using integrated pest management (IPM) techniques.` },
+    { q: `How are companies ranked on this page?`, a: `By default we show Eco-Certified (Tier 1) providers first, then Eco Options (Tier 2), each ordered by customer rating. You can filter by eco tier or sort by name using the controls above.` },
+  ];
 
   return (
     <>
       <section className="chero">
         <div className="wrap">
-          <div className="crumb"><Link href="/">Home</Link><span>/</span><Link href="/directory">{st}</Link><span>/</span>{cityName}</div>
+          <div className="crumb"><Link href="/">Home</Link><span>/</span><Link href={`/directory/${stateSlug}`}>{st}</Link><span>/</span>{cityName}</div>
           <h1>Eco-Friendly Pest Control in <span className="hl">{cityName}, {st}</span></h1>
-          <p>Compare green, organic, and pet-safe pest control companies serving {cityName} and surrounding areas. Eco-Certified providers are listed first.</p>
+          <p>{introCopy}</p>
           <div className="cstats">
             <div className="cstat"><b>{studios.length}</b><span>Companies</span></div>
             <div className="cstat"><b>{tier1}</b><span>Eco-Certified</span></div>
@@ -150,22 +168,72 @@ export default async function CityPage({ params, searchParams }: { params: Promi
       )}
 
       <section className="seo"><div className="wrap"><div className="panel">
-        <h2>Finding green pest control in {cityName}</h2>
-        <p>{cityName} homeowners increasingly want pest control that protects their families, pets, and green spaces. The Green Pest Directory lists <strong>{studios.length} eco-conscious providers</strong> across the {cityName} metro.</p>
+        <h2>Finding green pest control in {cityName}, {st}</h2>
+        <p>{cityName} homeowners increasingly want pest control that protects their families, pets, and green spaces. The Green Pest Directory lists <strong>{studios.length} eco-conscious providers</strong> in the {cityName} metro — {tier1} fully Eco-Certified companies that build their business around green methods, plus {tier2} conventional providers offering dedicated eco-friendly service lines.</p>
         <h3>Eco-Certified vs. Eco Options in {cityName}</h3>
-        <p><strong>Eco-Certified (Tier 1)</strong> companies build their entire business around green methods. <strong>Eco Options (Tier 2)</strong> are conventional providers that offer eco-friendly treatments on request.</p>
+        <p><strong>Eco-Certified (Tier 1)</strong> companies center their brand on green, organic, and low-toxicity pest control — it is their default service, not an upsell. <strong>Eco Options (Tier 2)</strong> are conventional providers that maintain dedicated eco-friendly programs you can request. Both tiers are verified and listed to help {cityName} homeowners find the right level of green commitment.</p>
+        <h3>What to expect from eco-friendly service in {cityName}</h3>
+        <p>Eco providers in {cityName} typically use integrated pest management (IPM) — inspecting your property, identifying the specific pest species, sealing entry points, and applying targeted treatments only where needed. Products include botanical sprays, gel bait stations, diatomaceous earth, and EPA minimum-risk formulations that are safe for families, pets, and the local environment.</p>
+
         <div className="faq" style={{ marginTop: "22px" }}>
           <h3>Frequently asked questions</h3>
-          <details open><summary>How much does eco-friendly pest control cost in {cityName}? <span className="plus">+</span></summary><div className="ans">Most {cityName} eco providers charge $40–$85 per visit for recurring service, or $150–$400 for one-time treatments.</div></details>
-          <details><summary>How are companies ranked on this page? <span className="plus">+</span></summary><div className="ans">By default we show Eco-Certified (Tier 1) first, then Eco Options (Tier 2), each ordered by rating.</div></details>
+          {faqItems.map((item, i) => (
+            <details key={i} open={i === 0}><summary>{item.q} <span className="plus">+</span></summary><div className="ans">{item.a}</div></details>
+          ))}
+        </div>
+      </div></div></section>
+
+      <section className="seo" style={{ paddingTop: 0 }}><div className="wrap"><div className="panel">
+        <h3>Related guides</h3>
+        <p style={{ color: "var(--muted)", marginBottom: "12px" }}>Learn more about green pest control methods used by {cityName} providers:</p>
+        <div className="citychips">
+          <Link className="citychip" href="/eco-friendly-pest-control">What Is Eco-Friendly Pest Control?</Link>
+          <Link className="citychip" href="/organic-pest-control">Organic Pest Control Guide</Link>
+          <Link className="citychip" href="/pet-safe-pest-control">Pet-Safe Treatments</Link>
+          <Link className="citychip" href="/ipm-pest-control">IPM Explained</Link>
+          <Link className="citychip" href="/termite-control">Eco Termite Control</Link>
+          <Link className="citychip" href="/mosquito-control">Green Mosquito Control</Link>
         </div>
       </div></div></section>
 
       <section style={{ padding: "0 0 56px" }}><div className="wrap"><div className="ctastrip">
         <h2>Own a green pest company in {cityName}?</h2>
-        <p>Get found by {cityName} homeowners. Claim your free listing today.</p>
+        <p>Get found by {cityName} homeowners searching for eco-friendly providers. Claim your free listing today.</p>
         <Link className="btn btn-light" href="/claim">List Your Company →</Link>
       </div></div></section>
+
+      {/* BreadcrumbList Schema */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.greenpestdirectory.com" },
+          { "@type": "ListItem", "position": 2, "name": st, "item": `https://www.greenpestdirectory.com/directory/${stateSlug}` },
+          { "@type": "ListItem", "position": 3, "name": cityName, "item": `https://www.greenpestdirectory.com/directory/${stateSlug}/${city}` },
+        ],
+      })}} />
+
+      {/* CollectionPage Schema */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": `Eco-Friendly Pest Control in ${cityName}, ${st}`,
+        "description": `Compare ${studios.length} eco-friendly pest control companies in ${cityName}, ${st}.`,
+        "url": `https://www.greenpestdirectory.com/directory/${stateSlug}/${city}`,
+        "numberOfItems": studios.length,
+        "isPartOf": { "@type": "WebSite", "name": "Green Pest Directory", "url": "https://www.greenpestdirectory.com" },
+      })}} />
+
+      {/* FAQPage Schema */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqItems.map((item) => ({
+          "@type": "Question",
+          "name": item.q,
+          "acceptedAnswer": { "@type": "Answer", "text": item.a },
+        })),
+      })}} />
     </>
   );
 }
