@@ -18,21 +18,55 @@ export default function TermiteControlPage() {
         </div>
       </section>
 
-      <section style={{ padding: "0 0 32px" }}>
-        <div className="wrap" style={{ maxWidth: "800px" }}>
-          <form className="search" action="/api/search" method="get">
-            <div className="field">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.2">
-                <circle cx="11" cy="11" r="7" />
-                <path d="m20 20-3-3" />
-              </svg>
-              <input type="text" name="q" placeholder="Enter city or ZIP code" aria-label="City or ZIP" />
-            </div>
-            <button className="btn btn-primary" type="submit">Search</button>
-          </form>
-        </div>
-      </section>
 
+      <div className="wrap" style={{ maxWidth: "800px" }}>
+        <div style={{
+          marginTop: "-20px", position: "relative", zIndex: 5,
+          background: "#fff", border: "1px solid var(--line)", borderRadius: "16px",
+          padding: "14px", boxShadow: "var(--shadow-sm)",
+          display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center",
+        }}>
+          <form action="/api/search" method="get" style={{
+            display: "flex", flex: "1 1 300px", alignItems: "center", gap: "0.5rem",
+            background: "var(--card)", border: "1px solid var(--line)", borderRadius: "10px",
+            padding: "0.45rem 0.7rem",
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/>
+            </svg>
+            <input
+              type="text" name="q"
+              placeholder="Search by city or state..."
+              style={{
+                border: "none", outline: "none", background: "transparent",
+                fontFamily: "Inter, sans-serif", fontSize: "0.9rem",
+                width: "100%", color: "var(--ink)",
+              }}
+            />
+            <button type="submit" className="btn btn-primary" style={{
+              padding: "0.4rem 0.85rem", fontSize: "0.78rem", whiteSpace: "nowrap",
+            }}>Search</button>
+          </form>
+
+          <Link href="/directory?eco=tier_1" style={{
+            display: "inline-flex", alignItems: "center", gap: "0.4rem",
+            padding: "0.55rem 0.85rem", borderRadius: "10px", fontSize: "0.82rem",
+            fontFamily: "Montserrat, sans-serif", fontWeight: 700, whiteSpace: "nowrap",
+            border: "1px solid var(--line)", background: "#fff", color: "var(--muted)",
+          }}>
+            {"✓"} Eco-Certified
+          </Link>
+
+          <Link href="/directory?eco=tier_2" style={{
+            display: "inline-flex", alignItems: "center", gap: "0.4rem",
+            padding: "0.55rem 0.85rem", borderRadius: "10px", fontSize: "0.82rem",
+            fontFamily: "Montserrat, sans-serif", fontWeight: 700, whiteSpace: "nowrap",
+            border: "1px solid var(--line)", background: "#fff", color: "var(--muted)",
+          }}>
+            {"◆"} Eco Options
+          </Link>
+        </div>
+      </div>
       <section className="block">
         <div className="wrap" style={{ maxWidth: "800px" }}>
 
