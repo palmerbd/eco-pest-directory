@@ -119,7 +119,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ state:
       />
       <div className="wrap"><div className="crumb">
         <Link href="/">Home</Link><span>/</span>
-        <Link href="/directory">{s.state}</Link><span>/</span>
+        <Link href={`/directory/${stateSlug}`}>{s.state}</Link><span>/</span>
         <Link href={`/directory/${stateSlug}/${citySlug}`}>{s.city}</Link><span>/</span>
         {s.title}
       </div></div>
